@@ -1,6 +1,5 @@
 *** Settings ***
 
-Library  Selenium2Library
 Library  String
 Library  DateTime
 Library  uatenders_service.py
@@ -73,8 +72,6 @@ ${locator.procurementMethodType}                                xpath=(//td[@cla
 ${locator.dgfDecisionDate}                                      xpath=(//span[@class='dgfDecisionDate'])
 ${locator.dgfDecisionID}                                        xpath=(//span[@class='dgfDecisionID'])
 ${locator.tenderAttempts}                                       xpath=(//span[@class='tenderAttempts'])
-
-
 ${locator.awards[0].status}                                     xpath=(//*[@class='col-md-12']/h4//span)[1]
 ${locator.awards[1].status}                                     xpath=(//*[@class='col-md-12']/h4//span)[2]
 
@@ -86,7 +83,6 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   Open Browser   ${USERS.users['${username}'].homepage}   ${USERS.users['${username}'].browser}   alias=${username}
   Set Window Size       @{USERS.users['${username}'].size}
   Set Window Position   @{USERS.users['${username}'].position}
-#  Run Keyword If   '${username}' != 'Ua_Viewer'   Login ${username}
 
 #Login
   Wait Until Element Is Visible      name=email
@@ -94,7 +90,6 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   Input text                         name=password       ${USERS.users['${username}'].password}
   Wait Until Element Is Visible      xpath=//button[contains(@class, 'btn btn-danger')]
   Click Element                      xpath=//button[contains(@class, 'btn btn-danger')]
-
 
 Створити тендер
   [Arguments]  @{ARGUMENTS}
@@ -128,7 +123,7 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
     ${dgfDecisionID}=                       Get From Dictionary         ${ARGUMENTS[1].data}                    dgfDecisionID
     ${tenderAttempts}=                      Get From Dictionary         ${ARGUMENTS[1].data}                    tenderAttempts
     ${procurement}=                         Get From Dictionary         ${ARGUMENTS[1].data}                    procurementMethodType
-  Selenium2Library.Switch Browser    ${ARGUMENTS[0]}
+
   Maximize Browser Window
   Wait Until Element Is Visible       xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[2]/li[1]/a
   Click Element                       xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[2]/li[1]/a
@@ -209,7 +204,6 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   ...      ${ARGUMENTS[2]} ==  questionId
   ${title}=        Get From Dictionary  ${ARGUMENTS[2].data}  title
   ${description}=  Get From Dictionary  ${ARGUMENTS[2].data}  description
-  Selenium2Library.Switch Browser       ${ARGUMENTS[0]}
   Wait Until Element Is Visible        xpath=//*[text()='Задати запитання']
   Click Element                        xpath=//*[text()='Задати запитання']
   Input text                           name=title                                     ${title}
@@ -224,7 +218,6 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   ...      ${ARGUMENTS[2]} ==  questionId
   ${title}=        Get From Dictionary  ${ARGUMENTS[2].data}  title
   ${description}=  Get From Dictionary  ${ARGUMENTS[2].data}  description
-  Selenium2Library.Switch Browser       ${ARGUMENTS[0]}
   Wait Until Element Is Visible        xpath=//*[text()='Задати запитання']
   Click Element                        xpath=//*[text()='Задати запитання']
   Input text                           name=title                                    ${title}
@@ -255,8 +248,8 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   Run Keyword And Ignore Error        Click Element               xpath=//*[@id="self_eligible"]
   Wait Until Element Is Visible       xpath=//*[@type='submit']
   Click Element                       xpath=//*[@type='submit']
-  Wait Until Element Is Visible       xpath=/html/body/div/div[2]/div[1]/table/tbody/tr[2]/td[9]/a/span
-  Click Element                       xpath=/html/body/div/div[2]/div[1]/table/tbody/tr[2]/td[9]/a/span
+  Wait Until Element Is Visible       xpath=//*[@class='table table-striped table-bordered']//tr[2]//td[2]/a
+  Click Element                       xpath=//*[@class='table table-striped table-bordered']//tr[2]//td[2]/a
   Click Element                       xpath=//a[@class="btn btn-success"]
 
 Скасувати цінову пропозицію
@@ -348,7 +341,6 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   ...    ${ARGUMENTS[0]} =  username
   ...    ${ARGUMENTS[1]} =  ${file_path}
   ...    ${ARGUMENTS[2]} =  ${TENDER_UAID}
-  Selenium2Library.Switch Browser    ${ARGUMENTS[0]}
   uatenders.Пошук тендера по ідентифікатору   ${ARGUMENTS[0]}   ${ARGUMENTS[1]}
   Wait Until Element Is Visible       name=description
   Input text                          name=description    Тестовий тендер після редагування
@@ -360,7 +352,6 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   [Documentation]
   ...      ${ARGUMENTS[0]} =  username
   ...      ${ARGUMENTS[1]} =  ${TENDER_UAID}
-  Selenium2Library.Switch Browser    ${ARGUMENTS[0]}
   uatenders.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}   ${ARGUMENTS[1]}
   Reload Page
 
@@ -501,7 +492,6 @@ Change_date_to_month
   ${cpv_id1}=                  Replace String           ${cpv_id}   -   _
   ${dkpp_id1}=                 Replace String           ${dkpp_id}   -   _
 
-  Selenium2Library.Switch Browser    ${ARGUMENTS[0]}
   Run keyword if   '${TEST NAME}' == 'Можливість додати позицію закупівлі в тендер'      Додати позицію
   Run keyword if   '${TEST NAME}' != 'Можливість додати позицію закупівлі в тендер'      Видалити позиції
 
@@ -914,7 +904,6 @@ Change_date_to_month
 Отримати дані із документу пропозиції
   [Arguments]  ${user_name}  ${tender_id}  ${bid_index}  ${document_index}  ${field}
   Sleep  2
-#  ${document_index}=        get_plus_Index           ${document_index}
   ${return_value}=                  Get Text        xpath=(//span[@id=${document_index}])
   [Return]  ${return_value}
 
@@ -1029,8 +1018,6 @@ Change_date_to_month
   Click Element                                     xpath=(//a[@class='btn btn-warning'])
   Wait Until Element Is Visible                     xpath=//a[text()[contains(.,'Підтвердити протокол')]]
   Click Element                                     xpath=//a[text()[contains(.,'Підтвердити протокол')]]
-#  ${text_true}                     Get Text          xpath=(//*[@class='alert alert-success'])
-#  Should Be Equal As Strings    ${text_true}         Заявка на підтвердження протоколу подана до ЦБД.
 
 Отримати інформацію про awards[${award_index}].status
   Wait Until Element Is Visible                     xpath=//a[text()[contains(.,'Пропозиції')]]

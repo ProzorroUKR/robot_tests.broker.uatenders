@@ -39,7 +39,6 @@ def convert_uatenders_string_to_common_string(string):
     }.get(string, string)
 
 
-
 def convert_datetime_for_delivery(isodate):
     iso_dt = parse_date(isodate)
     date_string = iso_dt.strftime("%d-%m-%Y %H:%M")
