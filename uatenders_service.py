@@ -21,7 +21,7 @@ def convert_uatenders_string_to_common_string(string):
         u"Аукціон відмінено": u"cancelled",
         u"Аукціон завершено": u"complete",
         u"Період уточнень": u"active.enquiries",
-        u"Аукціон не відбувся": u"unsuccessful",
+        u"Аукціон не відбувся": u"unsuccessful", 
         u"Очікування пропозицій": u"active.tendering",
         u"Період аукціону": u"active.auction",
         u"Кваліфікація переможця": u"active.qualification",
@@ -32,9 +32,14 @@ def convert_uatenders_string_to_common_string(string):
         u"tenderNotice": u"1",
         u"x_presentation": u"18",
         u"technicalSpecifications": u"2",
-            
-
+        u"очікується протокол": u"pending.verification",
+        u"очікується кінець кваліфікації": u"pending.waiting",
+        u"очікується підписання договору": u"pending.payment",  
+        u"Відхилено": u"unsuccessful", 
+        u"Відмінено": u"cancelled",     
+     
     }.get(string, string)
+
 
 def convert_datetime_for_delivery(isodate):
     iso_dt = parse_date(isodate)
@@ -53,8 +58,6 @@ def adapt_item(tender_data, role_name):
                 i['unit']['name'] = my_dict[i['unit']['name']]
     return tender_data
 
-
-
 def convert_auction_date(date):
 
     date_obj = datetime.strptime(date, "%d.%m.%Y %H:%M")
@@ -68,13 +71,11 @@ def get_unit_id(string):
         u"метри квадратні": u"13",
     }.get(string, string)
 
-
 def get_file_path():
     return os.path.join(os.getcwd(), 'src/robot_tests.broker.uatenders/fileupload.txt')
 
 def download(url, file_name, output_dir):
     urllib.urlretrieve(url, ('{}/{}'.format(output_dir, file_name)))
-
 
 def is_qualified(bid_data, username):
     if username == 'uatenders_Provider':
@@ -86,11 +87,14 @@ def get_dgf(dgfdate):
     newDate = datetime.strptime(dgfdate, "%Y-%m-%d")
     return newDate.strftime("%d.%m.%Y")
 
-def getIndex(attr):
+def get_minus_Index(attr):
     return attr[-1]
+
+def get_plus_Index(attr):
+    return attr[+1]
 
 def get_question_locator(string):
      return {
         u"title": u"questionTitle-",
         u"description": u"questionDesc-",
-    }.get(string, string)
+    }.get(string, string)  
