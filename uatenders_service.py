@@ -21,7 +21,7 @@ def convert_uatenders_string_to_common_string(string):
         u"Аукціон відмінено": u"cancelled",
         u"Аукціон завершено": u"complete",
         u"Період уточнень": u"active.enquiries",
-        u"Аукціон не відбувся": u"unsuccessful",
+        u"Аукціон не відбувся": u"unsuccessful", 
         u"Очікування пропозицій": u"active.tendering",
         u"Період аукціону": u"active.auction",
         u"Кваліфікація переможця": u"active.qualification",
@@ -34,7 +34,9 @@ def convert_uatenders_string_to_common_string(string):
         u"technicalSpecifications": u"2",
         u"очікується протокол": u"pending.verification",
         u"очікується кінець кваліфікації": u"pending.waiting",
-        u"очікується підписання договору": u"pending.payment",      
+        u"очікується підписання договору": u"pending.payment",  
+        u"Відхилено": u"unsuccessful", 
+        u"Відмінено": u"cancelled",     
      
     }.get(string, string)
 

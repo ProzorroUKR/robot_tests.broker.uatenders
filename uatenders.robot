@@ -72,8 +72,8 @@ ${locator.procurementMethodType}                                xpath=(//td[@cla
 ${locator.dgfDecisionDate}                                      xpath=(//span[@class='dgfDecisionDate'])
 ${locator.dgfDecisionID}                                        xpath=(//span[@class='dgfDecisionID'])
 ${locator.tenderAttempts}                                       xpath=(//span[@class='tenderAttempts'])
-${locator.awards[0].status}                                     xpath=(//*[@class='col-md-12']/h4//span)[1]
-${locator.awards[1].status}                                     xpath=(//*[@class='col-md-12']/h4//span)[2]
+${locator.awards[0].status}                                     xpath=(//*[@class='awards-list'])[(string(@award-status)) and @award-index='0']
+${locator.awards[1].status}                                     xpath=(//*[@class='awards-list'])[(string(@award-status)) and @award-index='1']
 
 
 *** Keywords ***
@@ -131,7 +131,6 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   Input text                          name=name                            ${proc_name}
   Input text                          name=legal_name                      ${proc_name}
   Click Element                       xpath=//*[@type='submit']
-  Capture Page Screenshot
   Wait Until Element Is Visible       xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[1]/li[1]/a
   Click Element                       xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[1]/li[1]/a
   Click Element                       xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[1]/li[1]/ul/li[1]/a
@@ -248,9 +247,12 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   Run Keyword And Ignore Error        Click Element               xpath=//*[@id="self_eligible"]
   Wait Until Element Is Visible       xpath=//*[@type='submit']
   Click Element                       xpath=//*[@type='submit']
-  Wait Until Element Is Visible       xpath=//*[@class='table table-striped table-bordered']//tr[2]//td[2]/a
-  Click Element                       xpath=//*[@class='table table-striped table-bordered']//tr[2]//td[2]/a
-  Click Element                       xpath=//a[@class="btn btn-success"]
+
+  Wait Until Element Is Visible       xpath=//*[@class='glyphicon glyphicon-pencil' and @auction-id='${ARGUMENTS[1]}']
+  Click Element                       xpath=//*[@class='glyphicon glyphicon-pencil' and @auction-id='${ARGUMENTS[1]}']
+  Sleep  5
+  Wait Until Element Is Visible       xpath=//*[text()='Опублікувати']
+  Click Element                       xpath=//*[text()='Опублікувати']
 
 Скасувати цінову пропозицію
   [Arguments]  @{ARGUMENTS}
@@ -285,7 +287,7 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
 Завантажити документ в ставку
   [Arguments]  ${username}  ${filePath}  ${tender_uaid}
   ${filepyth}=                              get_file_path
-  Run Keyword if   'Неможливість' in '${TEST_NAME}'        uatenders.Пошук тендера по ідентифікатору  ${username}   ${tender_uaid}
+
   Reload Page
   Sleep  2
   Choose File     id=bid-1            ${filepyth}
@@ -540,7 +542,7 @@ Change_date_to_month
 Отримати інформацію про items[0].deliveryAddress.region
   ${return_value}=   Отримати текст із поля і показати на сторінці         items[0].deliveryAddress.region
   ${return_value}=   Remove String   ${return_value}  ,
-  ${return_value}=   Run keyword if    '${return_value}' == 'Київ'   Convert To String  м. Київ
+  ${return_value}=   Run keyword if    '${return_value}' == 'Київ'       Convert To String  м. Київ
   [Return]  ${return_value}
 
 Отримати інформацію про items[0].deliveryAddress.locality
@@ -817,10 +819,18 @@ Change_date_to_month
 Скасування рішення кваліфікаційної комісії
   [Arguments]  ${username}  ${tender_uaid}  ${award_num}
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
-  Wait Until Element Is Visible                     xpath=(//a[@class='btn btn-warning'])
-  Click Element                                     xpath=(//a[@class='btn btn-warning'])
-  Wait Until Element Is Visible                     xpath=//a[text()[contains(.,'Відмінити результати кваліфікації')]]
-  Click Element                                     xpath=//a[text()[contains(.,'Відмінити результати кваліфікації')]]
+  Sleep   5
+  Run Keyword And Ignore Error        Click Element      xpath=(//a[@class='btn btn-warning'])
+  Run Keyword if   'скасувати рішення кваліфікації' in '${TEST_NAME}'        Run Keywords
+  ...   Click Element          				        xpath=//a[text()[contains(.,'Мої пропозиції')]]
+  ...   AND   Reload Page
+  ...   AND   Sleep   3
+  ...   AND   Wait Until Element Is Visible         xpath=//*[@class='btn btn-xs btn-danger' and @auction-id='${tender_uaid}']
+  ...   AND   Click Element                         xpath=//*[@class='btn btn-xs btn-danger' and @auction-id='${tender_uaid}']
+  ...   AND   Sleep   2
+  ...   AND   Click Element                         xpath=//a[text()[contains(.,'Так')]]
+  Sleep  5
+  Run Keyword And Ignore Error        Click Element      xpath=//a[text()[contains(.,'Відмінити результати кваліфікації')]]
 
 Завантажити документ рішення кваліфікаційної комісії
   [Arguments]  ${username}  ${document}  ${tender_uaid}  ${award_num}
@@ -828,7 +838,7 @@ Change_date_to_month
   Wait Until Element Is Visible                     xpath=(//a[@class='btn btn-warning'])
   Click Element                                     xpath=(//a[@class='btn btn-warning'])
   Sleep  2
-  Choose File         id=award-0-1            ${document}
+  Choose File         id=award-${award_num}-1            ${document}
   Sleep  5
   Wait Until Element Is Visible                     xpath=//*[@type='submit']
   Click Element                                     xpath=//*[@type='submit']
@@ -958,7 +968,7 @@ Change_date_to_month
   ${option}=    convert_uatenders_string_to_common_string     ${doc_type}
   Wait Until Element Is Visible                     xpath=//*[text()='Редагувати']
   Click Element                                     xpath=//*[text()='Редагувати']
-  Wait Until Page Contains Element                     name=tender[files][]          10
+  Wait Until Page Contains Element                  name=tender[files][]             10
   Choose File       name=tender[files][]       ${doc}
   Select From List                          xpath=//select[@name="tender[docTypes][]"]          ${option}
   Sleep  5
@@ -1005,9 +1015,9 @@ Change_date_to_month
   uatenders.Пошук тендера по ідентифікатору   ${ARGUMENTS[0]}   ${ARGUMENTS[1]}
   Wait Until Element Is Visible                     xpath=(//a[@class='btn btn-warning'])
   Click Element                                     xpath=(//a[@class='btn btn-warning'])
-  Sleep  2
+  Sleep  5
   Choose File                                       xpath=//*[@id='award-${ARGUMENTS[3]}-1']              ${ARGUMENTS[2]}
-  Sleep  2
+  Sleep  3
   Select From List                                  xpath=//*[@class='form-control select2-hidden-accessible']        22
   Wait Until Element Is Visible                     xpath=//*[@type='submit']
   Click Element                                     xpath=//*[@type='submit']
@@ -1016,12 +1026,17 @@ Change_date_to_month
   [Arguments]  ${username}  ${tender_uaid}  ${award_index}
   Wait Until Element Is Visible                     xpath=(//a[@class='btn btn-warning'])
   Click Element                                     xpath=(//a[@class='btn btn-warning'])
+  Sleep  2
+  Run Keyword if   'Неможливість' in '${TEST_NAME}'        Run Keywords
+  ...   Wait Until Element Is Not Visible           xpath=//a[text()[contains(.,'Підтвердити протокол')]]     90
+  ...   AND  Reload Page
   Wait Until Element Is Visible                     xpath=//a[text()[contains(.,'Підтвердити протокол')]]
   Click Element                                     xpath=//a[text()[contains(.,'Підтвердити протокол')]]
 
 Отримати інформацію про awards[${award_index}].status
   Wait Until Element Is Visible                     xpath=//a[text()[contains(.,'Пропозиції')]]
   Click Element                                     xpath=//a[text()[contains(.,'Пропозиції')]]
+  Sleep  4
   ${return_value}=   Отримати текст із поля і показати на сторінці   awards[${award_index}].status
   ${return_value}=       convert_uatenders_string_to_common_string   ${return_value}
   [Return]  ${return_value}
