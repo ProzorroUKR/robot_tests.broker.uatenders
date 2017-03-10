@@ -854,6 +854,7 @@ Change_date_to_month
   Input text                                        name=unsuccessful_description     ${description}
   Wait Until Element Is Visible                     xpath=//*[@type='submit']
   Click Element                                     xpath=//*[@type='submit']
+  Run Keyword if   'дискваліфікувати другого кандидата' in '${TEST_NAME}'        Sleep   180
 
 Завантажити ілюстрацію
   [Arguments]  ${username}  ${tender_uaid}  ${filepath}
