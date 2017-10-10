@@ -240,20 +240,17 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
 
 
 Подати цінову пропозицію
-  [Arguments]  @{ARGUMENTS}
-  [Documentation]
-  ...      ${ARGUMENTS[0]} ==  username
-  ...      ${ARGUMENTS[1]} ==  ${TENDER_UAID}
-  ...      ${ARGUMENTS[2]} ==  ${test_bid_data}
-  uatenders.Пошук тендера по ідентифікатору  ${ARGUMENTS[0]}   ${ARGUMENTS[1]}
-  Click Element     xpath=//*[text()='Подати пропозицію'][1]
+  [Arguments]  ${username}  ${tender_uaid}  ${test_bid_data}
+  uatenders.Пошук тендера по ідентифікатору  ${username}   ${tender_uaid}
+  Click Element                       xpath=//*[text()='Подати пропозицію'][1]
   Wait Until Element Is Visible       xpath=//*[@id="self_eligible"]      25
   Click Element                       xpath=//*[@id="self_eligible"]
-  Run Keyword If     'Неможливість' in '${TEST_NAME}'       Click Element              xpath=//*[@type='submit']//
+  Run Keyword If     'Неможливість' in '${TEST_NAME}'       Click Element                xpath=//*[@type='submit']//
   Run Keyword If     '${MODE}' == 'dgfFinancialAssets'      Run Keyword
-  ...   Input Text               name=amount       ${ARGUMENTS[2].data.value.amount}
-  ...      ELSE IF   '${MODE}' == 'dgfInsider' or 'Неможливість' != '${TEST_NAME}'   Run Keyword
-  ...   Click Element      xpath=//*[@type='submit']
+  ...   Input Text                   name=amount       ${test_bid_data.data.value.amount}
+  ...      ELSE IF   '${MODE}' == 'dgfInsider' or '${MODE}' == 'dgfFinancialAssets'      Run Keyword
+  ...   Click Element                 xpath=//*[@type='submit']
+  Wait Until Element Is Visible       xpath=(//h2[contains(text(),'Мої пропозиції')])    30
   Run Keyword If   'без кваліфікації' in '${TEST_NAME}'
   ...  Fail  "Неможливо подати пропозицію без кваліфікації"
 
@@ -267,8 +264,8 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   Click Element                       xpath=//*[text()='Редагувати пропозицію']
   Wait Until Element Is Visible       xpath=//*[text()='Відмінити']    25
   Click Element                       xpath=//*[text()='Відмінити']
-  Wait Until Page Contains Element       xpath=//*[@id="modal-confirm-bid"]/div/div/div[3]/input
-  Click Element               xpath=//*[@id="modal-confirm-bid"]/div/div/div[3]/input
+  Wait Until Page Contains Element    xpath=//*[@id="modal-confirm-bid"]/div/div/div[3]/input
+  Click Element                       xpath=//*[@id="modal-confirm-bid"]/div/div/div[3]/input
 
 Змінити цінову пропозицію
   [Arguments]  @{ARGUMENTS}
@@ -283,8 +280,7 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   Clear Element Text          name=amount
   Input Text                  name=amount                   ${amount}
   Wait Until Element Is Visible     xpath=//*[@type='submit']    30
-  Click Element               xpath=//*[@type='submit']
-  Sleep  8
+  Click Element                     xpath=//*[@type='submit']
 
 Завантажити документ в ставку
   [Arguments]  ${username}  ${filePath}  ${tender_uaid}
@@ -295,7 +291,7 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   Click Element               xpath=//*[text()='Додати файл']
   Choose File                 id=bid-1            ${filepyth}
   Wait Until Element Is Visible     xpath=//*[@type='submit']    60
-  Click Element               xpath=//*[@type='submit']
+  Click Element                     xpath=//*[@type='submit']
 
 Змінити документ в ставці
   [Arguments]  @{ARGUMENTS}
@@ -306,7 +302,7 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   Click Element               xpath=//*[text()='Додати файл']
   Choose File                 id=bid-1            ${filepyth}
   Wait Until Element Is Visible     xpath=//*[@type='submit']    60
-  Click Element               xpath=//*[@type='submit']
+  Click Element                     xpath=//*[@type='submit']
 
 Відповісти на питання
   Sleep   20
@@ -332,7 +328,7 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   Click Element               xpath=//*[text()='Редагувати']
   Choose File                 name=tender[files][]                   ${filepath}
   Wait Until Element Is Visible     xpath=//*[@type='submit']    60
-  Click Element               xpath=//*[@type='submit']
+  Click Element                     xpath=//*[@type='submit']
 
 Внести зміни в тендер
   [Arguments]  @{ARGUMENTS}
@@ -343,7 +339,7 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   uatenders.Пошук тендера по ідентифікатору   ${ARGUMENTS[0]}   ${ARGUMENTS[1]}
   Input Text                 name=description              Тестовий тендер після редагування
   Wait Until Element Is Visible     xpath=//*[@type='submit']    60
-  Click Element              xpath=//*[@id="submit-edit-btn"]
+  Click Element                     xpath=//*[@id="submit-edit-btn"]
 
 Оновити сторінку з тендером
   [Arguments]  @{ARGUMENTS}
@@ -353,7 +349,7 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   uatenders.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}   ${ARGUMENTS[1]}
   Sleep  5
   Run Keyword And Ignore Error         Click Element      xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
-  Sleep  15
+  Sleep  5
   Reload Page
   Sleep  2
 
@@ -370,6 +366,8 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   [Documentation]
   ...      ${ARGUMENTS[0]} ==  username
   ...      ${ARGUMENTS[1]} ==  ${TENDER_UAID}
+  Run Keyword If    '${MODE}' == 'dgfInsider'
+  ...   Switch Browser     1
   Go To  ${USERS.users['${ARGUMENTS[0]}'].homepage}
   Run Keyword And Ignore Error        Click Element        xpath=//*[@class='navbar-brand']
   Log To Console  tender_id --> ${ARGUMENTS[1]}
@@ -421,14 +419,16 @@ ${locator.awards[1].status}                                     xpath=(//*[@clas
   [Return]  ${return_value}
 
 Отримати інформацію про auctionPeriod.startDate
+  Wait Until Keyword Succeeds   15 x   60 s   Run Keywords
+  ...   Reload Page
+  ...   AND   Element Should Be Visible       xpath=(//*[@class='enquiryPeriod'])/span
   ${return_value}=   Отримати текст із поля і показати на сторінці   auctionPeriod.startDate
   ${return_value}=            convert_auction_date     ${return_value}
   [Return]  ${return_value}
 
 Отримати інформацію про auctionPeriod.endDate
-  Wait Until Keyword Succeeds   10 x   20 s   Run Keywords
+  Wait Until Keyword Succeeds   25 x   60 s   Run Keywords
   ...   Reload Page
-  ...   AND   Sleep  2
   ...   AND   Element Should Be Visible       xpath=(//*[contains(text(),'Дата закінчення аукціону')])[1]
   ${return_value}=   Отримати текст із поля і показати на сторінці   auctionPeriod.endDate
   ${return_value}=            convert_auction_date    ${return_value}
@@ -594,6 +594,7 @@ Change_date_to_month
 
 Отримати посилання на аукціон dgfInsider
   [Arguments]   @{ARGUMENTS}
+  Wait Until Element Is Visible         xpath=//*[text()='Мої пропозиції']    25
   Click Element                         xpath=//*[text()='Мої пропозиції']
   Wait Until Element Is Visible         xpath=((//*[contains(text(),'${ARGUMENTS[1]}')]//..//*)[contains(@class,"auctionUrl")])    60
   ${url}=     Get Element Attribute     xpath=((//*[contains(text(),'${ARGUMENTS[1]}')]//..//*)[contains(@class,"auctionUrl")])@href
@@ -836,7 +837,6 @@ Change_date_to_month
 
 Завантажити фінансову ліцензію
   [Arguments]  ${username}  ${tender_uaid}  ${filepath}
-  uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   Click Element                      xpath=//*[text()='Редагувати пропозицію']
   Choose File                        name=bid[files][]            ${filepath}
   Select From List                   name=bid[docTypes][]         14
@@ -849,12 +849,9 @@ Change_date_to_month
   Run Keyword And Ignore Error       Click Element      xpath=(//a[@class='btn btn-warning'])
   Wait Until Keyword Succeeds   10 x   25 s     Run Keywords
   ...   Click Element                                   xpath=//a[text()[contains(.,'Мої пропозиції')]]
-  ...   AND   Sleep  5
-  ...   AND   Reload Page
-  ...   AND   Sleep  5
-  ...   AND   Wait Until Element Is Visible             xpath=(//*[text()[contains(.,'${tender_uaid}')]])//..//*[contains(@class,'btn btn-xs btn-danger')]
+  ...   AND   Wait Until Element Is Visible             xpath=(//*[text()[contains(.,'${tender_uaid}')]])//..//*[contains(@class,'btn btn-xs btn-danger')]        60
   ...   AND   Click Element                             xpath=(//*[text()[contains(.,'${tender_uaid}')]])//..//*[contains(@class,'btn btn-xs btn-danger')]
-  ...   AND   Sleep  2
+  ...   AND   Wait Until Element Is Visible             xpath=//a[text()[contains(.,'Так')]]        60
   ...   AND   Click Element                             xpath=//a[text()[contains(.,'Так')]]
 
 Завантажити документ рішення кваліфікаційної комісії
@@ -974,7 +971,6 @@ Change_date_to_month
   [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${lot_id}=${Empty}
   Run Keyword And Ignore Error    Click Element           xpath=//*[text()='Редагувати']
 
-
 Завантажити протокол аукціону в авард
   [Arguments]  @{ARGUMENTS}
   [Documentation]
@@ -998,7 +994,7 @@ Change_date_to_month
   Sleep  2
   Maximize Browser Window
   Sleep  5
-  Run Keyword if   'Неможливість' in '${TEST_NAME}'        Run Keywords
+  Run Keyword IF   'Неможливість' in '${TEST_NAME}'        Run Keywords
   ...   Wait Until Element Is Not Visible           xpath=//a[text()[contains(.,'Підтвердити протокол')]]    90
   ...   AND  Sleep  3
   Wait Until Element Is Visible                     xpath=//a[text()[contains(.,'Підтвердити протокол')]]
@@ -1007,10 +1003,10 @@ Change_date_to_month
 Отримати інформацію про awards[0].status
   Click Element                                    xpath=(//*[contains(text(),'Пропозиції')])[1]
   ${test_name_value}=                Convert To String                                         ${TEST_NAME.replace('\'', '')}
-  Run Keyword If   'оплачено, очікується підписання договору' in '${test_name_value}'   Wait Until Keyword Succeeds   10 x   10 s   Run Keywords
+  Run Keyword IF   'оплачено, очікується підписання договору' in '${test_name_value}'
+  ...   Wait Until Keyword Succeeds   10 x   10 s   Run Keywords
   ...   Wait Until Page Contains  Оплачено, очікується підписання договору
   ...   AND   Reload Page
-  ...   AND   Sleep  5
   ${return_value}=    Отримати текст із поля і показати на сторінці    awards[0].status
   ${return_value}=      convert_uatenders_string_to_common_string      ${return_value}
   [Return]       ${return_value}
@@ -1018,10 +1014,14 @@ Change_date_to_month
 Отримати інформацію про awards[1].status
   Click Element                                    xpath=(//*[contains(text(),'Пропозиції')])[1]
   ${test_name_value}=                Convert To String                                         ${TEST_NAME.replace('\'', '')}
-  Run Keyword If   'оплачено, очікується підписання договору' in '${test_name_value}'   Wait Until Keyword Succeeds   10 x   10 s   Run Keywords
-  ...   Wait Until Page Contains  Оплачено, очікується підписання договору
-  ...   AND   Reload Page
-  ...   AND   Sleep  5
+  Run Keyword IF   'оплачено, очікується підписання договору' in '${test_name_value}'
+  ...   Wait Until Keyword Succeeds   15 x   15 s   Run Keywords
+  ...   Reload Page
+  ...   AND   Wait Until Page Contains  Оплачено, очікується підписання договору
+  Run Keyword IF   'статусу cancelled' in '${test_name_value}'
+  ...   Wait Until Keyword Succeeds   15 x   15 s   Run Keywords
+  ...   Reload Page
+  ...   AND   Wait Until Page Contains  Відмінено
   ${return_value}=    Отримати текст із поля і показати на сторінці    awards[1].status
   ${return_value}=      convert_uatenders_string_to_common_string      ${return_value}
   [Return]       ${return_value}
