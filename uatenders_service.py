@@ -42,6 +42,7 @@ def convert_uatenders_string_to_common_string(string):
         u"Очікується підписання договору": u"pending.payment",
         u"Оплачено, очікується підписання договору": u"active",
         u"Відхилено": u"unsuccessful",
+        u"Відмінено": u"cancelled",
 
     }.get(string, string)
  
