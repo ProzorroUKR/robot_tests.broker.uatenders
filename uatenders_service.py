@@ -28,21 +28,22 @@ def convert_uatenders_string_to_common_string(string):
         u"Пропозиції розглянуто": u"active",
         u"майна банків": u"dgfOtherAssets",
         u"прав вимоги за кредитами": u"dgfFinancialAssets",
-        u"x_nda": u"19",
-        u"tenderNotice": u"1",
-        u"x_presentation": u"18",
-        u"technicalSpecifications": u"2",
+        u"x_nda": u"23",
+        u"tenderNotice": u"14",
+        u"x_presentation": u"22",
+        u"technicalSpecifications": u"15",
         u"Ні": False,
         u"Так": True,
         u"комунальна": [u"комунальна"],
         u"державна": [u"державна"],
         u"приватна": [u"приватна"],            
-        u"Очікується протокол": u"pending.verification",
+        u"Підтвердження протоколу": u"pending.verification",
         u"Очікування рішення": u"pending.waiting",
-        u"Очікується підписання договору": u"pending.payment",
+        u"Очікується оплата": u"pending.payment",
         u"Оплачено, очікується підписання договору": u"active",
         u"Відхилено": u"unsuccessful",
         u"Відмінено": u"cancelled",
+        u"Скасування активовае": u"active",
 
     }.get(string, string)
  
@@ -63,28 +64,31 @@ def adapt_item(tender_data, role_name):
                 i['unit']['name'] = my_dict[i['unit']['name']]
     return tender_data
 
-
-
 def convert_auction_date(date):
-
     date_obj = datetime.strptime(date, "%d.%m.%Y %H:%M")
     time_zone = pytz.timezone('Europe/Kiev')
     localized_date = time_zone.localize(date_obj)
     return localized_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
 
+def convert_contractPeriod_date(date):
+    date_obj = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+    time_zone = pytz.timezone('Europe/Kiev')
+    localized_date = time_zone.localize(date_obj)
+    return localized_date.strftime("%Y-%m-%dT00:00:00+02:00")
+
 def get_unit_id(string):
      return {
-        u"послуга": u"9",
-        u"метри квадратні": u"13",
+        u"послуга": u"8",
+        u"метри квадратні": u"28",
+        u"штуки": u"14",
+        u"гектар": u"15",
     }.get(string, string)
-
 
 def get_file_path():
     return os.path.join(os.getcwd(), 'src/robot_tests.broker.uatenders/fileupload.txt')
 
 def download(url, file_name, output_dir):
     urllib.urlretrieve(url, ('{}/{}'.format(output_dir, file_name)))
-
 
 def is_qualified(bid_data, username):
     if username == 'uatenders_Provider':
