@@ -44,7 +44,9 @@ def convert_uatenders_string_to_common_string(string):
         u"Відхилено": u"unsuccessful",
         u"Відмінено": u"cancelled",
         u"Скасування активовае": u"active",
-
+        u"Інформація про оприлюднення інформаційного повідомлення": u"informationDetails",
+        u"Очікування": u"pending",
+        u"Видалено": u"deleted",
     }.get(string, string)
  
 def convert_datetime_for_delivery(isodate):
@@ -70,6 +72,13 @@ def convert_auction_date(date):
     localized_date = time_zone.localize(date_obj)
     return localized_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
 
+def convert_date_modified(date):
+    date_obj = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+    time_zone = pytz.timezone('Europe/Kiev')
+    localized_date = time_zone.localize(date_obj)
+    return localized_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+
+
 def convert_contractPeriod_date(date):
     date_obj = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
     time_zone = pytz.timezone('Europe/Kiev')
@@ -82,6 +91,9 @@ def get_unit_id(string):
         u"метри квадратні": u"28",
         u"штуки": u"14",
         u"гектар": u"15",
+        u"notice": u"27",
+        u"x_presentation": u"30",
+        u"technicalSpecifications": u"28",
     }.get(string, string)
 
 def get_file_path():
