@@ -1155,14 +1155,15 @@ Change_date_to_month
 Зачикати появи статусу при публікації
   [Arguments]  ${username}
   Wait Until Keyword Succeeds   20 x   5 s     Run Keywords
-  ...   Run Keyword IF      '${username}' == 'PASS'     Element Should Be Visible       xpath=(//*[contains(text(),'ID:')])[1]      ID:
-  ...   AND   Reload Page
+  ...   Reload Page
+  ...   AND   Sleep  2
   ...   AND   Element Should Be Visible       xpath=(//*[contains(@class,'publishAsset')])[1]      Опублікувати
+  Sleep  2
   Wait Until Element Is Visible               xpath=(//*[contains(@class,'publishAsset')])[1]      15
   Click Element                               xpath=(//*[contains(@class,'publishAsset')])[1]
   Wait Until Keyword Succeeds   25 x   5 s     Run Keywords
-  ...   Run Keyword IF      '${username}' == 'PASS'     Element Should Be Visible       xpath=(//*[contains(text(),'ID:')])[1]      ID:
-  ...   AND   Reload Page
+  ...   Reload Page
+  ...   AND   Sleep  2
   ...   AND   Wait Until Page Does Not Contain  Чернетка  5 s
 
 ClearFildAndInputText
@@ -1227,7 +1228,8 @@ ClearFildAndInputText
   Wait Until Element Is Visible                xpath=(//*[@id='allTab'])[2]      10
   Click Element                                xpath=(//*[@id='allTab'])[2]
   Wait Until Keyword Succeeds   15 x   5 s     Run Keywords
-  ...   Run Keyword IF      '${tender_uaid}' == 'PASS'    Input Text     name=search[s]     ${tender_uaid}
+  ...   Reload Page
+  ...   AND   Sleep  2
   ...   AND   Input Text                       name=search[s]                               ${tender_uaid}
   ...   AND   Click Element                    xpath=(//*[contains(@type,'submit') and contains(text(),'Знайти')])
   ...   AND   Element Should Be Visible        xpath=(//*[text()[contains(.,'Загальна інформація')]])[1]
@@ -1615,9 +1617,6 @@ ClearFildAndInputText
 
 Отримати інформацію із лоту для МП про auctions[${index}].registrationFee.amount
   Run Keyword And Return     Отримати дані з поля для об'єкту МП     xpath=(//*[contains(@class,'auctionBlock-${index}')]//span)[6]
-
-Отримати інформацію із лоту для МП про auctions[${index}].tenderingDuration
-  Run Keyword And Return     Отримати дані з поля для об'єкту МП     xpath=(//*[contains(@class,'auctionBlock-${index}')]//span)[7]
 
 Отримати інформацію із лоту для МП про auctions[${index}].auctionPeriod.startDate
   Run Keyword And Return     Отримати дані з поля для об'єкту МП     xpath=(//*[contains(@class,'auctionBlock-${index}')]//span)[8]
