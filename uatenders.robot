@@ -1624,6 +1624,9 @@ ClearFildAndInputText
 Отримати інформацію із лоту для МП про auctions[${index}].auctionID
   Run Keyword And Return     Отримати дані з поля для об'єкту МП     xpath=(//*[contains(@class,'auctionBlock-${index}')]//span)[9]
 
+Отримати інформацію із лоту для МП про auctions[${index}].tenderingDuration
+  Run Keyword And Return     Отримати дані з поля для об'єкту МП     xpath=(//*[contains(@class,'auctionBlock-${index}')]//span)[7]
+
 Отримати інформацію з активу лоту
   [Arguments]    ${username}    ${tender_uaid}    ${item_id}    ${field_name}
   Run Keyword And Return    uatenders.Отримати інформацію з активу лоту про ${field_name}
@@ -1758,6 +1761,12 @@ ClearFildAndInputText
 Додати умови проведення аукціону номер 1
   [Arguments]  ${username}  ${tender_uaid}  ${auction}
   uatenders.Пошук лоту по ідентифікатору   ${username}   ${tender_uaid}
+  Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
+  Click Element                     xpath=(//*[text()='Редагувати'])[1]
+  ClearFildAndInputText           name=lot[auctions][${index}][tendering_duration]            ${auction.tenderingDuration}
+  Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
+  Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
+
 
 Зберегти дані поля value.amount
   [Arguments]   ${field_value}
