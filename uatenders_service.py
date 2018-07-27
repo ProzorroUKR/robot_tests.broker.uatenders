@@ -47,6 +47,9 @@ def convert_uatenders_string_to_common_string(string):
         u"Інформація про оприлюднення інформаційного повідомлення": u"informationDetails",
         u"Очікування": u"pending",
         u"Видалено": u"deleted",
+        u"МП англ": u"sellout.english",
+        u"МП": u"sellout.insider",
+        u"Заплановано": u"scheduled",
     }.get(string, string)
  
 def convert_datetime_for_delivery(isodate):
@@ -77,7 +80,6 @@ def convert_date_modified(date):
     time_zone = pytz.timezone('Europe/Kiev')
     localized_date = time_zone.localize(date_obj)
     return localized_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-
 
 def convert_contractPeriod_date(date):
     date_obj = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
