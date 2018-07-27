@@ -837,8 +837,6 @@ Change_date_to_month
 
 Отримати документ
   [Arguments]  ${username}  ${tender_uaid}  ${doc_id}
-  Log To Console   Отримати документ
-  Log To Console   doc_id --- ${doc_id}
   ${file_name}=          Get Text         xpath=//*[contains(text(),'${doc_id}')]
   ${url}=         Get Element Attribute   xpath=//*[contains(text(),'${doc_id}')]@href
   download   ${url}  ${file_name}  ${OUTPUT_DIR}
@@ -1057,7 +1055,6 @@ Change_date_to_month
 # ##############################################################################################
 Створити об'єкт МП
   [Arguments]  ${username}  ${tender_data}
-  Log To Console   ${tender_data}
 # Загальна інформація
   ${title}=                                       Get From Dictionary    ${tender_data.data}                               title
   ${description}=                                 Get From Dictionary    ${tender_data.data}                               description
@@ -1150,7 +1147,6 @@ Change_date_to_month
   Run Keyword And Ignore Error         Click Element      xpath=(//*[@class='clean-table']//*[contains(text(),'sync')])
   uatenders.Зачикати появи статусу при публікації    ${username}
   ${tender_uaid}=   Отримати дані з поля для МП     xpath=(//*[contains(text(),'ID:')]/..//*[position() mod 2 = 0])[1]
-  Log To Console   ${tender_uaid}
   [Return]  ${tender_uaid}
 
 Зачикати появи статусу при публікації
@@ -1238,7 +1234,6 @@ ClearFildAndInputText
 
 Оновити сторінку з об'єктом МП
   [Arguments]  ${username}  ${tender_uaid}
-  Log To Console   Оновити сторінку з об'єктом МП
   Run Keyword And Ignore Error         Click Element      xpath=(//*[@class='clean-table']//*[contains(text(),'sync')])
   Sleep  2
   Reload Page
@@ -1246,7 +1241,6 @@ ClearFildAndInputText
 
 Отримати інформацію із об'єкта МП
   [Arguments]  ${username}  ${tender_uaid}  ${field_name}
-  Log To Console   field_name ---> ${field_name}
   Run Keyword And Return    uatenders.Отримати інформацію з об'єкту МП про ${field_name}
 
 Отримати дані з поля для МП
@@ -1327,9 +1321,6 @@ ClearFildAndInputText
 
 Внести зміни в об'єкт МП
   [Arguments]    ${username}    ${tender_uaid}    ${field_name}    ${field_value}
-  Log To Console    Внести зміни в об'єкт МП
-  Log To Console    field_name --- ${field_name}
-  Log To Console    field_value --- ${field_value}
   uatenders.Пошук об’єкта МП по ідентифікатору   ${username}   ${tender_uaid}
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
   Click Element                     xpath=(//*[text()='Редагувати'])[1]
@@ -1347,10 +1338,6 @@ ClearFildAndInputText
 
 Внести зміни в актив об'єкта МП
   [Arguments]    ${username}    ${item_id}    ${tender_uaid}    ${field_name}    ${field_value}
-  Log To Console    Внести зміни в актив об'єкта МП
-  Log To Console    item_id --- ${item_id}
-  Log To Console    field_name --- ${field_name}
-  Log To Console    field_value --- ${field_value}
   ${quantity_value}=      Run Keyword IF    '${field_name}' == 'quantity'
   ...   uatenders.Зберегти дані поля ${field_name}     ${field_value}
   uatenders.Пошук об’єкта МП по ідентифікатору   ${username}   ${tender_uaid}
@@ -1379,7 +1366,6 @@ ClearFildAndInputText
 
 Завантажити документ в об'єкт МП з типом
   [Arguments]    ${username}    ${tender_uaid}    ${filepath}    ${documentType}
-  Log To Console     documentType --- ${documentType}
   ${documentTypeNumber}=      get_unit_id     ${documentType}
   ${filepyth}=    get_file_path
   uatenders.Оновити сторінку з об'єктом МП    ${username}    ${tender_uaid}
@@ -1395,7 +1381,6 @@ ClearFildAndInputText
 
 Додати багато предметів до актива об'єкта МП
   [Arguments]    ${items}
-  Log To Console   NUMBER_OF_ITEMS ---- ${NUMBER_OF_ITEMS}
   ${items_length}=    Run Keyword IF    '${NUMBER_OF_ITEMS}' != '0'    Run Keyword
   ...   Convert To Integer          ${NUMBER_OF_ITEMS}
   :FOR   ${item_index}   IN RANGE   ${items_length}
@@ -1408,8 +1393,6 @@ ClearFildAndInputText
 
 Додати предмет актива об'єкта МП
   [Arguments]    ${items}    ${item_index}
-  Log To Console   Додати предмет актива об'єкта МП
-  Log To Console   item_index ----- ${item_index}
   ${quantity}=    Convert To String     ${items.quantity}
   ${unit_id}=     get_unit_id            ${items.unit.name}
   ${filepyth}=    get_file_path
@@ -1488,11 +1471,9 @@ ClearFildAndInputText
 # ##############################################################################################
 Створити лот
   [Arguments]    ${username}    ${tender_data}    ${asset_uaid}
-  Log To Console   ${tender_data}
   ${decisionDate}=        Get From Dictionary     ${tender_data.data.decisions[0]}    decisionDate
   ${decisionDateEdit}=    get_dgf                 ${decisionDate}
   ${decisionID}=          Get From Dictionary     ${tender_data.data.decisions[0]}    decisionID
-  Log To Console    decisionDateEdit---${decisionDateEdit}
   Wait Until Page Contains Element    xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[1]/li[1]/a    10
   Click Element                       xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[1]/li[1]/a
   Wait Until Page Contains Element    xpath=(//*[@id='bs-example-navbar-collapse-1']//a)[6]    10
@@ -1510,7 +1491,6 @@ ClearFildAndInputText
   uatenders.Зачикати появи статусу при публікації    ${username}
   Sleep  3
   ${tender_uaid}=   Отримати дані з поля для МП     xpath=(//*[contains(text(),'LOT ID:')]/..//*[position() mod 2 = 0])[1]
-  Log To Console   ${tender_uaid}
   [Return]    ${tender_uaid}
 
 Пошук лоту по ідентифікатору
@@ -1523,8 +1503,6 @@ ClearFildAndInputText
 
 Отримати інформацію із лоту
   [Arguments]    ${username}    ${tender_uaid}    ${field_name}
-  Log To Console   Отримати інформацію із лоту
-  Log To Console   field_name ---> ${field_name}
   Run Keyword And Return    uatenders.Отримати інформацію із лоту для МП про ${field_name}
 
 Отримати інформацію із лоту для МП про status
@@ -1657,9 +1635,6 @@ ClearFildAndInputText
 
 Отримати інформацію з активу лоту
   [Arguments]    ${username}    ${tender_uaid}    ${item_id}    ${field_name}
-  Log To Console   Отримати інформацію з активу лоту
-  Log To Console   field_name ---> ${field_name}
-  Log To Console   item_id ---> ${item_id}
   Run Keyword And Return    uatenders.Отримати інформацію з активу лоту про ${field_name}    ${item_id}
 # Інформація щодо об’єкта продажу
 Отримати інформацію з активу лоту про items[0].description
@@ -1703,9 +1678,6 @@ ClearFildAndInputText
 
 Внести зміни в лот
   [Arguments]    ${username}    ${tender_uaid}    ${field_name}    ${field_value}
-  Log To Console    Внести зміни в лот
-  Log To Console    field_name --- ${field_name}
-  Log To Console    field_value --- ${field_value}
   uatenders.Оновити сторінку з лотом    ${username}    ${tender_uaid}
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
   Click Element                     xpath=(//*[text()='Редагувати'])[1]
@@ -1718,7 +1690,6 @@ ClearFildAndInputText
 
 Внести зміни в актив лоту
   [Arguments]    ${username}    ${item_id}    ${tender_uaid}    ${field_name}    ${field_value}
-  Log To Console    Внести зміни в актив лоту
   ${quantity_value}=      Run Keyword IF    '${field_name}' == 'quantity'
   ...   uatenders.Зберегти дані поля ${field_name}     ${field_value}
   uatenders.Оновити сторінку з лотом    ${username}    ${tender_uaid}
@@ -1731,7 +1702,6 @@ ClearFildAndInputText
 
 Завантажити ілюстрацію в лот
   [Arguments]    ${username}    ${tender_uaid}    ${filepath}
-  Log To Console    Завантажити ілюстрацію в лот
   ${filepyth}=    get_file_path
   uatenders.Оновити сторінку з лотом    ${username}    ${tender_uaid}
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
@@ -1746,7 +1716,6 @@ ClearFildAndInputText
 
 Завантажити документ в лот з типом
   [Arguments]    ${username}    ${tender_uaid}    ${filepath}    ${documentType}
-  Log To Console     documentType --- ${documentType}
   ${documentTypeNumber}=      get_unit_id     ${documentType}
   ${filepyth}=    get_file_path
   uatenders.Оновити сторінку з лотом    ${username}    ${tender_uaid}
@@ -1766,7 +1735,6 @@ ClearFildAndInputText
 
 Завантажити документ для видалення лоту
   [Arguments]    ${username}    ${tender_uaid}    ${filepath}
-  Log To Console    Завантажити документ для видалення лоту
   ${filepyth}=    get_file_path
   uatenders.Пошук лоту по ідентифікатору   ${username}   ${tender_uaid}
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
@@ -1781,7 +1749,6 @@ ClearFildAndInputText
 
 Видалити лот
   [Arguments]    ${username}    ${tender_uaid}
-  Log To Console    Видалити лот
   Wait Until Page Contains Element    xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[1]/li[1]/a    10
   Click Element                       xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[1]/li[1]/a
   Wait Until Page Contains Element    xpath=(//*[@id='bs-example-navbar-collapse-1']//a)[7]    10
@@ -1793,14 +1760,10 @@ ClearFildAndInputText
 
 Додати умови проведення аукціону
   [Arguments]    ${username}    ${auction}    ${index}    ${tender_uaid}
-  Log To Console   Додати умови проведення аукціону
   Run Keyword  uatenders.Додати умови проведення аукціону номер ${index}   ${username}  ${tender_uaid}   ${auction}   ${index}
 
 Додати умови проведення аукціону номер 0
   [Arguments]    ${username}    ${tender_uaid}    ${auction}    ${index}
-  Log To Console   Додати умови проведення аукціону номер 0
-  Log To Console    index ---> ${index}
-  Log To Console    auction ---> ${auction}
   ${valueAmount}=                    Convert To String      ${auction.value.amount}
   ${valueValueAddedTaxIncluded}=     Convert To String      ${auction.value.valueAddedTaxIncluded}
   ${minimalStep}=                    Convert To String      ${auction.minimalStep.amount}
@@ -1828,9 +1791,6 @@ ClearFildAndInputText
 
 Додати умови проведення аукціону номер 1
   [Arguments]    ${username}    ${tender_uaid}    ${auction}    ${index}
-  Log To Console    Додати умови проведення аукціону номер 1
-  Log To Console    index ---> ${index}
-  Log To Console    auction ---> ${auction}
   uatenders.Пошук лоту по ідентифікатору   ${username}   ${tender_uaid}
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
   Click Element                     xpath=(//*[text()='Редагувати'])[1]
@@ -1853,10 +1813,6 @@ ClearFildAndInputText
 
 Внести зміни в умови проведення аукціону
   [Arguments]    ${username}    ${tender_uaid}    ${field_name}    ${field_value}    ${auction_index}
-  Log To Console    Внести зміни в умови проведення аукціону
-  Log To Console    auction_index --- ${auction_index}
-  Log To Console    field_name --- ${field_name}
-  Log To Console    field_value --- ${field_value}
   ${valueAmount_value}=              Run Keyword IF    '${field_name}' == 'value.amount'              uatenders.Зберегти дані поля ${field_name}     ${field_value}
   ${guaranteeAmount_value}=          Run Keyword IF    '${field_name}' == 'guarantee.amount'          uatenders.Зберегти дані поля ${field_name}     ${field_value}
   ${registrationFeeAmount_value}=    Run Keyword IF    '${field_name}' == 'registrationFee.amount'    uatenders.Зберегти дані поля ${field_name}     ${field_value}
