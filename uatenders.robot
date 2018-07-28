@@ -43,8 +43,9 @@ ${locator.minNumberOfQualifiedBids}                             xpath=(//*[conta
   Open Browser   ${USERS.users['${username}'].homepage}   ${USERS.users['${username}'].browser}   alias=${username}
   Set Window Size       @{USERS.users['${username}'].size}
   Set Window Position   @{USERS.users['${username}'].position}
+  Maximize Browser Window
 #Login
-  Wait Until Page Contains Element   xpath=(//*[text()[contains(.,'Вхід')]])
+  Wait Until Element Is Visible      xpath=(//*[text()[contains(.,'Вхід')]])    10
   Click Element                      xpath=(//*[text()[contains(.,'Вхід')]])
   Wait Until Page Contains Element   name=email                   10
   Input text                         name=email                   ${USERS.users['${username}'].login}
@@ -265,6 +266,7 @@ ${locator.minNumberOfQualifiedBids}                             xpath=(//*[conta
   ...   AND     uatenders.Оновити сторінку з тендером
   Sleep  5
   Choose File                 id=bid-1            ${filepyth}
+  Sleep  2
   Wait Until Element Is Visible     xpath=//*[@type='submit']    15
   Click Element                     xpath=//*[@type='submit']
 
@@ -591,42 +593,42 @@ Change_date_to_month
   Wait Until Page Contains Element             ${locator.${fieldname}}    20
   Run Keyword And Return      Get Text         ${locator.${fieldname}}
 
-Отримати інформацію із предмету
+Отримати інформацію із предмету для
   [Arguments]  @{ARGUMENTS}
   [Documentation]
   ...      ${ARGUMENTS[0]} ==  username
   ...      ${ARGUMENTS[1]} ==  tender_uaid
   ...      ${ARGUMENTS[2]} ==  item_id
   ...      ${ARGUMENTS[3]} ==  field_name
-  ${return_value}=  Run Keyword  Отримати значення поля items[0].${ARGUMENTS[3]}  ${ARGUMENTS[2]}  ${ARGUMENTS[0]}  ${ARGUMENTS[1]}
+  ${return_value}=    Run Keyword    Отримати значення поля з items[0].${ARGUMENTS[3]}  ${ARGUMENTS[2]}  ${ARGUMENTS[0]}  ${ARGUMENTS[1]}
   [Return]  ${return_value}
 
-Отримати значення поля items[0].description
+Отримати значення поля з items[0].description
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=(//*[contains(text(),'${item_id}')]/..//*)[2]
 
-Отримати значення поля items[0].deliveryDate.endDate
+Отримати значення поля з items[0].deliveryDate.endDate
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=//*[@id="lot-0-item-0"]/table/tbody/tr[4]/td
   Run Keyword And Return   Change_date_to_month   ${return_value}
 
-Отримати значення поля items[0].deliveryLocation.latitude
+Отримати значення поля з items[0].deliveryLocation.latitude
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Fail  Немає такого поля при перегляді
 
-Отримати значення поля items[0].deliveryLocation.longitude
+Отримати значення поля з items[0].deliveryLocation.longitude
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Fail  Немає такого поля при перегляді
 
-Отримати значення поля items[0].deliveryAddress.countryName
+Отримати значення поля з items[0].deliveryAddress.countryName
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.countryName'])
 
-Отримати значення поля items[0].deliveryAddress.postalCode
+Отримати значення поля з items[0].deliveryAddress.postalCode
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.postalCode'])
 
-Отримати значення поля items[0].deliveryAddress.region
+Отримати значення поля з items[0].deliveryAddress.region
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${region_name}=   Run Keyword And Return Status
   ...   Get Text      xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[contains(text(),'Київ') or contains(text(),'м. Київ')])[1]
@@ -636,53 +638,53 @@ Change_date_to_month
   ...   Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.region'])
   [Return]    ${return_value}
 
-Отримати значення поля items[0].deliveryAddress.locality
+Отримати значення поля з items[0].deliveryAddress.locality
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.locality'])
 
-Отримати значення поля items[0].deliveryAddress.streetAddress
+Отримати значення поля з items[0].deliveryAddress.streetAddress
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.streetAddress'])
 
-Отримати значення поля items[0].classification.scheme
+Отримати значення поля з items[0].classification.scheme
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='scheme'])[2]
   [Return]  ${return_value.replace(' -', '')}
 
-Отримати значення поля items[0].classification.id
+Отримати значення поля з items[0].classification.id
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='id'])[2]
 
-Отримати значення поля items[0].classification.description
+Отримати значення поля з items[0].classification.description
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='description'])[2]
 
-Отримати значення поля items[0].additionalClassifications[0].description
+Отримати значення поля з items[0].additionalClassifications[0].description
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='description'])[1]
 
-Отримати значення поля items[0].quantity
+Отримати значення поля з items[0].quantity
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='item-amount'])/span[1]
   Run Keyword And Return   Convert To Number                            ${return_value.split(' ')[0]}
 
-Отримати значення поля items[0].unit.name
+Отримати значення поля з items[0].unit.name
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='item-amount'])/span[2]
   ${return_value}=    Convert To String                                 ${return_value}
   Run Keyword And Return   convert_uatenders_string_to_common_string    ${return_value}
 
-Отримати значення поля items[0].unit.code
+Отримати значення поля з items[0].unit.code
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='item-amount'])/span[3]
   Run Keyword And Return   Convert To String                            ${return_value}
 
-Отримати значення поля items[0].contractPeriod.startDate
+Отримати значення поля з items[0].contractPeriod.startDate
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='item-delivery_period'])/span[1]
   Run Keyword And Return   convert_contractPeriod_date                  ${return_value}
 
-Отримати значення поля items[0].contractPeriod.endDate
+Отримати значення поля з items[0].contractPeriod.endDate
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='item-delivery_period'])/span[2]
   Run Keyword And Return   convert_contractPeriod_date                  ${return_value}
@@ -1050,6 +1052,7 @@ Change_date_to_month
   ${return_value}=      convert_uatenders_string_to_common_string      ${return_value}
   [Return]       ${return_value}
 
+
 # ##############################################################################################
 # #             Создание Малой Приватизации
 # ##############################################################################################
@@ -1094,7 +1097,6 @@ Change_date_to_month
   ${assetHolder_ContactPoint_telephone}=          Get From Dictionary    ${tender_data.data.assetHolder.contactPoint}      telephone
   ${assetHolder_ContactPoint_url}=                Get From Dictionary    ${tender_data.data.assetHolder.contactPoint}      url
   ${filepyth}=                                    get_file_path
-  Maximize Browser Window
 # "Додати аукціон"
   Wait Until Page Contains Element    xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[1]/li[1]/a    10
   Click Element                       xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[1]/li[1]/a
@@ -1230,7 +1232,7 @@ ClearFildAndInputText
   ...   AND   Input Text                       name=search[s]                               ${tender_uaid}
   ...   AND   Click Element                    xpath=(//*[contains(@type,'submit') and contains(text(),'Знайти')])
   ...   AND   Element Should Be Visible        xpath=(//*[text()[contains(.,'Загальна інформація')]])[1]
-  Log To Console  auctionID_1 --> ${tender_uaid}
+  Log To Console  assetLotID --> ${tender_uaid}
 
 Оновити сторінку з об'єктом МП
   [Arguments]  ${username}  ${tender_uaid}
@@ -1250,78 +1252,105 @@ ClearFildAndInputText
 
 Отримати інформацію з об'єкту МП про assetID
   Run Keyword And Return     Отримати дані з поля для МП    xpath=(//*[contains(text(),'ID:')]/..//*[position() mod 2 = 0])[1]
+
 Отримати інформацію з об'єкту МП про date
   ${return_value}=           Отримати дані з поля для МП    xpath=(//*[contains(text(),'Дата створення/знищення')]/..//*[position() mod 2 = 0]/span)[1]
   Run Keyword And Return     convert_datetime_for_delivery          ${return_value}
+
 Отримати інформацію з об'єкту МП про dateModified
   ${return_value}=           Отримати дані з поля для МП    xpath=(//*[contains(text(),'Дата внесення останніх змін')]/..//*[position() mod 2 = 0]/span)[1]
   Run Keyword And Return     convert_date_modified          ${return_value}
+
 Отримати інформацію з об'єкту МП про status
   ${return_value}=           Отримати дані з поля для МП    xpath=(//*[contains(text(),'Статус об')]/..//*[position() mod 2 = 0])//span
   Run Keyword And Return     convert_uatenders_string_to_common_string   ${return_value}
+
 Отримати інформацію з об'єкту МП про title
   Run Keyword And Return     Отримати дані з поля для МП    xpath=(//div[@class='col-md-12']/h2)[1]
+
 Отримати інформацію з об'єкту МП про description
   Run Keyword And Return     Отримати дані з поля для МП    xpath=(//div[@class='col-md-12']/p)[1]
+
 Отримати інформацію з об'єкту МП про rectificationPeriod.endDate
   ${return_value}=           Отримати дані з поля для МП    xpath=//*[@class='rectificationPeriod.endDate']
   Run Keyword And Return     convert_datetime_for_delivery          ${return_value}
+
 Отримати інформацію з об'єкту МП про decisions[0].title
   Run Keyword And Return     Отримати дані з поля для МП    xpath=(//*[contains(text(),'Найменування рішення про')]/..//*[position() mod 2 = 0])
+
 Отримати інформацію з об'єкту МП про decisions[0].decisionID
   Run Keyword And Return     Отримати дані з поля для МП    xpath=(//*[contains(text(),'Номер рішення у паперовій')]/..//*[position() mod 2 = 0])
+
 Отримати інформацію з об'єкту МП про decisions[0].decisionDate
   ${return_value}=           Отримати дані з поля для МП    xpath=(//*[contains(text(),'Дата прийняття рішення:')]/..//*[position() mod 2 = 0])
   Run Keyword And Return     convert_datetime_for_delivery          ${return_value}
+
 Отримати інформацію з об'єкту МП про assetHolder.name
   Run Keyword And Return     Отримати дані з поля для МП    xpath=//*[@class='assetHolder.name']
+
 Отримати інформацію з об'єкту МП про assetHolder.identifier.scheme
   Run Keyword And Return     Convert To String     UA-EDR
+
 Отримати інформацію з об'єкту МП про assetHolder.identifier.id
   Run Keyword And Return     Отримати дані з поля для МП    xpath=//*[@class='assetHolder.identifier.id']
+
 Отримати інформацію з об'єкту МП про assetCustodian.identifier.scheme
   Run Keyword And Return     Convert To String     UA-EDR
+
 Отримати інформацію з об'єкту МП про assetCustodian.identifier.id
   Run Keyword And Return     Отримати дані з поля для МП    xpath=//*[@class='assetCustodian.identifier.id']
+
 Отримати інформацію з об'єкту МП про assetCustodian.name
   Run Keyword And Return     Отримати дані з поля для МП    xpath=//*[@class='assetCustodian.name']
+
 Отримати інформацію з об'єкту МП про assetCustodian.contactPoint.email
   Run Keyword And Return     Отримати дані з поля для МП    xpath=(//*[contains(@class,'assetCustodian.contactPoint.emai')])[1]
+
 Отримати інформацію з об'єкту МП про assetCustodian.contactPoint.name
   Run Keyword And Return     Отримати дані з поля для МП    xpath=//*[@class='assetCustodian.contactPoint.name']
+
 Отримати інформацію з об'єкту МП про assetCustodian.contactPoint.telephone
   Run Keyword And Return     Отримати дані з поля для МП    xpath=//*[@class='assetCustodian.contactPoint.telephone']
+
 Отримати інформацію з об'єкту МП про assetCustodian.identifier.legalName
   Run Keyword And Return     Отримати дані з поля для МП    xpath=//*[@class='assetCustodian.identifier.legalName']
+
 Отримати інформацію з об'єкту МП про documents[0].documentType
   ${return_value}=           Отримати дані з поля для МП    xpath=(//*[contains(text(),'Документи щодо об')]//..//a)[last()]
   Run Keyword And Return   convert_uatenders_string_to_common_string   ${return_value}
+
 Отримати інформацію з активу об'єкта МП
   [Arguments]    ${username}    ${tender_uaid}    ${item_id}    ${field_name}
   Run Keyword And Return    uatenders.Отримати дані з поля для активу МП items[0].${field_name}    ${item_id}
+
 Отримати дані з поля для активу МП items[0].description
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП     xpath=//*[@id='item-1']//*[@class='item-description']
+
 Отримати дані з поля для активу МП items[0].classification.scheme
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[@class='classifier']/span)[1]
+
 Отримати дані з поля для активу МП items[0].classification.id
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[@class='classifier']/span)[2]
+
 Отримати дані з поля для активу МП items[0].quantity
   [Arguments]    ${item_id}
   ${return_value}=           Отримати дані з поля для МП     xpath=(//*[@id='item-1']//*[@class='amountVal'])[1]
   Run Keyword And Return     Convert To Number                            ${return_value}
+
 Отримати дані з поля для активу МП items[0].unit.name
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[@id='item-1']//*[@class='amountDescription'])[1]
+
 Отримати дані з поля для активу МП items[0].registrationDetails.status
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[@id='item-1']//*[@class='registrationDetailsStatus'])[1]
 
 Внести зміни в об'єкт МП
   [Arguments]    ${username}    ${tender_uaid}    ${field_name}    ${field_value}
-  uatenders.Пошук об’єкта МП по ідентифікатору   ${username}   ${tender_uaid}
+  uatenders.Оновити сторінку з об'єктом МП    ${username}    ${tender_uaid}
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
   Click Element                     xpath=(//*[text()='Редагувати'])[1]
   Run Keyword IF    '${field_name}' == 'title'
@@ -1332,23 +1361,25 @@ ClearFildAndInputText
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
 
-Зберегти дані поля quantity
-  [Arguments]   ${field_value}
-  Run Keyword And Return     Convert To String    ${field_value}
-
 Внести зміни в актив об'єкта МП
   [Arguments]    ${username}    ${item_id}    ${tender_uaid}    ${field_name}    ${field_value}
-  ${quantity_value}=      Run Keyword IF    '${field_name}' == 'quantity'
-  ...   uatenders.Зберегти дані поля ${field_name}     ${field_value}
-  uatenders.Пошук об’єкта МП по ідентифікатору   ${username}   ${tender_uaid}
+  uatenders.Оновити сторінку з об'єктом МП    ${username}    ${tender_uaid}
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
   Click Element                     xpath=(//*[text()='Редагувати'])[1]
-  Run Keyword IF    '${field_name}' == 'items[0].description'
-  ...   ClearFildAndInputText            name=asset[items][0][description_str]    ${field_value}
-  ...     ELSE IF   '${field_name}' == 'quantity'
-  ...   ClearFildAndInputText            name=asset[items][0][quantity]             ${quantity_value}
+  Run Keyword       uatenders.Змінити ${field_name} об'єкта МП    ${username}    ${tender_uaid}    ${item_id}    ${field_value}
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
+
+Змінити quantity об'єкта МП
+  [Arguments]    ${username}    ${tender_uaid}    ${item_id}    ${field_value}
+  ${quantity_value}=       Convert To String    ${field_value}
+  Sleep  2
+  ClearFildAndInputText            name=asset[items][0][quantity]           ${quantity_value}
+
+Змінити classification.id об'єкта МП
+  [Arguments]    ${username}    ${tender_uaid}    ${item_id}    ${field_value}
+  Sleep  2
+  ClearFildAndInputText            name=asset[items][0][classification][description]           ${field_value}
 
 Завантажити ілюстрацію в об'єкт МП
   [Arguments]    ${username}    ${tender_uaid}    ${filepath}
@@ -1366,15 +1397,14 @@ ClearFildAndInputText
 
 Завантажити документ в об'єкт МП з типом
   [Arguments]    ${username}    ${tender_uaid}    ${filepath}    ${documentType}
-  ${documentTypeNumber}=      get_unit_id     ${documentType}
-  ${filepyth}=    get_file_path
+  ${documentTypeConvert}=      get_unit_id     ${documentType}
   uatenders.Оновити сторінку з об'єктом МП    ${username}    ${tender_uaid}
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
   Click Element                     xpath=(//*[text()='Редагувати'])[1]
   Sleep  2
-  Choose File                       name=asset[files][]          ${filepyth}
+  Choose File                       name=asset[files][]          ${filepath}
   Sleep  2
-  Select From List                  name=asset[docTypes][]       ${documentTypeNumber}
+  Select From List                  name=asset[docTypes][]       ${documentTypeConvert}
   Sleep  2
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                     xpath=(//*[@id='submit-edit-btn'])[1]
@@ -1466,6 +1496,7 @@ ClearFildAndInputText
   Sleep  1
   Run Keyword And Ignore Error       Press Key        xpath=(//*[contains(text(), 'Так')])[1]     \\13
 
+
 # ##############################################################################################
 # #             Создание ЛОТА по Малой Приватизации
 # ##############################################################################################
@@ -1474,6 +1505,7 @@ ClearFildAndInputText
   ${decisionDate}=        Get From Dictionary     ${tender_data.data.decisions[0]}    decisionDate
   ${decisionDateEdit}=    get_dgf                 ${decisionDate}
   ${decisionID}=          Get From Dictionary     ${tender_data.data.decisions[0]}    decisionID
+  # ${lotType}=             Get From Dictionary     ${tender_data.data}                 lotType
   Wait Until Page Contains Element    xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[1]/li[1]/a    10
   Click Element                       xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[1]/li[1]/a
   Wait Until Page Contains Element    xpath=(//*[@id='bs-example-navbar-collapse-1']//a)[6]    10
@@ -1508,170 +1540,253 @@ ClearFildAndInputText
 Отримати інформацію із лоту для МП про status
   ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(text(),'LOT Статус:')]/..//*[position() mod 2 = 0]/span)[1]
   Run Keyword And Return     convert_uatenders_string_to_common_string          ${return_value}
+
 Отримати інформацію із лоту для МП про lotID
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'LOT ID:')]/..//*[position() mod 2 = 0])[1]
+
 Отримати інформацію із лоту для МП про dateModified
   ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(text(),'Дата внесення останніх змін')]/..//*[position() mod 2 = 0]/span)[1]
   Run Keyword And Return     convert_date_modified                   ${return_value}
+
 Отримати інформацію із лоту для МП про date
   ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(text(),'Дата створення')]/..//*[position() mod 2 = 0]/span)[1]
   Run Keyword And Return     convert_datetime_for_delivery           ${return_value}
+
 Отримати інформацію із лоту для МП про rectificationPeriod.endDate
   ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(text(),'Можливе редагування до')]/..//*[position() mod 2 = 0])[1]
   Run Keyword And Return     convert_date_modified                   ${return_value}
+
 # Загальна інформація щодо інформаційного повідомлення
 Отримати інформацію із лоту для МП про assets
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'ASSET ID')]/..//*[position() mod 2 = 0])[1]
+
 Отримати інформацію із лоту для МП про title
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//div[@class='col-md-12']/h2)[1]
+
 Отримати інформацію із лоту для МП про description
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//div[@class='col-md-12']/p)[1]
+
 # Балансоутримувач
 Отримати інформацію із лоту для МП про lotHolder.name
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[@class='col-md-12 well'])[1]//*[@class='item-procuringEntity.name']
+
 Отримати інформацію із лоту для МП про lotHolder.identifier.scheme
   Run Keyword And Return     Convert To String     UA-EDR
+
 Отримати інформацію із лоту для МП про lotHolder.identifier.id
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'Код ЄДРПОУ:')]/..//*[position() mod 2 = 0])[1]
+
 # Розпорядник
 Отримати інформацію із лоту для МП про lotCustodian.identifier.scheme
   Run Keyword And Return     Convert To String     UA-EDR
+
 Отримати інформацію із лоту для МП про lotCustodian.identifier.id
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'Код ЄДРПОУ:')]/..//*[position() mod 2 = 0])[2]
+
 Отримати інформацію із лоту для МП про lotCustodian.identifier.legalName
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[@class='col-md-12 well'])[2]//*[@class='item-procuringEntity.name']
+
 Отримати інформацію із лоту для МП про lotCustodian.contactPoint.name
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'Ім')]/..//*[position() mod 2 = 0])[2]
+
 Отримати інформацію із лоту для МП про lotCustodian.contactPoint.telephone
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'Телефон')]/..//*[position() mod 2 = 0])[2]
+
 Отримати інформацію із лоту для МП про lotCustodian.contactPoint.email
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'E-mail:')]/..//*[position() mod 2 = 0])[2]
+
 # Рішення
 Отримати інформацію із лоту для МП про decisions[0].decisionDate
   ${return_value}=           Отримати дані з поля для МП    xpath=(//*[contains(text(),'Дата прийняття рішення:')]/..//*[position() mod 2 = 0])[1]
   Run Keyword And Return     convert_datetime_for_delivery          ${return_value}
+
 Отримати інформацію із лоту для МП про decisions[1].decisionDate
   ${return_value}=           Отримати дані з поля для МП    xpath=(//*[contains(text(),'Дата прийняття рішення:')]/..//*[position() mod 2 = 0])[2]
   Run Keyword And Return     convert_datetime_for_delivery          ${return_value}
+
 Отримати інформацію із лоту для МП про decisions[0].decisionID
   Run Keyword And Return     Отримати дані з поля для МП    xpath=(//*[contains(text(),'Номер рішення у паперовій документації:')]/..//*[position() mod 2 = 0])[1]
+
 Отримати інформацію із лоту для МП про decisions[1].decisionID
   Run Keyword And Return     Отримати дані з поля для МП    xpath=(//*[contains(text(),'Номер рішення у паперовій документації:')]/..//*[position() mod 2 = 0])[2]
+
 Отримати інформацію із лоту для МП про decisions[1].title
   Run Keyword And Return     Отримати дані з поля для МП    xpath=(//*[contains(text(),'Найменування рішення про приватизацію лоту:')]/..//*[position() mod 2 = 0])[1]
+
 # Загальна інформація
 Отримати інформацію із лоту для МП про auctions[0].procurementMethodType
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-0')]//*[contains(text(),'Тип')]/..//td)[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'1')]//*[contains(text(),'Тип')]/..//td)[1]
   Run Keyword And Return     convert_uatenders_string_to_common_string        ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[1].procurementMethodType
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-1')]//*[contains(text(),'Тип')]/..//td)[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'2')]//*[contains(text(),'Тип')]/..//td)[1]
   Run Keyword And Return     convert_uatenders_string_to_common_string        ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[2].procurementMethodType
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-2')]//*[contains(text(),'Тип')]/..//td)[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'3')]//*[contains(text(),'Тип')]/..//td)[1]
   Run Keyword And Return     convert_uatenders_string_to_common_string        ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[0].status
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-0')]//*[contains(text(),'Статус')]/..//td)[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'1')]//*[contains(text(),'Статус')]/..//td)[1]
   Run Keyword And Return     convert_uatenders_string_to_common_string        ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[1].status
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-1')]//*[contains(text(),'Статус')]/..//td)[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'2')]//*[contains(text(),'Статус')]/..//td)[1]
   Run Keyword And Return     convert_uatenders_string_to_common_string        ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[2].status
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-2')]//*[contains(text(),'Статус')]/..//td)[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'3')]//*[contains(text(),'Статус')]/..//td)[1]
   Run Keyword And Return     convert_uatenders_string_to_common_string        ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[0].tenderAttempts
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-0')]//*[contains(text(),'Аукціону')]/..//td)[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'1')]//*[contains(text(),'Аукціону')]/..//td)[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[1].tenderAttempts
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-1')]//*[contains(text(),'Аукціону')]/..//td)[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'2')]//*[contains(text(),'Аукціону')]/..//td)[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[2].tenderAttempts
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-2')]//*[contains(text(),'Аукціону')]/..//td)[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'3')]//*[contains(text(),'Аукціону')]/..//td)[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[0].value.amount
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-0')]//*[contains(text(),'Початкова ціна')]/..//*[@class='auct_amount'])[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'1')]//*[contains(text(),'Початкова ціна')]/..//*[@class='auct_amount'])[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[1].value.amount
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-1')]//*[contains(text(),'Початкова ціна')]/..//*[@class='auct_amount'])[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'2')]//*[contains(text(),'Початкова ціна')]/..//*[@class='auct_amount'])[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[2].value.amount
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-2')]//*[contains(text(),'Початкова ціна')]/..//*[@class='auct_amount'])[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'3')]//*[contains(text(),'Початкова ціна')]/..//*[@class='auct_amount'])[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[0].minimalStep.amount
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-0')]//*[contains(text(),'Розмір мінімального')]/..//*[@class='auct_min_step'])[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'1')]//*[contains(text(),'Розмір мінімального')]/..//*[@class='auct_min_step'])[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[1].minimalStep.amount
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-1')]//*[contains(text(),'Розмір мінімального')]/..//*[@class='auct_min_step'])[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'2')]//*[contains(text(),'Розмір мінімального')]/..//*[@class='auct_min_step'])[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[2].minimalStep.amount
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-2')]//*[contains(text(),'Розмір мінімального')]/..//*[@class='auct_min_step'])[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'3')]//*[contains(text(),'Розмір мінімального')]/..//*[@class='auct_min_step'])[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[0].guarantee.amount
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-0')]//*[contains(text(),'Розмір гарантійного')]/..//*[@class='auct_guarantee_amount'])[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'1')]//*[contains(text(),'Розмір гарантійного')]/..//*[@class='auct_guarantee_amount'])[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[1].guarantee.amount
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-1')]//*[contains(text(),'Розмір гарантійного')]/..//*[@class='auct_guarantee_amount'])[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'2')]//*[contains(text(),'Розмір гарантійного')]/..//*[@class='auct_guarantee_amount'])[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[2].guarantee.amount
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-2')]//*[contains(text(),'Розмір гарантійного')]/..//*[@class='auct_guarantee_amount'])[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'3')]//*[contains(text(),'Розмір гарантійного')]/..//*[@class='auct_guarantee_amount'])[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[0].registrationFee.amount
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-0')]//*[contains(text(),'Реєстраційний внесок')]/..//*[@class='auct_amount'])[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'1')]//*[contains(text(),'Реєстраційний внесок')]/..//*[@class='auct_amount'])[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[1].registrationFee.amount
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-1')]//*[contains(text(),'Реєстраційний внесок')]/..//*[@class='auct_amount'])[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'2')]//*[contains(text(),'Реєстраційний внесок')]/..//*[@class='auct_amount'])[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[2].registrationFee.amount
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-2')]//*[contains(text(),'Реєстраційний внесок')]/..//*[@class='auct_amount'])[1]
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'3')]//*[contains(text(),'Реєстраційний внесок')]/..//*[@class='auct_amount'])[1]
   Run Keyword And Return     Convert To Number                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[1].tenderingDuration
-  Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-1')]//*[contains(text(),'Продолжительность')]/..//*[@class='auct_tendering_duration'])[1]
+  Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'2')]//*[contains(text(),'Продолжительность')]/..//*[@class='auct_tendering_duration'])[1]
+
 Отримати інформацію із лоту для МП про auctions[2].tenderingDuration
-  Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-2')]//*[contains(text(),'Продолжительность')]/..//*[@class='auct_tendering_duration'])[1]
+  Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'3')]//*[contains(text(),'Продолжительность')]/..//*[@class='auct_tendering_duration'])[1]
+
 Отримати інформацію із лоту для МП про auctions[0].auctionPeriod.startDate
-  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-0')]//*[contains(text(),'Електронний аукціон відбудеться')]/..//*[@class='enquiryPeriod']//span)[1]
-  Run Keyword And Return     convert_auction_date                       ${return_value}
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'1')]//*[contains(text(),'Електронний аукціон відбудеться')]/..//*[@class='enquiryPeriod'])[1]
+  Run Keyword And Return     convert_date_modified                       ${return_value}
+
 Отримати інформацію із лоту для МП про auctions[0].auctionID
-  Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(@class,'auctionBlock-0')]//span)[1]
+  Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(@data-index,'1')]//span)[1]
 
 Отримати інформацію з активу лоту
   [Arguments]    ${username}    ${tender_uaid}    ${item_id}    ${field_name}
   Run Keyword And Return    uatenders.Отримати інформацію з активу лоту про ${field_name}    ${item_id}
+
 # Інформація щодо об’єкта продажу
+Отримати інформацію з активу лоту про description
+  [Arguments]    ${item_id}
+  Run Keyword And Return     Отримати дані з поля для МП    xpath=(//*[contains(text(),'${item_id}')])
+
+Отримати інформацію з активу лоту про classification.scheme
+  [Arguments]    ${item_id}
+  Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='scheme']
+
+Отримати інформацію з активу лоту про classification.id
+  [Arguments]    ${item_id}
+  Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='id']
+
+Отримати інформацію з активу лоту про unit.name
+  [Arguments]    ${item_id}
+  Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='amountDescription']
+
+Отримати інформацію з активу лоту про quantity
+  [Arguments]    ${item_id}
+  ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='amountVal']
+  Run Keyword And Return     Convert To Number                            ${return_value}
+
+Отримати інформацію з активу лоту про registrationDetails.status
+  [Arguments]    ${item_id}
+  Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='registrationDetailsStatus']
+
 Отримати інформацію з активу лоту про items[0].description
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП    xpath=(//*[contains(text(),'${item_id}')])
+
 Отримати інформацію з активу лоту про items[1].description
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП    xpath=(//*[contains(text(),'${item_id}')])
+
 Отримати інформацію з активу лоту про items[0].unit.name
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='amountDescription']
+
 Отримати інформацію з активу лоту про items[1].unit.name
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='amountDescription']
+
 Отримати інформацію з активу лоту про items[0].quantity
   [Arguments]    ${item_id}
   ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='amountVal']
   Run Keyword And Return     Convert To Number                            ${return_value}
+
 Отримати інформацію з активу лоту про items[1].quantity
   [Arguments]    ${item_id}
   ${return_value}=           Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='amountVal']
   Run Keyword And Return     Convert To Number                            ${return_value}
+
 Отримати інформацію з активу лоту про items[0].classification.scheme
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='scheme']
+
 Отримати інформацію з активу лоту про items[1].classification.scheme
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='scheme']
+
 Отримати інформацію з активу лоту про items[0].classification.id
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='id']
+
 Отримати інформацію з активу лоту про items[1].classification.id
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='id']
+
 Отримати інформацію з активу лоту про items[0].registrationDetails.status
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='registrationDetailsStatus']
+
 Отримати інформацію з активу лоту про items[1].registrationDetails.status
   [Arguments]    ${item_id}
   Run Keyword And Return     Отримати дані з поля для МП     xpath=(//*[contains(text(),'${item_id}')]//..//*/../..//td)//*[@class='registrationDetailsStatus']
@@ -1699,11 +1814,12 @@ ClearFildAndInputText
   ...   ClearFildAndInputText            name=lot[items][0][quantity]             ${quantity_value}
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
+  Sleep  5
 
 Завантажити ілюстрацію в лот
   [Arguments]    ${username}    ${tender_uaid}    ${filepath}
   ${filepyth}=    get_file_path
-  uatenders.Оновити сторінку з лотом    ${username}    ${tender_uaid}
+  uatenders.Пошук лоту по ідентифікатору   ${username}   ${tender_uaid}
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
   Click Element                     xpath=(//*[text()='Редагувати'])[1]
   Sleep  2
@@ -1717,21 +1833,33 @@ ClearFildAndInputText
 Завантажити документ в лот з типом
   [Arguments]    ${username}    ${tender_uaid}    ${filepath}    ${documentType}
   ${documentTypeNumber}=      get_unit_id     ${documentType}
-  ${filepyth}=    get_file_path
   uatenders.Оновити сторінку з лотом    ${username}    ${tender_uaid}
+  # uatenders.Пошук лоту по ідентифікатору   ${username}   ${tender_uaid}
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
   Click Element                     xpath=(//*[text()='Редагувати'])[1]
   Sleep  2
-  Choose File                       name=lot[files][]         ${filepyth}
+  Choose File                       name=lot[files][]         ${filepath}
   Sleep  2
   Select From List                  name=lot[docTypes][]      ${documentTypeNumber}
   Sleep  2
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
-  Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
+  Click Element                     xpath=(//*[@id='submit-edit-btn'])[1]
+  Sleep  3
 
 Завантажити документ в умови проведення аукціону
   [Arguments]    ${username}    ${tender_uaid}    ${filepath}    ${documentType}    ${auction_index}
-  Run keyword    uatenders.Завантажити документ в лот з типом    ${username}    ${tender_uaid}    ${filepath}    ${documentType}
+  ${documentTypeNumber}=      get_unit_id     ${documentType}
+  uatenders.Оновити сторінку з лотом    ${username}    ${tender_uaid}
+  Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
+  Click Element                     xpath=(//*[text()='Редагувати'])[1]
+  Sleep  2
+  Choose File                       name=lot[auctions][${auction_index}][files][]         ${filepath}
+  Sleep  2
+  Select From List                  name=lot[auctions][0][docTypes][]      ${documentTypeNumber}
+  Sleep  2
+  Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
+  Click Element                     xpath=(//*[@id='submit-edit-btn'])[1]
+  Sleep  3
 
 Завантажити документ для видалення лоту
   [Arguments]    ${username}    ${tender_uaid}    ${filepath}
@@ -1746,6 +1874,7 @@ ClearFildAndInputText
   Sleep  2
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
+  Sleep  3
 
 Видалити лот
   [Arguments]    ${username}    ${tender_uaid}
@@ -1755,8 +1884,12 @@ ClearFildAndInputText
   Click Element                       xpath=(//*[@id='bs-example-navbar-collapse-1']//a)[7]
   Wait Until Element Is Visible       xpath=(//*[contains(@class,'table-bordered')]//*[contains(text(),'${tender_uaid}')]/..//*[contains(@class,'btn-danger')])[1]    10
   Click Element                       xpath=(//*[contains(@class,'table-bordered')]//*[contains(text(),'${tender_uaid}')]/..//*[contains(@class,'btn-danger')])[1]
-  Wait Until Page Contains Element    xpath=(//*[@id='deletetender']//a)[1]    10
-  Click Element                       xpath=(//*[@id='deletetender']//a)[1]
+  Sleep  3
+  Run Keyword And Ignore Error        Focus            xpath=(//*[contains(text(),'Так')])[1]
+  Sleep  1
+  Run Keyword And Ignore Error        Press Key        xpath=(//*[contains(text(),'Так')])[1]     \\13
+  Wait Until Page Contains Element    xpath=(//*[text()='Інформаційне повідомлення'])[1]     10
+  Click Element                       xpath=(//*[text()='Інформаційне повідомлення'])[1]
 
 Додати умови проведення аукціону
   [Arguments]    ${username}    ${auction}    ${index}    ${tender_uaid}
@@ -1772,10 +1905,10 @@ ClearFildAndInputText
   ${id}=                             Convert To String      ${auction.bankAccount.accountIdentification[0].id}
   ${scheme}=                         Convert To String      ${auction.bankAccount.accountIdentification[0].scheme}
   ${description}=                    Convert To String      ${auction.bankAccount.accountIdentification[0].description}
+  ${auctionStartDate}=               Get From Dictionary    ${auction.auctionPeriod}    startDate
   uatenders.Пошук лоту по ідентифікатору   ${username}   ${tender_uaid}
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
   Click Element                     xpath=(//*[text()='Редагувати'])[1]
-  ClearFildAndInputText           name=lot[auctions][${index}][tender_start_date]            ${auction.auctionPeriod.startDate}
   Run Keyword IF       '${valueValueAddedTaxIncluded}' == '${True}'    Select Checkbox    name=lot[auctions][${index}][tax]
   ClearFildAndInputText           name=lot[auctions][${index}][amount]                     ${valueAmount}
   ClearFildAndInputText           name=lot[auctions][${index}][guarantee_amount]           ${guaranteeAmount}
@@ -1786,8 +1919,19 @@ ClearFildAndInputText
   ClearFildAndInputText           name=lot[auctions][${index}][bank_identification][0][id]             ${id}
   ClearFildAndInputText           name=lot[auctions][${index}][bank_identification][0][scheme]         ${scheme}
   ClearFildAndInputText           name=lot[auctions][${index}][bank_identification][0][description]    ${description}
+  ClearFildAndInputText           name=lot[auctions][0][auction_start_date]            ${auctionStartDate}
+  Input Text                      name=lot[auctions][0][tendering_duration]       P1M
+  ClearFildAndInputText           name=lot[auctions][1][auction_start_date]            ${auctionStartDate}
+  Input Text                      name=lot[auctions][1][tendering_duration]       P1M
+  ClearFildAndInputText           name=lot[auctions][2][auction_start_date]            ${auctionStartDate}
+  Input Text                      name=lot[auctions][2][tendering_duration]       P1M
+  Sleep  1
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
+  Sleep  5
+  Wait Until Page Contains Element    xpath=(//*[contains(@class,'sendToVerification')])[1]     10
+  Click Element                       xpath=(//*[contains(@class,'sendToVerification')])[1]
+  Sleep  2
 
 Додати умови проведення аукціону номер 1
   [Arguments]    ${username}    ${tender_uaid}    ${auction}    ${index}
@@ -1798,16 +1942,27 @@ ClearFildAndInputText
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
 
+Зберегти дані поля quantity
+  [Arguments]   ${field_value}
+  Run Keyword And Return     Convert To String    ${field_value}
+
 Зберегти дані поля value.amount
   [Arguments]   ${field_value}
   Run Keyword And Return     Convert To String    ${field_value}
+
 Зберегти дані поля guarantee.amount
   [Arguments]   ${field_value}
   Run Keyword And Return     Convert To String    ${field_value}
+
 Зберегти дані поля registrationFee.amount
   [Arguments]   ${field_value}
   Run Keyword And Return     Convert To String    ${field_value}
+
 Зберегти дані поля minimalStep.amount
+  [Arguments]   ${field_value}
+  Run Keyword And Return     Convert To String    ${field_value}
+
+Зберегти дані поля auctionPeriod.startDate
   [Arguments]   ${field_value}
   Run Keyword And Return     Convert To String    ${field_value}
 
@@ -1817,17 +1972,20 @@ ClearFildAndInputText
   ${guaranteeAmount_value}=          Run Keyword IF    '${field_name}' == 'guarantee.amount'          uatenders.Зберегти дані поля ${field_name}     ${field_value}
   ${registrationFeeAmount_value}=    Run Keyword IF    '${field_name}' == 'registrationFee.amount'    uatenders.Зберегти дані поля ${field_name}     ${field_value}
   ${minimalStepAmount_value}=        Run Keyword IF    '${field_name}' == 'minimalStep.amount'        uatenders.Зберегти дані поля ${field_name}     ${field_value}
+  ${auctionPeriodStartDate_value}=   Run Keyword IF    '${field_name}' == 'auctionPeriod.startDate'   uatenders.Зберегти дані поля ${field_name}     ${field_value}
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
   Click Element                     xpath=(//*[text()='Редагувати'])[1]
-  Run Keyword IF    '${auction_index}' == '0' and '${field_name}' == 'value.amount'            Run Keyword
-  ...   ClearFildAndInputText            name=lot[auctions][0][amount]                         ${valueAmount_value}
+  Run Keyword IF    '${auction_index}' == '0' and '${field_name}' == 'value.amount'               Run Keyword
+  ...   ClearFildAndInputText       xpath=(//*[contains(@name,'amount')])[1]                         ${valueAmount_value}
   ...     ELSE IF   '${auction_index}' == '0' and '${field_name}' == 'guarantee.amount'
-  ...   ClearFildAndInputText            name=lot[auctions][0][guarantee_amount]               ${guaranteeAmount_value}
+  ...   ClearFildAndInputText       xpath=(//*[contains(@name,'guarantee_amount')])[1]               ${guaranteeAmount_value}
   ...     ELSE IF   '${auction_index}' == '0' and '${field_name}' == 'registrationFee.amount'
-  ...   ClearFildAndInputText            name=lot[auctions][0][fee_amount]                     ${registrationFeeAmount_value}
+  ...   ClearFildAndInputText       xpath=(//*[contains(@name,'fee_amount')])[1]                     ${registrationFeeAmount_value}
   ...     ELSE IF   '${auction_index}' == '0' and '${field_name}' == 'minimalStep.amount'
-  ...   ClearFildAndInputText            name=lot[auctions][0][minimal_step]                   ${minimalStepAmount_value}
+  ...   ClearFildAndInputText       xpath=(//*[contains(@name,'minimal_step')])[1]                   ${minimalStepAmount_value}
   ...     ELSE IF   '${auction_index}' == '0' and '${field_name}' == 'auctionPeriod.startDate'
-  ...   ClearFildAndInputText            name=lot[auctions][0][tender_start_date]              ${auctionPeriod.startDate}
+  ...   ClearFildAndInputText       xpath=(//*[contains(@name,'auction_start_date')])[1]             ${auctionPeriodStartDate_value}
+  Sleep  3
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                           xpath=(//*[@id='submit-edit-btn'])[1]
+  Sleep  7
