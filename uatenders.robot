@@ -839,6 +839,7 @@ Change_date_to_month
 
 Отримати документ
   [Arguments]  ${username}  ${tender_uaid}  ${doc_id}
+  uatenders.Оновити сторінку з лотом    ${username}    ${tender_uaid}
   ${file_name}=          Get Text         xpath=//*[contains(text(),'${doc_id}')]
   ${url}=         Get Element Attribute   xpath=//*[contains(text(),'${doc_id}')]@href
   download   ${url}  ${file_name}  ${OUTPUT_DIR}
