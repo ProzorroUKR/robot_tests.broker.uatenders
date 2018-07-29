@@ -593,7 +593,7 @@ Change_date_to_month
   Wait Until Page Contains Element             ${locator.${fieldname}}    20
   Run Keyword And Return      Get Text         ${locator.${fieldname}}
 
-Отримати інформацію із предмету для
+Отримати інформацію із предмету
   [Arguments]  @{ARGUMENTS}
   [Documentation]
   ...      ${ARGUMENTS[0]} ==  username
@@ -603,32 +603,32 @@ Change_date_to_month
   ${return_value}=    Run Keyword    Отримати значення поля з items[0].${ARGUMENTS[3]}  ${ARGUMENTS[2]}  ${ARGUMENTS[0]}  ${ARGUMENTS[1]}
   [Return]  ${return_value}
 
-Отримати значення поля з items[0].description
+Отримати значення поля items[0].description
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=(//*[contains(text(),'${item_id}')]/..//*)[2]
 
-Отримати значення поля з items[0].deliveryDate.endDate
+Отримати значення поля items[0].deliveryDate.endDate
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=//*[@id="lot-0-item-0"]/table/tbody/tr[4]/td
   Run Keyword And Return   Change_date_to_month   ${return_value}
 
-Отримати значення поля з items[0].deliveryLocation.latitude
+Отримати значення поля items[0].deliveryLocation.latitude
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Fail  Немає такого поля при перегляді
 
-Отримати значення поля з items[0].deliveryLocation.longitude
+Отримати значення поля items[0].deliveryLocation.longitude
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Fail  Немає такого поля при перегляді
 
-Отримати значення поля з items[0].deliveryAddress.countryName
+Отримати значення поля items[0].deliveryAddress.countryName
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.countryName'])
 
-Отримати значення поля з items[0].deliveryAddress.postalCode
+Отримати значення поля items[0].deliveryAddress.postalCode
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.postalCode'])
 
-Отримати значення поля з items[0].deliveryAddress.region
+Отримати значення поля items[0].deliveryAddress.region
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${region_name}=   Run Keyword And Return Status
   ...   Get Text      xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[contains(text(),'Київ') or contains(text(),'м. Київ')])[1]
@@ -638,53 +638,53 @@ Change_date_to_month
   ...   Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.region'])
   [Return]    ${return_value}
 
-Отримати значення поля з items[0].deliveryAddress.locality
+Отримати значення поля items[0].deliveryAddress.locality
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.locality'])
 
-Отримати значення поля з items[0].deliveryAddress.streetAddress
+Отримати значення поля items[0].deliveryAddress.streetAddress
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.streetAddress'])
 
-Отримати значення поля з items[0].classification.scheme
+Отримати значення поля items[0].classification.scheme
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='scheme'])[2]
   [Return]  ${return_value.replace(' -', '')}
 
-Отримати значення поля з items[0].classification.id
+Отримати значення поля items[0].classification.id
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='id'])[2]
 
-Отримати значення поля з items[0].classification.description
+Отримати значення поля items[0].classification.description
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='description'])[2]
 
-Отримати значення поля з items[0].additionalClassifications[0].description
+Отримати значення поля items[0].additionalClassifications[0].description
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='description'])[1]
 
-Отримати значення поля з items[0].quantity
+Отримати значення поля items[0].quantity
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='item-amount'])/span[1]
   Run Keyword And Return   Convert To Number                            ${return_value.split(' ')[0]}
 
-Отримати значення поля з items[0].unit.name
+Отримати значення поля items[0].unit.name
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='item-amount'])/span[2]
   ${return_value}=    Convert To String                                 ${return_value}
   Run Keyword And Return   convert_uatenders_string_to_common_string    ${return_value}
 
-Отримати значення поля з items[0].unit.code
+Отримати значення поля items[0].unit.code
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='item-amount'])/span[3]
   Run Keyword And Return   Convert To String                            ${return_value}
 
-Отримати значення поля з items[0].contractPeriod.startDate
+Отримати значення поля items[0].contractPeriod.startDate
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='item-delivery_period'])/span[1]
   Run Keyword And Return   convert_contractPeriod_date                  ${return_value}
 
-Отримати значення поля з items[0].contractPeriod.endDate
+Отримати значення поля items[0].contractPeriod.endDate
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='item-delivery_period'])/span[2]
   Run Keyword And Return   convert_contractPeriod_date                  ${return_value}
@@ -1360,6 +1360,7 @@ ClearFildAndInputText
   Sleep  2
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
+  Sleep  4
 
 Внести зміни в актив об'єкта МП
   [Arguments]    ${username}    ${item_id}    ${tender_uaid}    ${field_name}    ${field_value}
@@ -1367,9 +1368,11 @@ ClearFildAndInputText
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
   Click Element                     xpath=(//*[text()='Редагувати'])[1]
   Run Keyword       uatenders.Змінити ${field_name} об'єкта МП    ${username}    ${tender_uaid}    ${item_id}    ${field_value}
+  Sleep  2
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
-
+  Sleep  4
+  
 Змінити quantity об'єкта МП
   [Arguments]    ${username}    ${tender_uaid}    ${item_id}    ${field_value}
   ${quantity_value}=       Convert To String    ${field_value}
@@ -1800,9 +1803,11 @@ ClearFildAndInputText
   ...   ClearFildAndInputText            name=lot[title]                          ${field_value}
   ...     ELSE IF   '${field_name}' == 'description'
   ...   ClearFildAndInputText            name=lot[description]                    ${field_value}
+  Sleep  2
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
-
+  Sleep  4
+  
 Внести зміни в актив лоту
   [Arguments]    ${username}    ${item_id}    ${tender_uaid}    ${field_name}    ${field_value}
   ${quantity_value}=      Run Keyword IF    '${field_name}' == 'quantity'
@@ -1812,9 +1817,10 @@ ClearFildAndInputText
   Click Element                     xpath=(//*[text()='Редагувати'])[1]
   Run Keyword IF    '${field_name}' == 'quantity'
   ...   ClearFildAndInputText            name=lot[items][0][quantity]             ${quantity_value}
+  Sleep  2
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
-  Sleep  5
+  Sleep  4
 
 Завантажити ілюстрацію в лот
   [Arguments]    ${username}    ${tender_uaid}    ${filepath}
