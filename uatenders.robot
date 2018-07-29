@@ -1981,6 +1981,7 @@ ClearFildAndInputText
   ${auctionPeriodStartDate_value}=   Run Keyword IF    '${field_name}' == 'auctionPeriod.startDate'   uatenders.Зберегти дані поля ${field_name}     ${field_value}
   Wait Until Element Is Visible     xpath=(//*[text()='Редагувати'])[1]    10
   Click Element                     xpath=(//*[text()='Редагувати'])[1]
+  Sleep  2
   Run Keyword IF    '${auction_index}' == '0' and '${field_name}' == 'value.amount'               Run Keyword
   ...   ClearFildAndInputText       xpath=(//*[contains(@name,'amount')])[1]                         ${valueAmount_value}
   ...     ELSE IF   '${auction_index}' == '0' and '${field_name}' == 'guarantee.amount'
@@ -1991,7 +1992,7 @@ ClearFildAndInputText
   ...   ClearFildAndInputText       xpath=(//*[contains(@name,'minimal_step')])[1]                   ${minimalStepAmount_value}
   ...     ELSE IF   '${auction_index}' == '0' and '${field_name}' == 'auctionPeriod.startDate'
   ...   ClearFildAndInputText       xpath=(//*[contains(@name,'auction_start_date')])[1]             ${auctionPeriodStartDate_value}
-  Sleep  3
+  Sleep  2
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                           xpath=(//*[@id='submit-edit-btn'])[1]
   Sleep  7
