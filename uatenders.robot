@@ -600,7 +600,7 @@ Change_date_to_month
   ...      ${ARGUMENTS[1]} ==  tender_uaid
   ...      ${ARGUMENTS[2]} ==  item_id
   ...      ${ARGUMENTS[3]} ==  field_name
-  ${return_value}=    Run Keyword    Отримати значення поля з items[0].${ARGUMENTS[3]}  ${ARGUMENTS[2]}  ${ARGUMENTS[0]}  ${ARGUMENTS[1]}
+  ${return_value}=    Run Keyword    Отримати значення поля items[0].${ARGUMENTS[3]}  ${ARGUMENTS[2]}  ${ARGUMENTS[0]}  ${ARGUMENTS[1]}
   [Return]  ${return_value}
 
 Отримати значення поля items[0].description
