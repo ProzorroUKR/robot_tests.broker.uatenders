@@ -2051,13 +2051,12 @@ ClearFildAndInputText
   Wait Until Element Is Visible      xpath=(//*[contains(text(),'Контракти')])[1]          15
   Click Element                      xpath=(//*[contains(text(),'Контракти')])[1]
 
-  ${test_name_value}=                Convert To String                                ${TEST_NAME.replace('\'', '')}
-  Run Keyword IF    'встановити дату підписання угоди' in '${test_name_value}'        Run Keywords
-  ...   Sleep  2
-  ...   AND   Choose File                        name=contract[files][]          ${filepyth}
-  ...   AND   Sleep  3
-  ...   AND   Click Element     xpath=(//*[@value='Зберегти'])[1]
-  ...   AND   Sleep  5
+  Sleep  2
+  Choose File                        name=contract[files][]          ${filepyth}
+  Sleep  2
+  Wait Until Element Is Visible      xpath=(//*[@value='Зберегти'])[1]          15
+  Click Element                      xpath=(//*[@value='Зберегти'])[1]
+  Sleep  5
 
   Wait Until Keyword Succeeds   3 x   10 s     Run Keywords
   ...   Reload Page
