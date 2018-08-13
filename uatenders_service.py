@@ -44,14 +44,24 @@ def convert_uatenders_string_to_common_string(string):
         u"Відхилено": u"unsuccessful",
         u"Відмінено": u"cancelled",
         u"Скасування активовае": u"active",
-        u"Інформація про оприлюднення інформаційного повідомлення": u"informationDetails",
-        u"Очікування": u"pending",
+        u"Опубліковано": u"pending",
+        u"Аукціон": u"active.auction",
+        u"Скасування активоване.": u"active",
+        u"Переможець": u"active",
+        u"Очікується рішення": u"pending",
+        #  award
+        u"Рішення скасоване": u"unsuccessful",
+        u"Відмова від очікування": u"cancelled",
+        #  contract
+        u"Договір було скасовано до підписання": u"cancelled",
+        u"Підписаний всіма учасниками": u"active",
+        u"Об’єкт виставлено на продаж": u"active.salable",
         u"Видалено": u"deleted",
-        u"МП англ": u"sellout.english",
-        u"МП": u"sellout.insider",
+        u"Аукціон (Мала приватизація)": u"sellout.english",
+        u"Аукціон за методом покрокового зниження стартової ціни та подальшого подання": u"sellout.insider",
         u"Заплановано": u"scheduled",
     }.get(string, string)
- 
+
 def convert_datetime_for_delivery(isodate):
     iso_dt = parse_date(isodate)
     date_string = iso_dt.strftime("%d-%m-%Y %H:%M")
@@ -68,6 +78,12 @@ def adapt_item(tender_data, role_name):
             for i in tender_data['data']['items']:
                 i['unit']['name'] = my_dict[i['unit']['name']]
     return tender_data
+
+def convert_bank_identification_date(date):
+    date_obj = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f+03:00")
+    time_zone = pytz.timezone('Europe/Kiev')
+    localized_date = time_zone.localize(date_obj)
+    return localized_date.strftime("%d.%m.%Y %H:%M:%S")
 
 def convert_auction_date(date):
     date_obj = datetime.strptime(date, "%d.%m.%Y %H:%M")
@@ -96,6 +112,7 @@ def get_unit_id(string):
         u"notice": u"27",
         u"x_presentation": u"30",
         u"technicalSpecifications": u"28",
+
     }.get(string, string)
 
 def get_file_path():
