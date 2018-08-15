@@ -396,7 +396,6 @@ ${locator.registrationFee.amount}                               xpath=(//*[conta
   [Documentation]
   ...      ${ARGUMENTS[0]} ==  username
   ...      ${ARGUMENTS[1]} ==  ${TENDER_UAID}
-  Log To Console   MODE --- ${MODE}
   Run Keyword IF    '${MODE}' == 'dgfInsider' #or '${MODE}' == 'lots' or '${MODE}' == 'assets'
   ...   Switch Browser     1
   Go To  ${USERS.users['${ARGUMENTS[0]}'].homepage}
