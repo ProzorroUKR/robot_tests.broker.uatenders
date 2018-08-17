@@ -641,12 +641,6 @@ Change_date_to_month
 
 Отримати інформацію із предмету
   [Arguments]   ${username}  ${tender_uaid}  ${item_id}  ${field_name}
-  # [Arguments]  @{ARGUMENTS}
-  # [Documentation]
-  # ...      ${ARGUMENTS[0]} ==  username
-  # ...      ${ARGUMENTS[1]} ==  tender_uaid
-  # ...      ${ARGUMENTS[2]} ==  item_id
-  # ...      ${ARGUMENTS[3]} ==  field_name
   Log     MODE ---> ${MODE}
   Run Keyword IF     '${MODE}' == 'lots'
   ...   Run Keyword And Return    uatenders.Отримати інформацію із лоту   ${username}   ${tender_uaid}   ${field_name}
