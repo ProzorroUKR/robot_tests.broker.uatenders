@@ -36,6 +36,8 @@ ${locator.guarantee.amount}                                     xpath=(//*[conta
 ${locator.minNumberOfQualifiedBids}                             xpath=(//*[contains(text(),'Мінімальна кількість учасників')])/../*[position() mod 2 = 0]
 ${locator.registrationFee.amount}                               xpath=(//*[contains(text(),'Реєстраційний внесок:')]/..//*[position() mod 2 = 0]//span)[1]
 
+
+
 *** Keywords ***
 
 Підготувати клієнт для користувача
@@ -205,7 +207,7 @@ ${locator.registrationFee.amount}                               xpath=(//*[conta
   ${title}=           Get From Dictionary    ${question.data}    title
   ${description}=     Get From Dictionary    ${question.data}    description
   uatenders.Пошук тендера по ідентифікатору  ${username}   ${tender_uaid}
-  Wait Until Keyword Succeeds   10 x   20 s     Run Keywords
+  Wait Until Keyword Succeeds   10 x   25 s     Run Keywords
   ...   Reload Page
   ...   AND   Wait Until Element Is Visible     xpath=(//a[@class='btn btn-success auctionQuestion'])[1]    10
   Wait Until Element Is Visible     xpath=(//a[@class='btn btn-success auctionQuestion'])[1]      15
@@ -221,6 +223,10 @@ ${locator.registrationFee.amount}                               xpath=(//*[conta
   ${amount}=           Get From Dictionary    ${test_bid_data.data.value}    amount
   ${amount}=            Convert To String     ${amount}
   uatenders.Пошук тендера по ідентифікатору  ${username}   ${tender_uaid}
+  Wait Until Keyword Succeeds   10 x   25 s     Run Keywords
+  ...   Reload Page
+  ...   AND   Wait Until Element Is Visible     xpath=//*[text()='Подати пропозицію'][1]    5
+  Wait Until Element Is Visible       xpath=//*[text()='Подати пропозицію'][1]    10
   Click Element                       xpath=//*[text()='Подати пропозицію'][1]
   Wait Until Element Is Visible       xpath=//*[@id="self_eligible"]      10
   Click Element                       xpath=//*[@id="self_eligible"]
@@ -594,7 +600,7 @@ Change_date_to_month
 
 Отримати інформацію із запитання про questions[0].title
   [Arguments]  ${username}  ${question_id}
-  Wait Until Keyword Succeeds   5 x   25 s     Run Keywords
+  Wait Until Keyword Succeeds   10 x   25 s     Run Keywords
   ...   Reload Page
   ...   AND   Sleep  2
   ...   AND   Element Should Be Visible    xpath=(//*[contains(text(),'${question_id}')]/..//*)[1]         ${question_id}
@@ -606,11 +612,13 @@ Change_date_to_month
 
 Отримати інформацію із запитання про questions[0].answer
   [Arguments]  ${username}  ${question_id}
-  Wait Until Keyword Succeeds   5 x   25 s     Run Keywords
+  Wait Until Keyword Succeeds   10 x   25 s     Run Keywords
   ...   Reload Page
   ...   AND   Sleep  2
   ...   AND   Wait Until Page Contains Element    xpath=(//*[contains(text(),'${question_id}')]/..//following::*[contains(@class,'${question_id}')]//p)[1]           5
+  # Wait Until Page Contains Element      xpath=(//*[contains(text(),'${question_id}')]/..//following::*[@class='bs-callout bs-callout-success']//p)[1]           60
   Run Keyword And Return    Get Text              xpath=(//*[contains(text(),'${question_id}')]/..//following::*[contains(@class,'${question_id}')]//p)[1]
+
 
 Підготувати дані для оголошення тендера
   [Arguments]  ${username}   ${tender_data}    ${role_name}
@@ -638,6 +646,7 @@ Change_date_to_month
   ...   Run Keyword And Return    uatenders.Отримати інформацію із лоту   ${username}   ${tender_uaid}   ${field_name}
   ...      ELSE IF   '${MODE}' != 'lots'
   ...   Run Keyword And Return    uatenders.Отримати значення поля items[0].${field_name}   ${item_id}   ${username}   ${tender_uaid}
+
 
 Отримати значення поля items[0].description
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
@@ -862,6 +871,7 @@ Change_date_to_month
   Wait Until Element Is Visible      xpath=(//*[contains(@type,'submit') and contains(@value,'Оновити')])     15
   Click Element                      xpath=(//*[contains(@type,'submit') and contains(@value,'Оновити')])
 
+
 Завантажити документ рішення кваліфікаційної комісії
   [Arguments]  ${username}  ${document}  ${tender_uaid}  ${award_num}
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
@@ -869,6 +879,7 @@ Change_date_to_month
   Choose File                        id=award-0-1           ${document}
   Wait Until Element Is Visible      xpath=//*[@type='submit']        15
   Click Element                      xpath=//*[@type='submit']
+
 
 Отримати кількість документів в ставці
   [Arguments]  ${username}  ${tender_uaid}  ${bid_index}
@@ -1741,7 +1752,7 @@ ClearFildAndInputText
   Sleep  2
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
-  Sleep  5
+  Sleep  4
 
 Внести зміни в актив лоту
   [Arguments]    ${username}    ${item_id}    ${tender_uaid}    ${field_name}    ${field_value}
@@ -1755,7 +1766,7 @@ ClearFildAndInputText
   Sleep  2
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
   Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
-  Sleep  5
+  Sleep  4
 
 Завантажити ілюстрацію в лот
   [Arguments]    ${username}    ${tender_uaid}    ${filepath}
@@ -1861,14 +1872,11 @@ ClearFildAndInputText
   ClearFildAndInputText           name=lot[auctions][${index}][bank_identification][0][id]             ${id}
   Select From List By Value       name=lot[auctions][${index}][bank_identification][0][scheme]         ${scheme}
   ClearFildAndInputText           name=lot[auctions][${index}][bank_identification][0][description]    ${description}
-
   Input Text                      name=lot[auctions][1][tendering_duration]      20
   Input Text                      name=lot[auctions][2][tendering_duration]      20
-
-  Sleep  1
+  Sleep  2
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
-  Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
-
+  Click Element                           xpath=(//*[@id='submit-edit-btn'])[1]
   Wait Until Keyword Succeeds   15 x   15 s     Run Keywords
   ...   Wait Until Page Contains Element          xpath=(//*[contains(@class,'sendToVerification')])[1]     10
   ...   AND   Click Element                       xpath=(//*[contains(@class,'sendToVerification')])[1]
@@ -1883,11 +1891,11 @@ ClearFildAndInputText
   ...   AND   Wait Until Page Contains Element       xpath=(//*[text()='Редагувати'])[1]    5
   ...   AND   Click Element                          xpath=(//*[text()='Редагувати'])[1]
   ...   AND   Wait Until Page Does Not Contain   Редагувати   2 s
-  ${tenderingDuration}=   Run Keyword IF    '${auction.tenderingDuration}' == 'P1M'      Convert To String      1
-  ClearFildAndInputText             name=lot[auctions][${index}][tendering_duration]            ${tenderingDuration}
+  ${tenderingDuration}=   Run Keyword IF    '${auction.tenderingDuration}' == 'P1M'      Convert To String    1
+  ClearFildAndInputText                              name=lot[auctions][${index}][tendering_duration]         ${tenderingDuration}
   Sleep  2
   Execute Javascript  window.document.evaluate("(//*[@id='submit-edit-btn'])[1]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
-  Click Element                          xpath=(//*[@id='submit-edit-btn'])[1]
+  Click Element                                      xpath=(//*[@id='submit-edit-btn'])[1]
 
 Зберегти дані поля quantity
   [Arguments]   ${field_value}
@@ -1942,6 +1950,7 @@ ClearFildAndInputText
   [Arguments]  ${username}  ${tender_uaid}
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
 
+
 # ==============================================================================
 #    Tests Files.Awarding
 # ==============================================================================
@@ -1960,34 +1969,38 @@ ClearFildAndInputText
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   Wait Until Element Is Visible      xpath=(//*[contains(text(),'Кваліфікація') and contains(@class,'btn-warning')])[1]     15
   Click Element                      xpath=(//*[contains(text(),'Кваліфікація') and contains(@class,'btn-warning')])[1]
-  ${trueSinglStatusDisqualification}=       Run Keyword And Return Status
+  ${trueEnableButton}=       Run Keyword And Return Status
   ...   Wait Until Element Is Visible       xpath=(//*[@value='Опублікувати рішення про викуп'])[1]       5
-  Run Keyword IF    '${trueSinglStatusDisqualification}' == 'True'          Run Keywords
+  Run Keyword IF    '${trueEnableButton}' == 'True'          Run Keywords
   ...   Sleep  2
-  ...   AND   Choose File                   name=award_admission_protocol                ${filepyth}
-  ...     ELSE IF   '${trueSinglStatusDisqualification}' != 'True'          Run Keywords
+  ...   AND   Choose File                         name=award_admission_protocol           ${filepyth}
+  ...     ELSE IF   '${trueEnableButton}' != 'True'          Run Keywords
   ...   Sleep  2
-  ...   AND   Choose File                   xpath=(//*[@id='award_protocol'])[1]         ${filepyth}
+  ...   AND   Choose File                         xpath=(//*[@id='award_protocol'])[1]    ${filepyth}
   Sleep  5
+
 
 Активувати кваліфікацію учасника
   [Arguments]  ${username}  ${tender_uaid}
-  ${trueSinglStatusDisqualification}=       Run Keyword And Return Status
-  ...   Wait Until Element Is Visible            xpath=(//*[@value='Опублікувати рішення про викуп'])[1]     5
-  Run Keyword IF    '${trueSinglStatusDisqualification}' == 'True'          Run Keywords
+  ${trueEnableButton}=       Run Keyword And Return Status
+  ...   Wait Until Element Is Visible       xpath=(//*[@value='Опублікувати рішення про викуп'])[1]       5
+  Run Keyword IF    '${trueEnableButton}' == 'True'          Run Keywords
   ...   Wait Until Element Is Visible            xpath=(//*[@value='Опублікувати рішення про викуп'])[1]     10
   ...   AND   Click Element                      xpath=(//*[@value='Опублікувати рішення про викуп'])[1]
-  ...     ELSE IF   '${trueSinglStatusDisqualification}' != 'True'          Run Keywords
+  ...     ELSE IF   '${trueEnableButton}' != 'True'          Run Keywords
   ...   Wait Until Element Is Visible            xpath=(//*[contains(@value,'Зберегти')])    10
   ...   AND   Click Element                      xpath=(//*[contains(@value,'Зберегти')])
   Sleep  5
 
 Завантажити протокол аукціону в авард
   [Arguments]  ${username}  ${tender_uaid}  ${file_path}  ${award_index}
-  ${filepyth}=    get_file_path
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
-  Wait Until Element Is Visible             xpath=(//*[contains(text(),'Кваліфікація') and contains(@class,'btn-warning')])[1]    15
-  Click Element                             xpath=(//*[contains(text(),'Кваліфікація') and contains(@class,'btn-warning')])[1]
+  ${filepyth}=    get_file_path
+  Wait Until Element Is Visible        xpath=(//*[contains(text(),'Кваліфікація') and contains(@class,'btn-warning')])[1]    15
+  Click Element                        xpath=(//*[contains(text(),'Кваліфікація') and contains(@class,'btn-warning')])[1]
+  Sleep  2
+  Reload Page
+  Sleep  5
   ${trueEnableButton}=       Run Keyword And Return Status
   ...   Wait Until Element Is Visible       xpath=(//*[contains(text(),'Додати протокол торгів')])       5
   Run Keyword IF    '${trueEnableButton}' == 'True'          Run Keywords
@@ -1999,6 +2012,7 @@ ClearFildAndInputText
   ...     ELSE IF   '${trueEnableButton}' != 'True'          Run Keyword
   ...   Reload Page
   Sleep  5
+
 
 Підтвердити постачальника
   [Arguments]  ${username}  ${tender_uaid}  ${award_num}
@@ -2016,16 +2030,21 @@ ClearFildAndInputText
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   Wait Until Element Is Visible      xpath=(//*[contains(text(),'Кваліфікація') and contains(@class,'btn-warning')])[1]     15
   Click Element                      xpath=(//*[contains(text(),'Кваліфікація') and contains(@class,'btn-warning')])[1]
+  Sleep  2
+  Reload Page
+  Sleep  5
   ${trueSinglStatusDisqualification}=       Run Keyword And Return Status
   ...   Wait Until Element Is Visible       xpath=(//*[@value='Опублікувати рішення про викуп'])[2]       5
   Run Keyword IF    '${trueSinglStatusDisqualification}' == 'True'          Run Keywords
   ...   Sleep  3
   ...   AND   Choose File                        name=award_admission_rejection         ${filepyth}
+  ...   AND   Sleep  2
   ...     ELSE IF   '${trueSinglStatusDisqualification}' != 'True'          Run Keywords
   ...   Wait Until Element Is Visible            xpath=(//*[contains(text(),'Відхилити') and contains(@class,'btn-danger')])[1]     15
   ...   AND   Click Element                      xpath=(//*[contains(text(),'Відхилити') and contains(@class,'btn-danger')])[1]
   ...   AND   Sleep  3
   ...   AND   Choose File                        name=award[0][files][]         ${filepyth}
+  ...   AND   Sleep  2
   Sleep  5
 
 Дискваліфікувати постачальника
@@ -2033,6 +2052,9 @@ ClearFildAndInputText
   ${filepyth}=    get_file_path
   ${trueSinglStatusDisqualification}=       Run Keyword And Return Status
   ...   Wait Until Element Is Visible       xpath=(//*[@value='Опублікувати рішення про викуп'])[2]          5
+  Sleep  2
+  Reload Page
+  Sleep  5
   Run Keyword IF    '${trueSinglStatusDisqualification}' == 'True'          Run Keywords
   ...   Sleep  2
   ...   AND   ClearFildAndInputText              name=award_admission_description                ${description}
@@ -2051,44 +2073,66 @@ ClearFildAndInputText
   [Arguments]  ${username}  ${tender_uaid}  ${award_num}
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   Run Keyword And Ignore Error       Click Element      xpath=(//a[@class='btn btn-warning'])
-  Wait Until Element Is Visible             xpath=//a[text()[contains(.,'Мої пропозиції')]]        15
-  Click Element                             xpath=//a[text()[contains(.,'Мої пропозиції')]]
+  Wait Until Element Is Visible                 xpath=//a[text()[contains(.,'Мої пропозиції')]]        15
+  Click Element                                 xpath=//a[text()[contains(.,'Мої пропозиції')]]
   Wait Until Keyword Succeeds   5 x   10 s     Run Keywords
   ...   Reload Page
-  ...   AND   Wait Until Element Is Visible       xpath=((//*[text()[contains(.,'${tender_uaid}')]])//..//*[contains(@class,'btn btn-xs btn-danger')])[1]        10
-  Wait Until Element Is Visible                   xpath=((//*[text()[contains(.,'${tender_uaid}')]])//..//*[contains(@class,'btn btn-xs btn-danger')])[1]        15
-  Click Element                                   xpath=((//*[text()[contains(.,'${tender_uaid}')]])//..//*[contains(@class,'btn btn-xs btn-danger')])[1]
+  ...   AND   Wait Until Element Is Visible     xpath=((//*[text()[contains(.,'${tender_uaid}')]])//..//*[contains(@class,'btn btn-xs btn-danger')])[1]        10
+  Wait Until Element Is Visible                 xpath=((//*[text()[contains(.,'${tender_uaid}')]])//..//*[contains(@class,'btn btn-xs btn-danger')])[1]        15
+  Click Element                                 xpath=((//*[text()[contains(.,'${tender_uaid}')]])//..//*[contains(@class,'btn btn-xs btn-danger')])[1]
   Sleep  3
-  Run Keyword And Ignore Error       Focus        xpath=(//*[contains(@value,'Так')])[1]
+  Run Keyword And Ignore Error       Focus            xpath=(//*[contains(@value,'Так')])[1]
   Sleep  1
-  Run Keyword And Ignore Error       Press Key    xpath=(//*[contains(@value,'Так')])[1]     \\13
+  Run Keyword And Ignore Error       Press Key        xpath=(//*[contains(@value,'Так')])[1]     \\13
+
 
 # ==============================================================================
 #    Contract Signing
 # ==============================================================================
+
 Завантажити протокол скасування в контракт
   [Arguments]  ${username}  ${tender_uaid}  ${file_path}  ${contract_num}
   ${filepyth}=    get_file_path
-  Wait Until Element Is Visible      xpath=(//*[contains(text(),'Відхилити') and contains(@class,'btn-danger')])[1]     15
-  Click Element                      xpath=(//*[contains(text(),'Відхилити') and contains(@class,'btn-danger')])[1]
-  ClearFildAndInputText              xpath=(//*[contains(text(),'Підстава відхилення')]/..//*[position() mod 2 = 0]/textarea)[1]        Дисквалiфiкувати потом еще раз и два
+  Wait Until Element Is Visible      xpath=(//*[contains(text(),'Контракти')])[1]          15
+  Click Element                      xpath=(//*[contains(text(),'Контракти')])[1]
   Sleep  2
-  Choose File                        name=award[0][files][]         ${filepyth}
+  Reload Page
   Sleep  5
+  ${trueEnableStatus}=       Run Keyword And Return Status
+  ...   Wait Until Element Is Visible            xpath=(//*[contains(text(),'Відхилити') and contains(@class,'btn-danger')])[1]          5
+  Run Keyword IF    '${trueEnableStatus}' == 'True'          Run Keywords
+  ...   Wait Until Element Is Visible            xpath=(//*[contains(text(),'Відхилити') and contains(@class,'btn-danger')])[1]     15
+  ...   AND   Click Element                      xpath=(//*[contains(text(),'Відхилити') and contains(@class,'btn-danger')])[1]
+  ...   AND   Wait Until Element Is Visible      xpath=(//*[contains(text(),'Підстава відхилення')])[1]     10
+  ...   AND   ClearFildAndInputText              xpath=(//*[contains(text(),'Підстава відхилення')]/..//*[position() mod 2 = 0]/textarea)[1]      Дисквалiфiкувати потом еще раз и два
+  ...   AND   Sleep  2
+  ...   AND   Choose File                        name=award[0][files][]         ${filepyth}
+  ...     ELSE IF   '${trueEnableStatus}' != 'True'          Run Keywords
+  ...   Wait Until Element Is Visible            xpath=(//*[contains(text(),'Контракти') and contains(@class,'main_contract')])[1]     15
+  ...   AND   Click Element                      xpath=(//*[contains(text(),'Контракти') and contains(@class,'main_contract')])[1]
+  ...   AND   Wait Until Element Is Visible      xpath=(//*[contains(text(),'Скасувати контракт') and contains(@class,'btn-danger')])[1]     15
+  ...   AND   Click Element                      xpath=(//*[contains(text(),'Скасувати контракт') and contains(@class,'btn-danger')])[1]
+  ...   AND   Wait Until Element Is Visible      xpath=(//*[contains(text(),'Відміна договору')])[1]     15
+  ...   AND   Sleep  2
+  ...   AND   Choose File                        name=contract[files][]         ${filepyth}
+  Sleep  4
 
 Скасувати контракт
   [Arguments]  ${username}  ${tender_uaid}  ${contract_num}
-  Click Element                      xpath=(//*[contains(@value,'Відхилити') and contains(@class,'btn-danger')])[1]
+  Click Element                      xpath=(//*[contains(@value,'Відхилити') or contains(@value,'Відмінити')])[1]
   Sleep  5
 
 Встановити дату підписання угоди
   [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${date}
   ${filepyth}=    get_file_path
-  ${contractDateEdit}=                            convert_bank_identification_date                ${date}
-  Wait Until Element Is Visible      xpath=(//*[contains(text(),'Контракти')])[1]          15
+  ${contractDateEdit}=                   convert_bank_identification_date                ${date}
+  Wait Until Element Is Visible      xpath=(//*[contains(text(),'Контракти')])[1]        15
   Click Element                      xpath=(//*[contains(text(),'Контракти')])[1]
+  Sleep  2
+  Reload Page
+  Sleep  5
   ${trueSinglStatusDisqualification}=       Run Keyword And Return Status
-  ...   Wait Until Element Is Visible       xpath=(//(//*[contains(text(),'Додати договір')])[1]          5
+  ...   Wait Until Element Is Visible       xpath=(//*[contains(text(),'Додати договір')])[1]          5
   Run Keyword IF    '${trueSinglStatusDisqualification}' == 'True'          Run Keywords
   ...   Sleep  2
   ...   AND   Choose File                        name=contract[files][]          ${filepyth}
@@ -2109,6 +2153,8 @@ ClearFildAndInputText
 Завантажити угоду до тендера
   [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${file_path}
   ${filepyth}=    get_file_path
+  Wait Until Element Is Visible      xpath=(//*[contains(text(),'Контракти')])[1]        10
+  Click Element                      xpath=(//*[contains(text(),'Контракти')])[1]
   Sleep  2
   Choose File                        name=contract[files][]          ${filepyth}
   Sleep  3
