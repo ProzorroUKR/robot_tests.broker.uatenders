@@ -2234,7 +2234,11 @@ ClearFildAndInputText
 
 Вказати дату прийняття наказу
   [Arguments]  ${username}  ${contract_uaid}  ${dateMet}
-  ${contractDateEdit}=                 convert_bank_identification_date                 ${dateMet}
+  ${test_name_value}=                 Convert To String                 ${TEST_NAME.replace('\'', '')}
+  ${contractDateEdit}=    Run Keyword IF   'після дати виконання умов приватизації' in '${test_name_value}'
+  ...   convert_contract_Met_date_twoZone        ${dateMet}
+  ...     ELSE IF   'після дати виконання умов приватизації' != '${test_name_value}'
+  ...   convert_bank_identification_date         ${dateMet}
 # // поле принимает время без секунд
   Input Text                          name=date_met     ${contractDateEdit}
   Sleep  2
@@ -2258,8 +2262,12 @@ ClearFildAndInputText
 
 Вказати дату виконання умов контракту
   [Arguments]  ${username}  ${contract_uaid}  ${dateMet}
+  ${test_name_value}=                 Convert To String                 ${TEST_NAME.replace('\'', '')}
+  ${contractDateEdit}=    Run Keyword IF   'усіх умов контракту після дати виконання умов приватизації' in '${test_name_value}'
+  ...   convert_contract_Met_date_twoZone        ${dateMet}
+  ...     ELSE IF   'усіх умов контракту після дати виконання умов приватизації' != '${test_name_value}'
+  ...   convert_bank_identification_date         ${dateMet}
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${contract_uaid}
-  ${contractDateEdit}=                 convert_bank_identification_date                 ${dateMet}
   Wait Until Element Is Visible        xpath=(//*[contains(text(),'Підтверждення виконання решти умов контракту')])[1]     10
 # // поле принимает время без секунд
   Input Text                           name=date_met     ${contractDateEdit}
