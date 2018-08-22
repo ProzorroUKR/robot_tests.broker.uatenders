@@ -100,6 +100,12 @@ def convert_contract_Met_date(date):
     localized_date = time_zone.localize(date_obj)
     return localized_date.strftime("%d.%m.%Y %H:%M:%S")
 
+def convert_contract_Met_date_twoZone(date):
+    date_obj = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S+02:00")
+    time_zone = pytz.timezone('Europe/Kiev')
+    localized_date = time_zone.localize(date_obj)
+    return localized_date.strftime("%d.%m.%Y %H:%M:%S")
+
 def convert_auction_date(date):
     date_obj = datetime.strptime(date, "%d.%m.%Y %H:%M")
     time_zone = pytz.timezone('Europe/Kiev')
