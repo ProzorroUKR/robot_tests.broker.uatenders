@@ -60,6 +60,15 @@ def convert_uatenders_string_to_common_string(string):
         u"Аукціон (Мала приватизація)": u"sellout.english",
         u"Аукціон за методом покрокового зниження стартової ціни та подальшого подання": u"sellout.insider",
         u"Заплановано": u"scheduled",
+        #  contract_management
+        u"Очікується оплата": u"active.payment",
+        u"Виконано": u"met",
+        u"Виконано": u"partiallyMet",
+        u"Договір оплачено. Очікується наказ": u"active.approval",
+        u"Не виконано": u"notMet",
+        u"Приватизація об’єкта завершена": u"terminated",
+        u"Приватизація об’єкта неуспішна": u"unsuccessful",
+                         
     }.get(string, string)
 
 def convert_datetime_for_delivery(isodate):
@@ -85,6 +94,12 @@ def convert_bank_identification_date(date):
     localized_date = time_zone.localize(date_obj)
     return localized_date.strftime("%d.%m.%Y %H:%M:%S")
 
+def convert_contract_Met_date(date):
+    date_obj = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S+03:00")
+    time_zone = pytz.timezone('Europe/Kiev')
+    localized_date = time_zone.localize(date_obj)
+    return localized_date.strftime("%d.%m.%Y %H:%M:%S")
+
 def convert_auction_date(date):
     date_obj = datetime.strptime(date, "%d.%m.%Y %H:%M")
     time_zone = pytz.timezone('Europe/Kiev')
@@ -102,6 +117,12 @@ def convert_contractPeriod_date(date):
     time_zone = pytz.timezone('Europe/Kiev')
     localized_date = time_zone.localize(date_obj)
     return localized_date.strftime("%Y-%m-%dT00:00:00+02:00")
+
+def convert_dateMet(date):
+    date_obj = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+    time_zone = pytz.timezone('Europe/Kiev')
+    localized_date = time_zone.localize(date_obj)
+    return localized_date.strftime("%d.%m.%Y %H:%M:%S")
 
 def get_unit_id(string):
      return {
