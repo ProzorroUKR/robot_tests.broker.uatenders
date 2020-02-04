@@ -196,6 +196,13 @@ def convert_status_bids(string):
 
     }.get(string, string)
 
+def adapt_tender_funders(initial_data):
+    # funders
+    initial_data['funders'][0]['address']['countryName'] = u'Сполучені Штати Америки'
+    initial_data['funders'][0]['address']['locality'] = u'Washington'
+
+    return initial_data
+
 def adapt_plan_data(initial_data):
     # set user name
     initial_data['procuringEntity']['name'] = u'ТОВАРИСТВО З ОБМЕЖЕНОЮ ВІДПОВІДАЛЬНІСТЮ \"ЗАКУПІВЛІ ЮА\"'

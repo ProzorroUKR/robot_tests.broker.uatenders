@@ -147,10 +147,8 @@ ${locator.provider.items[1].description}                                   xpath
 ${locator.provider.items[2].description}                                   xpath=(.//*[@class='wrappLots lots-price']//*[@class='ukr_version'])[3]
 ############  Доноры  ############
 ${locator.provider.funders[0].name}                                         xpath=(//*[contains(text(),'Донор:')]/..//*[position() mod 2 = 0]/a)
-${locator.provider.funders[0].address.countryName}                          xpath=(.//*[@class='donorModalTable']//td[2])[2]
 ${locator.provider.funders[0].address.postalCode}                           xpath=(.//*[@class='donorModalTable']//td[2])[2]
 ${locator.provider.funders[0].address.region}                               xpath=(.//*[@class='donorModalTable']//td[2])[2]
-${locator.provider.funders[0].address.locality}                             xpath=(.//*[@class='donorModalTable']//td[2])[2]
 ${locator.provider.funders[0].address.streetAddress}                        xpath=(.//*[@class='donorModalTable']//td[2])[2]
 ${locator.provider.funders[0].identifier.legalName}                         xpath=(.//*[@class='donorModalTable']//td[2])[3]
 ###################################################################
@@ -199,10 +197,9 @@ ${locator.ownerViewer.items[1].unit.code}                                   xpat
 ${locator.ownerViewer.items[2].unit.code}                                   xpath=(.//*[@class='data-item-amount-code'])[3]
 ############  Доноры
 ${locator.ownerViewer.funders[0].name}                                      xpath=(//*[contains(text(),'Донор:')]/..//*[position() mod 2 = 0]/a)
-${locator.ownerViewer.funders[0].address.countryName}                       xpath=(.//*[@class='donorModalTable']//td[2])[2]
 ${locator.ownerViewer.funders[0].address.postalCode}                        xpath=(.//*[@class='donorModalTable']//td[2])[2]
 ${locator.ownerViewer.funders[0].address.region}                            xpath=(.//*[@class='donorModalTable']//td[2])[2]
-${locator.ownerViewer.funders[0].address.locality}                          xpath=(.//*[@class='donorModalTable']//td[2])[2]
+${locator.ownerViewer.funders[0].address.locality}                            xpath=(.//*[@class='donorModalTable']//td[2])[2]
 ${locator.ownerViewer.funders[0].address.streetAddress}                     xpath=(.//*[@class='donorModalTable']//td[2])[2]
 ${locator.ownerViewer.funders[0].identifier.legalName}                      xpath=(.//*[@class='donorModalTable']//td[2])[3]
 #####################################################################
@@ -302,7 +299,7 @@ DismissAlertPopUp
   Set Window Size       @{USERS.users['${ARGUMENTS[0]}'].size}
   Set Window Position   @{USERS.users['${ARGUMENTS[0]}'].position}
   ############   Login
-  maximize browser window
+  # maximize browser window
   Delete All Cookies
   WaitVisibilityAndClickElement      xpath=(//*[text()[contains(.,'Вхід')]])[1]
   Wait Until Page Contains Element   name=email
@@ -314,8 +311,20 @@ DismissAlertPopUp
 Підготувати дані для оголошення тендера
   [Arguments]  ${username}  ${tender_data}  ${role_name}
   ${addressStatus}=  Run Keyword And Return Status  List Should Contain Value  ${tender_data.data.procuringEntity.address}  locality
+
+  # ${fundersStatus}=  Run Keyword And Return Status  List Should Contain Value  ${tender_data.data.funders[0].address}  countryName
+
+
   ${adaptedData}=    Run Keyword IF   '${addressStatus}' == 'False' and '${ROLE}' != 'provider' and '${ROLE}' != 'provider1' and '${ROLE}' != 'provider2'    adapt_plan_data  ${tender_data.data}
   ...   ELSE IF   '${addressStatus}' != 'False' and '${ROLE}' != 'provider' and '${ROLE}' != 'provider1' and '${ROLE}' != 'provider2'   adapt_tender_data  ${tender_data.data}
+
+
+  # ${adaptedData}=    Run Keyword IF   '${fundersStatus}' == 'False' and '${ROLE}' != 'provider' and '${ROLE}' != 'provider1' and '${ROLE}' != 'provider2'    adapt_tender_data  ${tender_data.data}
+  # ...   ELSE IF   '${fundersStatus}' != 'False' and '${ROLE}' != 'provider' and '${ROLE}' != 'provider1' and '${ROLE}' != 'provider2'   adapt_tender_funders  ${tender_data.data}
+
+
+# adapt_tender_funders
+
   [Return]    ${tender_data}
 ###############################################################
 ####                TODO  раскомментировать                ####
@@ -1038,10 +1047,9 @@ DismissAlertPopUp
 #######################################################
 Дочикатися появи кнопки Опублікувати
   [Arguments]   ${username}
-  Wait Until Keyword Succeeds   5 x   10 s     Run Keywords
+  Wait Until Keyword Succeeds   10 x   10 s     Run Keywords
   ...   Run Keyword IF    '${username}' == 'PASS'    Element Should Be Visible    xpath=(//*[contains(text(),'ID:')])    ID:
   ...   AND   Run Keyword And Ignore Error    Click Element    xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
-  ...   AND   Wait Until Page Contains  Опублікувати  5 s
   ...   AND   WaitVisibilityAndClickElement    xpath=//*[contains(text(),'Опублікувати')]
   ...   AND   Sleep  5
   ...   AND   Reload Page
@@ -1078,6 +1086,8 @@ DismissAlertPopUp
   ...   AND   Input Text                                  name=search[s]                ${tender_uaid}
   ...   AND   WaitVisibilityAndClickElement               xpath=(//*[contains(@type,'submit') and contains(.,'Знайти')])
   ...   AND   Wait Until Element Is Visible               xpath=(//*[contains(text(),'Загальна інформація')])[1]    30
+  Sleep  5
+  Run Keyword And Ignore Error    Click Element           xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
   Log To Console  _
   Log To Console  tender_id --> ${tender_uaid}
   Log To Console  mode <<====>> ${MODE}
@@ -1106,10 +1116,14 @@ DismissAlertPopUp
   Log To Console  agreementId <<====>> ${agreementId}
   Log To Console  _
   Log To Console  agreementId --> ${agreementId}
+  uatenders.Пошук тендера по ідентифікатору   ${username}  ${agreement_uaid}
+
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Угоди')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
   Sleep  2
   Page Should Contain  ${agreement_uaid}
+  Sleep  5
+  Run Keyword And Ignore Error    Click Element           xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
 
 ######################################    ОНОВИТИ СТОРІНКУ для Тендера    ################################################
 Оновити сторінку з тендером
@@ -1117,7 +1131,7 @@ DismissAlertPopUp
   Switch Browser  ${BROWSER_ALIAS}
   Reload Page
   Sleep  2
-  Run Keyword And Ignore Error      Click Element                      xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  Run Keyword And Ignore Error    Click Element           xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
 ######################################    ОНОВИТИ СТОРІНКУ для Плана    ################################################
 Оновити сторінку з планом
   [Arguments]   ${username}  ${plan_uaid}
@@ -2573,7 +2587,6 @@ DismissAlertPopUp
   Run Keyword if   'Неможливість подати цінову пропозицію' in '${TEST_NAME}'      Fail
   ${filepath}=                              get_file_path
   ${bid_value}=  Set Variable If  ${NUMBER_OF_LOTS} == 0  ${bid.data.value.amount}  ${bid.data.lotValues[0].value.amount}
-  Log To Console   bid_value= ${bid_value}
   ${amount}=          float_to_string_2f                  ${bid_value}
   ${amount}=          Convert To String                   ${bid_value}
   Log To Console   amount= ${amount}
@@ -2682,8 +2695,8 @@ DismissAlertPopUp
   Reload Page
   Sleep  5
   Reload Page
-  Log To Console   fieldvalue= ${fieldvalue}
-  Run Keyword And Return If    '${fieldvalue}' == 'None'    uatenders.Дочекатися кнопку Активувати    ${username}  ${tender_uaid}
+  # Run Keyword And Return If    '${fieldvalue}' == 'None'    uatenders.Дочекатися кнопку Активувати    ${username}  ${tender_uaid}
+  Run Keyword And Return If    'після зміни умов тендера' in '${TEST_NAME}'    uatenders.Дочекатися кнопку Активувати    ${username}  ${tender_uaid}
   Run Keyword And Ignore Error    WaitVisibilityAndClickElement    xpath=(//*[contains(text(),'Активувати')])
   ${amount}=          float_to_string_2f                  ${fieldvalue}
   ${amount}=          Convert To String                   ${amount}
@@ -2732,18 +2745,19 @@ DismissAlertPopUp
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   WaitVisibilityAndClickElement     xpath=//*[text()='Редагувати']
   WaitVisibilityAndClickElement     name=donor_checkbox
+  Sleep  2
+  WaitVisibilityAndClickElement     name=lots[0][items][0][same_delivery_address]
   WaitVisibilityAndClickElement     xpath=//*[@type='submit']
   Sleep  1
   Dismiss Alert
   Sleep  1
 
 Отримати інформацію про замовника funders[0].name
+  WaitVisibilityAndClickElement    xpath=(//*[contains(text(),'Донор')]/..//*[position() mod 2 = 0]/a)[1]
   Run Keyword And Return           Отримати текст із поля для замовника               funders[0].name
 
 Отримати інформацію про замовника funders[0].address.countryName
-  WaitVisibilityAndClickElement    xpath=(//*[contains(text(),'Донор')]/..//*[position() mod 2 = 0]/a)
-  ${return_value}=                 Отримати текст із поля для замовника               funders[0].address.countryName
-  [Return]          ${return_value.split(',')[0].replace(' ','')}
+  Run Keyword And Return           Get Element Attribute                     xpath=(//*[contains(@class,'withoutBorder')]//*[contains(@class,'countryName')])@value
 
 Отримати інформацію про замовника funders[0].address.postalCode
   ${return_value}=                 Отримати текст із поля для замовника               funders[0].address.postalCode
@@ -2754,8 +2768,7 @@ DismissAlertPopUp
   [Return]          ${return_value.split(',')[2].replace(' ','')}
 
 Отримати інформацію про замовника funders[0].address.locality
-  ${return_value}=                 Отримати текст із поля для замовника               funders[0].address.locality
-  [Return]          ${return_value.split(', ')[3]}
+  Run Keyword And Return           Get Element Attribute                     xpath=(//*[contains(@class,'withoutBorder')]//*[contains(@class,'localit')])@value
 
 Отримати інформацію про замовника funders[0].address.streetAddress
   ${return_value}=                 Отримати текст із поля для замовника               funders[0].address.streetAddress
@@ -2770,18 +2783,17 @@ DismissAlertPopUp
   Run Keyword And Return           Отримати текст із поля для замовника               funders[0].identifier.legalName
 
 Отримати інформацію про замовника funders[0].identifier.id
-  Run Keyword And Return                     Get Element Attribute           xpath=(//*[contains(@class,'donorIdentifier')])@value
+  Run Keyword And Return           Get Element Attribute                     xpath=(//*[contains(@class,'donorIdentifier')])@value
 
 Отримати інформацію про замовника funders[0].identifier.scheme
-  Run Keyword And Return                     Get Element Attribute           xpath=(//*[contains(@class,'donorScheme')])@value
+  Run Keyword And Return           Get Element Attribute                     xpath=(//*[contains(@class,'donorScheme')])@value
 
 Отримати інформацію про посточальника funders[0].name
   Run Keyword And Return           Отримати текст із поля для посточальника               funders[0].name
 
 Отримати інформацію про посточальника funders[0].address.countryName
   WaitVisibilityAndClickElement    xpath=(//*[contains(text(),'Донор')]/..//*[position() mod 2 = 0]/a)
-  ${return_value}=                 Отримати текст із поля для посточальника               funders[0].address.countryName
-  [Return]          ${return_value.split(',')[0].replace(' ','')}
+  Run Keyword And Return           Get Element Attribute                     xpath=(//*[contains(@class,'withoutBorder')]//*[contains(@class,'countryName')])@value
 
 Отримати інформацію про посточальника funders[0].address.postalCode
   ${return_value}=                 Отримати текст із поля для посточальника               funders[0].address.postalCode
@@ -2792,8 +2804,7 @@ DismissAlertPopUp
   [Return]          ${return_value.split(',')[2].replace(' ','')}
 
 Отримати інформацію про посточальника funders[0].address.locality
-  ${return_value}=                 Отримати текст із поля для посточальника               funders[0].address.locality
-  [Return]          ${return_value.split(', ')[3]}
+  Run Keyword And Return           Get Element Attribute                     xpath=(//*[contains(@class,'withoutBorder')]//*[contains(@class,'localit')])@value
 
 Отримати інформацію про посточальника funders[0].address.streetAddress
   ${return_value}=                 Отримати текст із поля для посточальника               funders[0].address.streetAddress
@@ -2962,7 +2973,13 @@ DismissAlertPopUp
   ${filepath}=               get_file_path
   WaitVisibilityAndClickElement         xpath=(//*[contains(@class,'btn btn-warning') and contains(.,'Кваліфікація')])[1]
 #  Квалификация победителя по Допорогам проходит, через этот кейВорд
-  Run Keyword if   'підтвердити постачальника' in '${TEST_NAME}'       Run Keywords
+  Run Keyword if   'Неможливість' in '${TEST_NAME}'    Run Keywords
+  ...   Sleep  300
+  ...   AND   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
+  ...   AND   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Угоди')]])
+  ...   AND   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
+
+  Run Keyword if   'підтвердити постачальника' in '${TEST_NAME}'    Run Keywords
   ...   Sleep  2
   ...   AND   Run Keyword And Ignore Error    Choose File    id=award-0-1             ${filepath}
   ...   AND   Run Keyword And Ignore Error    Choose File    id=award-1-1             ${filepath}
@@ -3027,10 +3044,11 @@ DismissAlertPopUp
 
 Обрати другу кваліфікації
   Log To Console    ${MODE}
-  Run Keyword IF   '${MODE}' != 'open_competitive_dialogue' and '${MODE}' != 'open_framework'   WaitVisibilityAndClickElement   xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[1]
+  Run Keyword IF   '${MODE}' != 'open_competitive_dialogue' and '${MODE}' != 'open_framework' and '${MODE}' != 'openeu'   WaitVisibilityAndClickElement   xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[1]
   # ...    ELSE IF   '${MODE}' != 'open_framework'              WaitVisibilityAndClickElement   xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[1]
   ...    ELSE IF   '${MODE}' == 'open_competitive_dialogue'   WaitVisibilityAndClickElement   xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[2]
   ...    ELSE IF   '${MODE}' == 'open_framework'              WaitVisibilityAndClickElement   xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[2]
+  ...    ELSE IF   '${MODE}' == 'openeu'              WaitVisibilityAndClickElement   xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[2]
 
 Обрати третю кваліфікації
   Log To Console    ${MODE}
@@ -3168,7 +3186,6 @@ DismissAlertPopUp
 Встановити ціну за одиницю для контракту
   [Arguments]  ${username}  ${tender_uaid}  ${contract_data}
   ${filepath}=                            get_file_path
-  Log To Console   contract_data===${contract_data}
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Угоди')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
   ScrollToElementToFalse                      (//*[contains(text(),'З 8 до 18')])[1]
@@ -3194,7 +3211,6 @@ DismissAlertPopUp
 Зареєструвати угоду
   [Arguments]  ${username}  ${tender_uaid}  ${period}
   ${filepath}=                            get_file_path
-  Log To Console   period===${period}
   Sleep  3
   Choose File       id=agreement-0                   ${filepath}
   Sleep  3
@@ -3203,9 +3219,6 @@ DismissAlertPopUp
   Input Text        name=agreement_number         1234567890
   ${startDate}=  convert_agreement_delivery  ${period['startDate']}
   ${endDate}=    convert_agreement_delivery  ${period['endDate']}
-  Log To Console  ${startDate}
-  Log To Console  ${endDate}
-
   ClearFildAndInputText     name=period_start_date   ${startDate}
   ClearFildAndInputText     name=period_end_date     ${endDate}
   WaitVisibilityAndClickElement    xpath=(//*[contains(@value,'Зберегти')])[1]
@@ -3221,8 +3234,8 @@ DismissAlertPopUp
 
 Отримати доступ до угоди
   [Arguments]  ${username}  ${agreement_uaid}
-  Log To Console  ${agreement_uaid}
-  Wait Until Keyword Succeeds   15 x   20 s     Run Keywords
+  Run Keyword if   'Можливість отримати доступ до угоди' in '${TEST_NAME}'   Sleep  300
+  Wait Until Keyword Succeeds   15 x   45 s     Run Keywords
   ...   uatenders.Пошук угоди по ідентифікатору  ${username}  ${agreement_uaid}
   ...   AND   Sleep  2
   ...   AND   Element Should Be Visible    xpath=(//*[contains(@class,'btn-success') and contains(.,'Виконання угоди')])
