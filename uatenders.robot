@@ -422,9 +422,7 @@ DismissAlertPopUp
   \  ${deliveryEndDate}=  Convert Date   ${items[${index}].deliveryDate.endDate}          result_format=%d.%m.%Y
   \  Input Text                          name=items[${index+1}][delivery_end_date]        ${deliveryEndDate}
   #  17 17 17
-  \  Log To Console   items_unit_afte= ${items[${index}].unit.name}
   \  ${items_unit}=  convert_uatenders_string_to_common_string  ${items[${index}].unit.name}
-  \  Log To Console   items_unit_before= ${items_unit}
   \  Select From List                    name=items[${index+1}][unit_id]    ${items_unit}
   # \  Select From List                    xpath=//*[@name="items[${index+1}][unit_id]"]    ${items[${index}].unit.name}
   \  Input Text                          name=items[${index+1}][cpv]                      ${items[${index}].classification.id}      #24910000-6     #${classificationID}
@@ -474,7 +472,6 @@ DismissAlertPopUp
   ...   Run Keyword IF    '${tender_data.data.value.valueAddedTaxIncluded}' == 'True'   Click Element    name=tax_included
 #####   Додати донора
   ${statusFunders}=    Run Keyword And Return Status    Get From Dictionary    ${tender_data.data}    funders
-  Log To Console    ${statusFunders}
   Run Keyword IF    '${statusFunders}' == 'True'    uatenders.Додати донора до тендеру    ${username}  ${tender_data}
 #####################
   # Процедуры в которых нет features
@@ -947,7 +944,6 @@ DismissAlertPopUp
 
 Додатковий класифікатор
   [Arguments]  ${item}  ${item_index}  ${defoultLot_index}
-  Run Keyword And Ignore Error    Log To Console   UA-ROAD= ${item.additionalClassifications[0].scheme}
   ${addSchemeStatus}=    Run Keyword And Return Status    Get From Dictionary    ${item.additionalClassifications[0]}    scheme
   Run Keyword And Ignore Error    Input Text      name=lots[${defoultLot_index}][items][${item_index}][code_additional_road]      ${item.additionalClassifications[0].id}
   Run Keyword And Ignore Error    Input Text      name=lots[${defoultLot_index}][items][${item_index}][code_additional_gmdn]      ${item.additionalClassifications[0].id}
@@ -968,9 +964,7 @@ DismissAlertPopUp
   ${quantity}=                        Convert To String              ${itemQuantity}
   Input Text                                    name=lots[${defoultLot_index}][items][${item_index}][quantity]         ${quantity}
   # #  17 17 17
-  Log To Console   items_unit_afte= ${unit_id}
   ${unit_id}=  convert_uatenders_string_to_common_string  ${unit_id}
-  Log To Console   items_unit_before= ${unit_id}
   Select From List                    name=lots[${defoultLot_index}][items][${item_index}][unit_id]    ${unit_id}
   # Select From List                              name=lots[${defoultLot_index}][items][${item_index}][unit_id]          ${unit_id}
   Input Text                          name=lots[${defoultLot_index}][items][${item_index}][delivery_date_start]          ${delivery_start_date}  #${delivery_end_plus_date}
@@ -1039,6 +1033,7 @@ DismissAlertPopUp
   Wait Until Keyword Succeeds   10 x   10 s     Run Keywords
   ...   Run Keyword IF    '${username}' == 'PASS'    Element Should Be Visible    xpath=(//*[contains(text(),'ID:')])    ID:
   ...   AND   Run Keyword And Ignore Error    Click Element    xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  ...   AND   Reload Page
   ...   AND   WaitVisibilityAndClickElement    xpath=//*[contains(text(),'Опублікувати')]
   ...   AND   Sleep  5
   ...   AND   Reload Page
@@ -1117,9 +1112,9 @@ DismissAlertPopUp
 Оновити сторінку з тендером
   [Arguments]   ${username}  ${tender_uaid}
   Switch Browser  ${BROWSER_ALIAS}
-  Reload Page
-  Sleep  2
   Run Keyword And Ignore Error    Click Element           xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  Sleep  2
+  Reload Page
   Sleep  2
 ######################################    ОНОВИТИ СТОРІНКУ для Плана    ################################################
 Оновити сторінку з планом
@@ -1202,7 +1197,6 @@ DismissAlertPopUp
   uatenders.Пошук угоди по ідентифікатору  ${username}  ${agreement_uaid}
   ScrollToElementToFalse                      (//*[contains(text(),'З 8 до 18')])[1]
   ${fieldNum}=    uatenders.Отримати індекс з назви поля  ${field_name}
-  Log To Console     fieldNum==${fieldNum}
   Run Keyword And Return If  'rationaleType' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationaleType')])@value
   Run Keyword And Return If  'rationale' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationale')])@value
   Run Keyword And Return If  'status' in '${field_name}'         Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'status')])@value
@@ -1215,7 +1209,6 @@ DismissAlertPopUp
   [Arguments]  ${field_name}
   ${fieldNum_1}       Fetch From Right     ${field_name}      [
   ${fieldNum_2}       Fetch From Left      ${fieldNum_1}      ]
-  Log To Console      fieldNum_1==${fieldNum_2}
   Run Keyword And Return    Convert To String    ${fieldNum_2}
 
 ##################################################################################################################
@@ -1316,7 +1309,6 @@ DismissAlertPopUp
 
 Отримати інформацію про замовника lots[0].value.amount
   ${return_value}=                  Отримати текст із поля для замовника             lots[0].value.amount
-  Log To Console   конвертация в статусе
   ${return_value}            convert_status                 ${return_value}
 # переход на 2-й єтап
   Run Keyword If  '${MODE}' == 'framework_selection' and '${ROLE}' == 'viewer'
@@ -1597,8 +1589,7 @@ DismissAlertPopUp
 
 Отримати значення поля items[0].deliveryAddress.region
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
-  ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.region'])[1]
-  [Return]    ${return_value}
+  Run Keyword And Return    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.region'])[1]
 
 Отримати значення поля items[0].deliveryAddress.locality
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
@@ -2379,9 +2370,7 @@ DismissAlertPopUp
   ${quantityItems}=                   Convert To String                                ${item.quantity}
   Input Text                          name=items[${index}][quantity]                 ${quantityItems}
   #  17 17 17
-  Log To Console   items_unit_afte= ${item.unit.name}
   ${items_unit}=   convert_uatenders_string_to_common_string  ${item.unit.name}
-  Log To Console   items_unit_before= ${items_unit}
   Select From List                    xpath=//*[@name="items[${index}][unit_id]"]    ${items_unit}
   # Select From List                    xpath=//*[@name="items[${index}][unit_id]"]    ${item.unit.name}
   ${deliveryEndDate}=  Convert Date   ${item.deliveryDate.endDate}          result_format=%d.%m.%Y
@@ -2574,7 +2563,6 @@ DismissAlertPopUp
   ${bid_value}=  Set Variable If  ${NUMBER_OF_LOTS} == 0  ${bid.data.value.amount}  ${bid.data.lotValues[0].value.amount}
   ${amount}=          float_to_string_2f                  ${bid_value}
   ${amount}=          Convert To String                   ${bid_value}
-  Log To Console   amount= ${amount}
   Run Keyword IF   '${username}' != 'uatenders_Provider'   Run Keywords
   ...   ScrollToElement                                     (//*[text()[contains(.,'Нецінові показники')]]/..//*[. = 'Нецінові показники'])
   ...   AND   Sleep  1
@@ -2685,7 +2673,6 @@ DismissAlertPopUp
   Run Keyword And Ignore Error    WaitVisibilityAndClickElement    xpath=(//*[contains(text(),'Активувати')])
   ${amount}=          float_to_string_2f                  ${fieldvalue}
   ${amount}=          Convert To String                   ${amount}
-  Log To Console   amount= ${amount}
   ClearFildAndInputText                css=.input-price                      ${amount}
   WaitVisibilityAndClickElement        xpath=(.//*[@id='bid']//h1)[1]
 
@@ -2738,6 +2725,7 @@ DismissAlertPopUp
   Sleep  1
 
 Отримати інформацію про замовника funders[0].name
+  ScrollToElementToFalse                                (//*[contains(text(),'Загальна інформація')])[1]
   WaitVisibilityAndClickElement    xpath=(//*[contains(text(),'Донор')]/..//*[position() mod 2 = 0]/a)[1]
   Run Keyword And Return           Отримати текст із поля для замовника               funders[0].name
 
@@ -3028,7 +3016,6 @@ DismissAlertPopUp
   Sleep  2
 
 Обрати другу кваліфікації
-  Log To Console    ${MODE}
   Run Keyword IF   '${MODE}' != 'open_competitive_dialogue' and '${MODE}' != 'open_framework' and '${MODE}' != 'openeu'   WaitVisibilityAndClickElement   xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[1]
   # ...    ELSE IF   '${MODE}' != 'open_framework'              WaitVisibilityAndClickElement   xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[1]
   ...    ELSE IF   '${MODE}' == 'open_competitive_dialogue'   WaitVisibilityAndClickElement   xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[2]
@@ -3036,7 +3023,6 @@ DismissAlertPopUp
   ...    ELSE IF   '${MODE}' == 'openeu'              WaitVisibilityAndClickElement   xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[2]
 
 Обрати третю кваліфікації
-  Log To Console    ${MODE}
   Run Keyword IF   '${MODE}' != 'open_competitive_dialogue' and '${MODE}' != 'open_framework'   WaitVisibilityAndClickElement   xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[1]
   # ...    ELSE IF   '${MODE}' != 'open_framework'              WaitVisibilityAndClickElement   xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[1]
   ...    ELSE IF   '${MODE}' == 'open_competitive_dialogue'   WaitVisibilityAndClickElement   xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[3]
@@ -3048,7 +3034,6 @@ DismissAlertPopUp
   ${filepath}=                            get_file_path
   WaitVisibilityAndClickElement           xpath=(//*[contains(@class,'btn btn-warning') and contains(.,'Прекваліфікація')])
 ######################################################################################################
-  Log To Console    ${MODE}
   Run Keyword if   'підтвердити першу' in '${TEST_NAME}'
   ...    WaitVisibilityAndClickElement    xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[1]
   Run Keyword if   'підтвердити другу' in '${TEST_NAME}'   uatenders.Обрати другу кваліфікації
@@ -3167,6 +3152,8 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement    xpath=(//*[contains(@class,'btn btn-warning') and contains(.,'Кваліфікація')])[1]
   WaitVisibilityAndClickElement    xpath=(//a[text()[contains(.,'Закінчити кваліфікацію')]])[1]
   WaitVisibilityAndClickElement    xpath=(.//*[@class='modal-footer']/*[contains(@value,'Так')])[1]
+#    ${object}' not found.
+  Sleep  360
 
 Встановити ціну за одиницю для контракту
   [Arguments]  ${username}  ${tender_uaid}  ${contract_data}
@@ -3178,7 +3165,6 @@ DismissAlertPopUp
   ...  'ціну за одиницю для першого контракту' in '${TEST_NAME}'   1
   ...  'ціну за одиницю для другого контракту' in '${TEST_NAME}'   2
   ...  'ціну за одиницю для третього контракту' in '${TEST_NAME}'  3
-  Log To Console   index===${index}
   WaitVisibilityAndClickElement     xpath=(.//*[@title-data="Редагувати"])[${index}]
   Sleep  3
   Choose File          id=contract-0                   ${filepath}
