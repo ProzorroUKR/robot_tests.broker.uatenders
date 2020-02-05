@@ -2331,7 +2331,7 @@ DismissAlertPopUp
 Отримати інформацію про замовника contracts[${index}].value.amountNet
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Контракти') or contains(.,'Визначити учасників')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
-  ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].value.amount
+  ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].value.amountNet
   ${return_value}=           Fetch From Left         ${return_value}     ${SPACE}
   Run Keyword And Return               convert_valueAddedTaxIncluded                  ${return_value}
 
