@@ -142,7 +142,7 @@ def provider_convert_enquiry_tender_startDate(date_str):
     date_str = value_from_ua_month(date_str)
     date_obj = datetime.strptime(date_str, "%d %m, %H:%M")
     time_zone = pytz.timezone('Europe/Kiev')
-    localized_date = time_zone.localize(date_obj) + timedelta(minutes=-20)    
+    localized_date = time_zone.localize(date_obj) + timedelta(minutes=-15)    
     return localized_date.strftime("2020-%m-%dT%H:%M:%S.%f+02:00")
 
 def provider_convert_enquiry_tender_endDate(date_str):
