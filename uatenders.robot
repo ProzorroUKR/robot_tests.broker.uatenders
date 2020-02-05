@@ -1154,7 +1154,7 @@ DismissAlertPopUp
 
 Отримати інформацію із предмету
   [Arguments]   ${username}  ${tender_uaid}  ${item_id}  ${field_name}
-  ScrollToElementToFalse                      (//*[contains(text(),'Результати')])[1]
+  ScrollToElementToFalse                      (//*[contains(text(),'Результати') or contains(text(),'З 8 до 18')])[1]
   ${statusShowLots}=       Run Keyword And Return Status
   ...   Element Should Be Visible    xpath=(.//*[contains(text(),'Переглянути інформацію про лот')]/../*[@style='display: none;'])[1]
   Run Keyword IF   '${statusShowLots}' == 'PASS'   Run Keyword
