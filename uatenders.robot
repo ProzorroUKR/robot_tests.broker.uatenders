@@ -311,20 +311,8 @@ DismissAlertPopUp
 Підготувати дані для оголошення тендера
   [Arguments]  ${username}  ${tender_data}  ${role_name}
   ${addressStatus}=  Run Keyword And Return Status  List Should Contain Value  ${tender_data.data.procuringEntity.address}  locality
-
-  # ${fundersStatus}=  Run Keyword And Return Status  List Should Contain Value  ${tender_data.data.funders[0].address}  countryName
-
-
   ${adaptedData}=    Run Keyword IF   '${addressStatus}' == 'False' and '${ROLE}' != 'provider' and '${ROLE}' != 'provider1' and '${ROLE}' != 'provider2'    adapt_plan_data  ${tender_data.data}
   ...   ELSE IF   '${addressStatus}' != 'False' and '${ROLE}' != 'provider' and '${ROLE}' != 'provider1' and '${ROLE}' != 'provider2'   adapt_tender_data  ${tender_data.data}
-
-
-  # ${adaptedData}=    Run Keyword IF   '${fundersStatus}' == 'False' and '${ROLE}' != 'provider' and '${ROLE}' != 'provider1' and '${ROLE}' != 'provider2'    adapt_tender_data  ${tender_data.data}
-  # ...   ELSE IF   '${fundersStatus}' != 'False' and '${ROLE}' != 'provider' and '${ROLE}' != 'provider1' and '${ROLE}' != 'provider2'   adapt_tender_funders  ${tender_data.data}
-
-
-# adapt_tender_funders
-
   [Return]    ${tender_data}
 ###############################################################
 ####                TODO  раскомментировать                ####
@@ -353,6 +341,7 @@ DismissAlertPopUp
   ...   AND   Reload Page
   ...   AND   Sleep  2
   ...   AND   Run Keyword And Ignore Error        Click Element      xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  uatenders.Оновити сторінку з тендером  ${username}  ${tender_uaid}
   ScrollToElementToFalse                (//*[contains(text(),'З 8 до 18')])[1]
   Sleep  1
   Run Keyword And Return            Get Text                 xpath=//a[contains(text(),'${doc_id}')]
@@ -1117,7 +1106,6 @@ DismissAlertPopUp
   Log To Console  _
   Log To Console  agreementId --> ${agreementId}
   uatenders.Пошук тендера по ідентифікатору   ${username}  ${agreement_uaid}
-
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Угоди')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
   Sleep  2
@@ -1132,6 +1120,7 @@ DismissAlertPopUp
   Reload Page
   Sleep  2
   Run Keyword And Ignore Error    Click Element           xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  Sleep  2
 ######################################    ОНОВИТИ СТОРІНКУ для Плана    ################################################
 Оновити сторінку з планом
   [Arguments]   ${username}  ${plan_uaid}
@@ -1608,11 +1597,7 @@ DismissAlertPopUp
 
 Отримати значення поля items[0].deliveryAddress.region
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
-  ${region_name}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.region'])[1]
-  ${return_value}=   Run Keyword IF     'Київ' == '${region_name}' or 'м. Київ' == '${region_name}' or 'Київська област' == '${region_name}'
-  ...   Convert To String   місто Київ
-  ...        ELSE IF    'Київ' != '${region_name}' or 'м. Київ' != '${region_name}' or 'Київська област' != '${region_name}'
-  ...   Get Text   xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.region'])[1]
+  ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/..//*)/..//following-sibling::*//*[@class='item-deliveryAddress.region'])[1]
   [Return]    ${return_value}
 
 Отримати значення поля items[0].deliveryAddress.locality
@@ -2188,7 +2173,7 @@ DismissAlertPopUp
   ${return_value}=   Run Keyword if   '${MODE}' == 'belowThreshold'   Run Keyword
   ...   uatenders.Отримати атрибут з датою
   ...     ELSE IF    '${MODE}' != 'belowThreshold'      Get Text          xpath=(.//*[@class='complaint_date_end'])
-  Run Keyword And Return               convert_timeToTime              ${return_value}
+  Run Keyword And Return          convert_timeToTime              ${return_value}
 
 Отримати інформацію із лоту про замовника lots[0].auctionPeriod.startDate
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'Дата початку аукціону')])/..//span[2])[1]
@@ -2196,19 +2181,19 @@ DismissAlertPopUp
 
 Отримати інформацію про посточальника enquiryPeriod.startDate
   ${return_value}=                     Отримати текст із поля для посточальника            enquiryPeriod.startDate
-  Run Keyword And Return     provider_convert_enquiry_tender_startDate              ${return_value}   #.replace(' ,', ',')}
+  Run Keyword And Return     provider_convert_enquiry_tender_startDate              ${return_value}
 
 Отримати інформацію про посточальника enquiryPeriod.endDate
   ${return_value}=                     Отримати текст із поля для посточальника            enquiryPeriod.endDate
-  Run Keyword And Return     provider_convert_enquiry_tender_endDate              ${return_value}   #.replace(' ,', ',')}
+  Run Keyword And Return     provider_convert_enquiry_tender_endDate                ${return_value}
 
 Отримати інформацію про посточальника tenderPeriod.startDate
   ${return_value}=                     Отримати текст із поля для посточальника            tenderPeriod.startDate
-  Run Keyword And Return     provider_convert_enquiry_tender_startDate              ${return_value}   #.replace(' ,', ',')}
+  Run Keyword And Return     provider_convert_enquiry_tender_startDate              ${return_value}
 
 Отримати інформацію про посточальника tenderPeriod.endDate
   ${return_value}=                     Отримати текст із поля для посточальника            tenderPeriod.endDate
-  Run Keyword And Return     provider_convert_enquiry_tender_endDate              ${return_value}   #.replace(' ,', ',')}
+  Run Keyword And Return     provider_convert_enquiry_tender_endDate                ${return_value}
 
 # преобразуется с tenderPeriod.endDate
 Отримати значення поля посточальника qualificationPeriod.endDate
