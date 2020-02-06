@@ -381,6 +381,7 @@ def convert_uatenders_string_to_ClaimsStatus(string):
     string = string.strip()
     return {
 # TODO: -> Конвертация для Claims
+        u"Відхилена": u"invalid",
         u"Виконана замовником": u"resolved",
         u"Очікує розгляду": u"claim",
         u"Задоволена": u"resolved",
