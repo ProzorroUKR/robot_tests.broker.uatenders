@@ -257,6 +257,9 @@ def convert_valueAddedTaxIncluded(string):
         # provider
         u"без ПДВ": False,
         u"з ПДВ": True,
+        # claim
+        u"Вимогу задоволено": True,
+
     }.get(string, string)
 
 def convert_method_type(string):
@@ -378,7 +381,6 @@ def convert_uatenders_string_to_ClaimsStatus(string):
     string = string.strip()
     return {
 # TODO: -> Конвертация для Claims
-        u"Вимогу задоволено": u"True",
         u"Виконана замовником": u"resolved",
         u"Очікує розгляду": u"claim",
         u"Задоволена": u"resolved",

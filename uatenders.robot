@@ -3898,7 +3898,7 @@ DismissAlertPopUp
   ...   AND   Sleep  2
   ...   AND   Element Should Be Visible        xpath=(//*[contains(text(),'Оцінка скаржника:')])[1]    Оцінка скаржника:
   ${return_value}=      Get Text      xpath=((//span[contains(@class,'complaint')]))[1]
-  Run Keyword And Return      convert_uatenders_string_to_ClaimsStatus      ${return_value}
+  Run Keyword And Return      convert_valueAddedTaxIncluded      ${return_value}
 
 Отримати значення поля complaints[0].resolutionType
   [Arguments]   ${tender_uaid}
