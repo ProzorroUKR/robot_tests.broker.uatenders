@@ -327,7 +327,8 @@ DismissAlertPopUp
   Sleep  1
   Choose File       name=tender[files][]        ${filepath}
   Sleep  2
-  WaitVisibilityAndClickElement               xpath=(.//*[contains(@class,'address-toggle-control')])[1]
+  Run Keyword And Ignore Error        WaitVisibilityAndClickElement        xpath=(.//*[contains(@class,'address-toggle-control')])[1]
+  Run Keyword And Ignore Error        WaitVisibilityAndClickElement        xpath=(.//*[contains(@class,'address-toggle-control')])[4]
   uatenders.DismissAlertPopUp
 
 Отримати інформацію із документа
@@ -3662,7 +3663,7 @@ DismissAlertPopUp
 
 Створити вимогу про виправлення умов лоту
   [Arguments]  ${username}  ${tender_uaid}  ${claim}  ${lot_id}  ${document}=${None}
-  Run Keyword And Return    uatenders.Створити чернетку вимоги про виправлення умов лоту   ${username}  ${tender_uaid}  ${claim}
+  Run Keyword And Return    uatenders.Створити чернетку вимоги про виправлення умов лоту   ${username}  ${tender_uaid}  ${claim}  ${lot_id}
 
 Створити вимогу про виправлення визначення переможця
   [Arguments]  ${username}  ${tender_uaid}  ${claim}  ${award_index}  ${document}=${None}
@@ -3821,6 +3822,8 @@ DismissAlertPopUp
   ...     WaitVisibilityAndClickElement         xpath=(//*[contains(@data-complaintid,'${complaintID}')]//*[contains(text(),'Відкликати')])[1]
   Sleep  2
   WaitVisibilityAndClickElement    xpath=((.//*[@data-complaintid='${complaintID}'])//*[@class='modal-body']/*[@name='cancellation_reason'])[1]
+
+  ClearFildAndInputText            xpath=((.//*[@data-complaintid='${complaintID}'])//*[@class='modal-body']/*[@name='cancellation_reason'])[1]   ${cancellation_data.data.cancellationReason}
 
   WaitVisibilityAndClickElement    xpath=((.//*[@data-complaintid='${complaintID}'])//*[@class='modal-footer']/*[@type='submit'])[1]
 
