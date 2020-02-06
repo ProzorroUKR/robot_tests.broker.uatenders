@@ -196,13 +196,6 @@ def convert_status_bids(string):
 
     }.get(string, string)
 
-def adapt_tender_funders(initial_data):
-    # funders
-    initial_data['funders'][0]['address']['countryName'] = u'Сполучені Штати Америки'
-    initial_data['funders'][0]['address']['locality'] = u'Washington'
-
-    return initial_data
-
 def adapt_plan_data(initial_data):
     # set user name
     initial_data['procuringEntity']['name'] = u'ТОВАРИСТВО З ОБМЕЖЕНОЮ ВІДПОВІДАЛЬНІСТЮ \"ЗАКУПІВЛІ ЮА\"'
@@ -264,6 +257,9 @@ def convert_valueAddedTaxIncluded(string):
         # provider
         u"без ПДВ": False,
         u"з ПДВ": True,
+        # claim
+        u"Вимогу задоволено": True,
+
     }.get(string, string)
 
 def convert_method_type(string):
@@ -385,7 +381,7 @@ def convert_uatenders_string_to_ClaimsStatus(string):
     string = string.strip()
     return {
 # TODO: -> Конвертация для Claims
-        u"Вимогу задоволено": u"True",
+        u"Відхилена": u"invalid",
         u"Виконана замовником": u"resolved",
         u"Очікує розгляду": u"claim",
         u"Задоволена": u"resolved",

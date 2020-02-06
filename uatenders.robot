@@ -327,6 +327,7 @@ DismissAlertPopUp
   Sleep  1
   Choose File       name=tender[files][]        ${filepath}
   Sleep  2
+  WaitVisibilityAndClickElement               xpath=(.//*[contains(@class,'address-toggle-control')])[1]
   uatenders.DismissAlertPopUp
 
 Отримати інформацію із документа
@@ -453,7 +454,6 @@ DismissAlertPopUp
 #####################
   Log To Console        ${tender_data}
   Log To Console   procurementMethodType -----> ${procurementMethodType}
-  Log To Console   mainProcurementCategory -----> ${tender_data.data.mainProcurementCategory}
 #Додати закупівлю
   WaitVisibilityAndClickElement       xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[1]/li[1]/a
   WaitVisibilityAndClickElement       xpath=//*[@id="bs-example-navbar-collapse-1"]/ul[1]/li[1]/ul/li[1]/a
@@ -2302,14 +2302,15 @@ DismissAlertPopUp
 Отримати інформацію про замовника contracts[${index}].value.amount
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Контракти') or contains(.,'Визначити учасників')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
-  Run Keyword And Return          Отримати текст із поля для замовника          contracts[${index}].value.amount
+  ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].value.amount
+  Run Keyword And Return               float_to_string_2f                  ${return_value}
 
 Отримати інформацію про замовника contracts[${index}].value.amountNet
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Контракти') or contains(.,'Визначити учасників')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
   ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].value.amountNet
-  ${return_value}=           Fetch From Left         ${return_value}     ${SPACE}
-  Run Keyword And Return               convert_valueAddedTaxIncluded                  ${return_value}
+  ${return_value}=             Fetch From Left         ${return_value}     ${SPACE}
+  Run Keyword And Return               float_to_string_2f                  ${return_value}
 
 Отримати інформацію про замовника contracts[${index}].dateSigned
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Контракти') or contains(.,'Визначити учасників')]])
@@ -2563,12 +2564,17 @@ DismissAlertPopUp
   ${bid_value}=  Set Variable If  ${NUMBER_OF_LOTS} == 0  ${bid.data.value.amount}  ${bid.data.lotValues[0].value.amount}
   ${amount}=          float_to_string_2f                  ${bid_value}
   ${amount}=          Convert To String                   ${bid_value}
-  Run Keyword IF   '${username}' != 'uatenders_Provider'   Run Keywords
-  ...   ScrollToElement                                     (//*[text()[contains(.,'Нецінові показники')]]/..//*[. = 'Нецінові показники'])
-  ...   AND   Sleep  1
-  ...   AND   WaitVisibilityAndClickElement           xpath=(//*[contains(@class,'${lotForSearchId}') and contains(.,'Подати пропозицію')])
-  Run Keyword IF   '${username}' == 'uatenders_Provider'
-  ...     WaitVisibilityAndClickElement           xpath=(//*[text()[contains(.,'Подати пропозицію')]])[1]
+
+  # Run Keyword IF   '${username}' != 'uatenders_Provider'   Run Keywords
+  # ...   ScrollToElement                                     (//*[text()[contains(.,'Нецінові показники')]]/..//*[. = 'Нецінові показники'])
+  # ...   AND   Sleep  1
+  # ...   AND   WaitVisibilityAndClickElement           xpath=(//*[contains(@class,'${lotForSearchId}') and contains(.,'Подати пропозицію')])
+
+  Run Keyword IF   '${username}' == 'uatenders_Provider' or '${username}' == 'uatenders_Provider1' or '${username}' == 'uatenders_Provider2'   Run Keywords
+  ...   ScrollToElement                                    (.//*[@class='TenderType'])[1]
+  ...   AND  WaitVisibilityAndClickElement           xpath=(//*[text()[contains(.,'Подати пропозицію')]])[1]
+
+
   Run Keyword IF   '${MODE}' == 'open_competitive_dialogue'
   ...    Run Keyword And Ignore Error    ClearFildAndInputText    css=.input-price    ${amount}
   ...      ELSE IF    '${MODE}' != 'open_competitive_dialogue'    ClearFildAndInputText    css=.input-price    ${amount}
@@ -2725,7 +2731,7 @@ DismissAlertPopUp
   Sleep  1
 
 Отримати інформацію про замовника funders[0].name
-  ScrollToElementToFalse                                (//*[contains(text(),'Загальна інформація')])[1]
+  ScrollToElementToFalse                 (//*[contains(text(),'Загальна інформація')])[1]
   WaitVisibilityAndClickElement    xpath=(//*[contains(text(),'Донор')]/..//*[position() mod 2 = 0]/a)[1]
   Run Keyword And Return           Отримати текст із поля для замовника               funders[0].name
 
@@ -2765,7 +2771,8 @@ DismissAlertPopUp
   Run Keyword And Return           Отримати текст із поля для посточальника               funders[0].name
 
 Отримати інформацію про посточальника funders[0].address.countryName
-  WaitVisibilityAndClickElement    xpath=(//*[contains(text(),'Донор')]/..//*[position() mod 2 = 0]/a)
+  ScrollToElementToFalse                 (//*[contains(text(),'Загальна інформація')])[1]
+  WaitVisibilityAndClickElement    xpath=(//*[contains(text(),'Донор')]/..//*[position() mod 2 = 0]/a)[1]
   Run Keyword And Return           Get Element Attribute                     xpath=(//*[contains(@class,'withoutBorder')]//*[contains(@class,'countryName')])@value
 
 Отримати інформацію про посточальника funders[0].address.postalCode
@@ -3401,6 +3408,7 @@ DismissAlertPopUp
   ...   AND   Element Should Be Visible       xpath=(.//*[contains(text(),'Контракти')])[1]      Контракти
   WaitVisibilityAndClickElement       xpath=(.//*[contains(text(),'Контракти')])[1]
   WaitVisibilityAndClickElement       xpath=((//*[contains(text(),'№')]/../../..//a)[position() mod 2 = 1])[1]
+  ScrollToElementToFalse                    (//*[contains(text(),'З 8 до 18')])[1]
   Run Keyword if   'Можливість редагувати вартість угоди без урахування ПДВ' in '${TEST_NAME}'   Sleep  600
   Run Keyword If     '${field_name}' == 'value.amount'     Run Keyword
   ...   ClearFildAndInputText         name=amount          ${value}
@@ -3889,8 +3897,8 @@ DismissAlertPopUp
   ...   Reload Page
   ...   AND   Sleep  2
   ...   AND   Element Should Be Visible        xpath=(//*[contains(text(),'Оцінка скаржника:')])[1]    Оцінка скаржника:
-  ${return_value}=      Get Text      xpath=(//*[contains(text(),'Оцінка скаржника:')])[1]//..//*[position() mod 2 = 0]
-  Run Keyword And Return      convert_uatenders_string_to_ClaimsStatus      ${return_value}
+  ${return_value}=      Get Text      xpath=((//span[contains(@class,'complaint')]))[1]
+  Run Keyword And Return      convert_valueAddedTaxIncluded      ${return_value}
 
 Отримати значення поля complaints[0].resolutionType
   [Arguments]   ${tender_uaid}
