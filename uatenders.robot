@@ -2747,8 +2747,7 @@ DismissAlertPopUp
   [Return]          ${return_value.split(',')[2].replace(' ','')}
 
 Отримати інформацію про замовника funders[0].address.locality
-  ${return_value}=                 Get Element Attribute                     xpath=(//*[contains(@class,'withoutBorder')]//*[contains(@class,'localit')])@value
-  Run Keyword And Return           convert_funders                           ${return_value}
+  Run Keyword And Return           Get Element Attribute                     xpath=(//*[contains(@class,'withoutBorder')]//*[contains(@class,'localit')])@value
 
 Отримати інформацію про замовника funders[0].address.streetAddress
   ${return_value}=                 Отримати текст із поля для замовника               funders[0].address.streetAddress
@@ -2785,8 +2784,7 @@ DismissAlertPopUp
   [Return]          ${return_value.split(',')[2].replace(' ','')}
 
 Отримати інформацію про посточальника funders[0].address.locality
-  ${return_value}=                 Get Element Attribute                     xpath=(//*[contains(@class,'withoutBorder')]//*[contains(@class,'localit')])@value
-  Run Keyword And Return           convert_funders                           ${return_value}
+  Run Keyword And Return           Get Element Attribute                     xpath=(//*[contains(@class,'withoutBorder')]//*[contains(@class,'localit')])@value
 
 Отримати інформацію про посточальника funders[0].address.streetAddress
   ${return_value}=                 Отримати текст із поля для посточальника               funders[0].address.streetAddress

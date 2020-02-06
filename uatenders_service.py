@@ -248,13 +248,6 @@ def convert_fundingKind(string):
         u"Фінансування виключно за рахунок Учасника": u"other",
     }.get(string, string)
 
-def convert_funders(string):
-    string = string.strip()
-    return {
-        u"Женева": u"Geneva",
-        u"Вашингтон": u"Washington",
-    }.get(string, string)
-
 def convert_valueAddedTaxIncluded(string):
     string = string.strip()
     return {
