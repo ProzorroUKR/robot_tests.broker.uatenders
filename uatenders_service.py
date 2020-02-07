@@ -391,6 +391,7 @@ def convert_uatenders_string_to_ClaimsStatus(string):
         u"Відхилена замовником": u"invalid",
         u"Не задоволена замовником": u"declined",
         u"Задоволена замовником": u"resolved",
+        u"Залишена без відповіді": u"ignored",
 
     }.get(string, string)
 

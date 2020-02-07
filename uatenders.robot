@@ -319,7 +319,7 @@ DismissAlertPopUp
   Set Window Size       @{USERS.users['${ARGUMENTS[0]}'].size}
   Set Window Position   @{USERS.users['${ARGUMENTS[0]}'].position}
   ############   Login
-  maximize browser window
+  # maximize browser window
   Delete All Cookies
   WaitVisibilityAndClickElement      xpath=(//*[text()[contains(.,'Вхід')]])[1]
   Wait Until Page Contains Element   name=email
@@ -1224,7 +1224,6 @@ DismissAlertPopUp
   [Arguments]  ${username}  ${agreement_uaid}  ${field_name}
   uatenders.Пошук угоди по ідентифікатору  ${username}  ${agreement_uaid}
   uatenders.Переміститься до футера
-# ScrollToElementToFalse                      (//*[contains(text(),'З 8 до 18')])[1]
   ${fieldNum}=    uatenders.Отримати індекс з назви поля  ${field_name}
   Run Keyword And Return If  'rationaleType' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationaleType')])@value
   Run Keyword And Return If  'rationale' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationale')])@value
@@ -2969,7 +2968,6 @@ DismissAlertPopUp
   Run Keyword And Ignore Error    Choose File    id=award-1-1             ${document}
   Run Keyword And Ignore Error    Choose File    id=award-2-1             ${document}
   Sleep  3
-  # Run Keyword And Ignore Error    ScrollToElementToFalse    (//*[contains(text(),'З 8 до 18')])[1]
   Run Keyword And Ignore Error    ScrollToElementToFalse    (//*[@type='submit'])[1]
   WaitVisibilityAndClickElement         xpath=(//*[@type='submit'])[1]
 
@@ -3003,8 +3001,6 @@ DismissAlertPopUp
   Run Keyword And Ignore Error    Element Should Be Visible        xpath=(.//*[@class='alert alert-success'])[1]    Заявка на підтвердження переможця подана до ЦБД.
   Sleep  2
   Run Keyword And Ignore Error      uatenders.Переміститься до футера
-  # ScrollToElementToFalse    (//*[contains(text(),'З 8 до 18')])[1]
-
   Run Keyword And Ignore Error    WaitVisibilityAndClickElement    xpath=//*[@value='Визнати переможцем']
   #Подпись ЕЦП
   uatenders.Підписати ЕЦП   ${username}   ${tender_uaid}
@@ -3074,9 +3070,6 @@ DismissAlertPopUp
   Run Keyword if   'підтвердити третю' in '${TEST_NAME}'   uatenders.Обрати третю кваліфікації
   Sleep  2
   uatenders.Переміститься до футера
-  # ScrollToElementToFalse                                (//*[contains(text(),'З 8 до 18')])[1]
-  # Sleep  2
-
   Select From List                        xpath=//*[@name='status']      active    #Допустити до аукціону
   Run Keyword And Ignore Error    Execute Javascript  window.frames[0]; document.querySelector( "input[name='protocol']" ).style.display = "block";
   Sleep  2
@@ -3091,13 +3084,8 @@ DismissAlertPopUp
   Reload Page
   Sleep  2
   Run Keyword And Ignore Error      uatenders.Переміститься до футера
-
-  # ScrollToElementToFalse          (//*[contains(text(),'З 8 до 18')])[1]
-  # Sleep  2
-
   Run Keyword if    'open_framework' == '${MODE}'    uatenders.Підписати ЕЦП   ${username}   ${tender_uaid}
   ...    ELSE IF    'open_framework' != '${MODE}'    Run Keyword And Ignore Error    WaitVisibilityAndClickElement    xpath=(//*[contains(@value,'Підтвердити кваліфікацію')])
-
 
 Відхилити кваліфікацію
   [Arguments]  @{ARGUMENTS}
@@ -3117,7 +3105,6 @@ DismissAlertPopUp
 ######################################################################################################
   Sleep  2
   uatenders.Переміститься до футера
-# ScrollToElementToFalse                                (//*[contains(text(),'З 8 до 18')])[1]
   Sleep  5
   Select From List                        xpath=//*[@name='status']      unsuccessful    # Відхилити пропозицію
   Run Keyword And Ignore Error    Execute Javascript  window.frames[0]; document.querySelector( "input[name='protocol']" ).style.display = "block";
@@ -3131,7 +3118,6 @@ DismissAlertPopUp
   Reload Page
   Sleep  2
   Run Keyword And Ignore Error      uatenders.Переміститься до футера
-# ScrollToElementToFalse          (//*[contains(text(),'З 8 до 18')])[1]
   Sleep  2
   Run Keyword if    'open_framework' == '${MODE}'    uatenders.Підписати ЕЦП   ${ARGUMENTS[0]}   ${ARGUMENTS[1]}
   ...    ELSE IF    'open_framework' != '${MODE}'    Run Keyword And Ignore Error    WaitVisibilityAndClickElement    xpath=(//*[contains(@value,'Підтвердити кваліфікацію')])
@@ -3148,7 +3134,6 @@ DismissAlertPopUp
 ######################################################################################################
   Sleep  2
   uatenders.Переміститься до футера
-# ScrollToElementToFalse                                (//*[contains(text(),'З 8 до 18')])[1]
   Sleep  5
   Select From List                        xpath=//*[@name='status']      active    # Допустити до аукціону
   Run Keyword And Ignore Error    Execute Javascript  window.frames[0]; document.querySelector( "input[name='protocol']" ).style.display = "block";
@@ -3169,7 +3154,6 @@ DismissAlertPopUp
 ######################################################################################################
   Sleep  2
   uatenders.Переміститься до футера
-# ScrollToElementToFalse                                (//*[contains(text(),'З 8 до 18')])[1]
   WaitVisibilityAndClickElement    xpath=(//*[@value='Відмінити рішення'])[1]
   Sleep  10
   Reload Page
@@ -3204,7 +3188,6 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Угоди')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
   uatenders.Переміститься до футера
-# ScrollToElementToFalse                      (//*[contains(text(),'З 8 до 18')])[1]
   ${index}=  Set Variable If
   ...  'ціну за одиницю для першого контракту' in '${TEST_NAME}'   1
   ...  'ціну за одиницю для другого контракту' in '${TEST_NAME}'   2
@@ -3370,7 +3353,6 @@ DismissAlertPopUp
   \   ClearFildAndInputText       name=lots[${lots_count}][items][0][description_en]   ${adapted_data.data.lots[0].description_en}
   \   uatenders.Додати до предмет одиниці виміру    ${items[0]}  ${0}  ${0}
   uatenders.Переміститься до футера
-# ScrollToElementToFalse                (//*[contains(text(),'З 8 до 18')])[1]
   WaitVisibilityAndClickElement       xpath=//*[@type='submit']
   Sleep  2
   Dismiss Alert
@@ -3716,6 +3698,13 @@ DismissAlertPopUp
   ...    ELSE IF    '${mode}' != 'openua'    WaitVisibilityAndClickElement    xpath=(.//*[contains(text(),'Вимога щодо переможця')])[1]
   Run Keyword And Ignore Error    WaitVisibilityAndClickElement    xpath=(//*[contains(@class,'switcNotSatisfied') and contains(.,'По лоту')])
   uatenders.Заповнити поля для вимоги/скарги  ${username}  ${tender_uaid}  ${claim}
+
+  Run Keyword And Ignore Error    Run Keyword If    '${document}' != 'None'    Run Keywords
+  ...   Sleep  2
+  ...   AND   Choose File                      css=[id*=complaint-1]              ${document}
+  ...   AND   Sleep  2
+
+  Sleep  5
   Run Keyword And Return        Get Element Attribute     xpath=(//*[contains(text(),"${claim.data.title}")]/..//../..)@data-complaintid
 
 Заповнити поля для вимоги/скарги
