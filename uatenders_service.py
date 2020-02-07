@@ -438,13 +438,6 @@ def get_unit_id(string):
         u"0.01": u"1",
         u"5": u"0.05",
         u"1": u"0.01",
-        u"м. Київ": u"26",
-        u"місто Київ": u"26",
-        u"Черкаська": u"12",
-        u"Київська область": u"11",
-        u"Львівська область": u"2",
-        u"Дніпропетровська область": u"19",
-        u"Миколаївська област": u"15",
         u"artContestIP": u"1",
         u"noCompetition": u"2",
         u"quick": u"3",
@@ -463,11 +456,40 @@ def get_unit_id(string):
 
     }.get(string, string)
 
+def get_region_delivery_id(string):
+     return {
+        u"Закарпатська область": u"1",
+        u"Львівська область": u"2",
+        u"Волинська область": u"3",
+        u"Тернопільська область": u"5",
+        u"Чернівецька область": u"6",
+        u"Рівненська область": u"7",
+        u"Хмельницька область": u"8",
+        u"Вінницька область": u"9",
+        u"Житомирська область": u"10",
+        u"Київська область": u"11",
+        u"Черкаська": u"12",
+        u"Одеська область": u"13",
+        u"Кіровоградська область": u"14",
+        u"Миколаївська област": u"15",
+        u"Чернігівська область": u"16",
+        u"Полтавська область": u"17",
+        u"Сумська область": u"18",
+        u"Дніпропетровська область": u"19",
+        u"Херсонська область": u"20",
+        u"Запорізька область": u"22",
+        u"Харківська область": u"23",
+        u"Донецька область": u"24",
+        u"Луганська область": u"25",
+        u"м. Київ": u"26",
+        u"місто Київ": u"26",
+    }.get(string, string)
+
 def get_file_path():
     return os.path.join(os.getcwd(), 'src/robot_tests.broker.uatenders/fileupload.txt')
 
 def get_file_path_key():
-    return os.path.join(os.getcwd(), 'src/robot_tests.broker.uatenders/Key-6.dat')
+    return os.path.join(os.getcwd(), 'src/robot_tests.broker.uatenders/testKey-6.dat')
 
 def download(url, file_name, output_dir):
     urllib.urlretrieve(url, ('{}/{}'.format(output_dir, file_name)))
