@@ -220,7 +220,7 @@ def adapt_tender_data(initial_data):
     initial_data['procuringEntity']['address']['streetAddress'] = u'вулиця Тестова, 32'
     # contactPoint
     initial_data['procuringEntity']['contactPoint']['email'] = u'test_owner_arm@ukr.net'
-    initial_data['procuringEntity']['contactPoint']['telephone'] = u'+380637418135'
+    initial_data['procuringEntity']['contactPoint']['telephone'] = u'+380630000000'
     initial_data['procuringEntity']['contactPoint']['name'] = u'R2-D2'
 
     return initial_data
@@ -392,6 +392,7 @@ def convert_uatenders_string_to_ClaimsStatus(string):
         u"Не задоволена замовником": u"declined",
         u"Задоволена замовником": u"resolved",
         u"Залишена без відповіді": u"ignored",
+        u"Не задоволена": u"declined",
 
     }.get(string, string)
 
