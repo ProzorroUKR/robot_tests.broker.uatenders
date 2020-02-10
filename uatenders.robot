@@ -3695,15 +3695,18 @@ DismissAlertPopUp
   Run Keyword And Ignore Error     uatenders.Дочикатися появи айди тендера complaintID  ${username}  ${claim.data.title}
   Sleep  2
   Reload Page
-  Sleep  2
-  ${complaintID}=     Get Element Attribute     xpath=(//*[contains(text(),'${claim.data.title}')]/..//../..)@data-complaintid
+  Sleep  5
+
+  ${claimTitle}=      Fetch From Left       ${claim.data.title}    :
+
+  ${complaintID}=     Get Element Attribute     xpath=(//*[contains(text(),'${claimTitle}')]/..//../..)@data-complaintid
   [Return]     ${complaintID}
 
 Дочикатися появи айди тендера complaintID
   [Arguments]   ${username}  ${complaintsTitleSearch}
-  Wait Until Keyword Succeeds   5 x   15 s     Run Keywords
+  Wait Until Keyword Succeeds   5 x   20 s     Run Keywords
   ...   Run Keyword IF      '${username}' == 'PASS'     Element Should Be Visible       xpath=(//*[contains(text(),'Вимоги та скарги по закупівлі')])      Вимоги та скарги по закупівлі
-  ...   AND   Sleep  2
+  ...   AND   Sleep  5
   ...   AND   Reload Page
   ...   AND   Sleep  2
   ...   AND   Element Should Be Visible       xpath=(//*[contains(text(),"${complaintsTitleSearch}")])      ${complaintsTitleSearch}
@@ -3998,10 +4001,8 @@ DismissAlertPopUp
 
 Отримати значення поля complaints[0].resolution
   [Arguments]   ${tender_uaid}  #${complaintID}
-  ${return_value}=      Get Text      xpath=(//*[contains(text(),'Відповідь:')])[1]//..//*[position() mod 2 = 0]
-  ${catLine}=                      Convert To String      ${return_value.split('.')[1]}
-  ${return_value}=                  Catenate               ${catLine}   .
-  [Return]         ${return_value.replace(' .','.')}
+  Sleep  2
+  Run Keyword And Return      Get Text      xpath=((//*[contains(text(),'Відповідь:')])[1]//..//*[position() mod 2 = 0])/span
 
 Отримати значення поля Claims Provider complaints[0].status
   [Arguments]   ${tender_uaid}  ${complaintID}
