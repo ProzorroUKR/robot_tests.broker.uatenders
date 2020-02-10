@@ -972,8 +972,6 @@ DismissAlertPopUp
   ...   Convert To Integer        ${NUMBER_OF_ITEMS}
   :FOR   ${item_index}   IN RANGE   ${items_length}
   \   uatenders.Додати предмет    ${items[${item_index}]}    ${item_index}   ${defoultLot_index}
-  # \   Run Keyword IF    '${MODE}' != 'negotiation'    uatenders.Додати предмет    ${items[${item_index}]}    ${item_index}   ${defoultLot_index}
-  # \   ...    ELSE IF    '${MODE}' == 'negotiation'    Додати переплутані предмети до Negotiation    ${items[${item_index}]}    ${item_index}   ${defoultLot_index}
   \   uatenders.Завантажити документ до створення 'Нової закупівлі' - товар    ${item_index}   ${defoultLot_index}
 
 Додати предмет
@@ -3421,6 +3419,15 @@ DismissAlertPopUp
   [Arguments]  ${username}  ${tender_uaid}
   uatenders.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   WaitVisibilityAndClickElement       xpath=//*[contains(text(),'Оголосити відбір для закупівлі за рамковою угодою')]
+
+Отримати інформацію про посточальника title
+  Run Keyword And Return       Отримати текст із поля для посточальника       title
+
+Отримати інформацію про посточальника description
+  Run Keyword And Return       Отримати текст із поля для посточальника       description
+
+Отримати інформацію про посточальника procuringEntity.name
+  Run Keyword And Return       Отримати текст із поля для посточальника       procuringEntity.name
 
 ####################################################################################################
 ################################    Awards (Contract)    ###########################################
