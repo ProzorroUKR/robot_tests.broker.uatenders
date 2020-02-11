@@ -3953,6 +3953,8 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement       xpath=(//*[text()[contains(.,'Оскарження')]])[1]
   WaitVisibilityAndClickElement       xpath=(.//*[contains(text(),'Подати скаргу')])[1]
   uatenders.Заповнити поля для вимоги/скарги  ${username}  ${tender_uaid}  ${claim}
+  Sleep  2
+  WaitVisibilityAndClickElement       xpath=(//*[contains(@type,'submit') and contains(@value,'Подати')])
   Run Keyword And Return        Get Element Attribute     xpath=(//*[contains(text(),"${claim.data.title}")]/..//../..)@data-complaintid
 
 Отримати інформацію із документа до скарги
