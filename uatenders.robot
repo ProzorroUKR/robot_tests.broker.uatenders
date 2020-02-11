@@ -2005,20 +2005,26 @@ DismissAlertPopUp
 Перехід на запитання замовником до тендеру/предмету/лоту
   [Arguments]   ${question_id}  ${username}  ${tender_uaid}
   #отримати з тендеру
-  Run Keyword IF   'запитання на тендер' in '${TEST_NAME}'            Run Keywords
-  ...    ScrollToElement                              (//div[@class='col-md-12']/p)[1]    # заголовок тендера
-  ...    AND   Sleep  2
-  ...    AND   WaitVisibilityAndClickElement    xpath=(//*[contains(@class,'${tender_uaid}') and contains(.,'Запитання')])
+  Run Keyword IF   'запитання на тендер' in '${TEST_NAME}'    Wait Until Keyword Succeeds   10 x   25 s     Run Keywords
+  ...   Reload Page
+  ...   AND   Sleep  2
+  ...   AND   ScrollToElement                        (//div[@class='col-md-12']/p)[1]    # заголовок тендера
+  ...   AND   Element Should Be Visible        xpath=(//*[contains(@class,'${tender_uaid}') and contains(.,'Запитання')])      Запитання
+  ...   AND   WaitVisibilityAndClickElement    xpath=(//*[contains(@class,'${tender_uaid}') and contains(.,'Запитання')])
   #отримати з лоту
-  Run Keyword IF   'на всі лоти' in '${TEST_NAME}'                    Run Keywords
-  ...    ScrollToElement            (//*[text()[contains(.,'Документи')]]/..//*[. = 'Документи'])[1]
-  ...    AND   Sleep  2
-  ...    AND   WaitVisibilityAndClickElement    xpath=(//*[text()[contains(.,'Лоти')]]/..//*[text()[contains(.,'Запитання')]])[1]
+  Run Keyword IF   'на всі лоти' in '${TEST_NAME}'    Wait Until Keyword Succeeds   10 x   25 s     Run Keywords
+  ...   Reload Page
+  ...   AND   Sleep  2
+  ...   AND   ScrollToElement                        (//*[text()[contains(.,'Документи')]]/..//*[. = 'Документи'])[1]
+  ...   AND   Element Should Be Visible        xpath=(//*[text()[contains(.,'Лоти')]]/..//*[text()[contains(.,'Запитання')]])[1]      Запитання
+  ...   AND   WaitVisibilityAndClickElement    xpath=(//*[text()[contains(.,'Лоти')]]/..//*[text()[contains(.,'Запитання')]])[1]
   #отримати з предмету
-  Run Keyword IF   'на всі предмети' in '${TEST_NAME}'                Run Keywords
-  ...    ScrollToElement                       (//*[text()[contains(.,'Критерії оцінки') or contains(.,'Перелік')]])[1]
-  ...    AND   Sleep  2
-  ...    AND   WaitVisibilityAndClickElement    xpath=(//*[text()[contains(.,'Перелік')]]/..//*[text()[contains(.,'Запитання')]])[1]
+  Run Keyword IF   'на всі предмети' in '${TEST_NAME}'    Wait Until Keyword Succeeds   10 x   25 s     Run Keywords
+  ...   Reload Page
+  ...   AND   Sleep  2
+  ...   AND   ScrollToElement                        (//*[text()[contains(.,'Критерії оцінки') or contains(.,'Перелік')]])[1]
+  ...   AND   Element Should Be Visible        xpath=(//*[text()[contains(.,'Перелік')]]/..//*[text()[contains(.,'Запитання')]])[1]      Запитання
+  ...   AND   WaitVisibilityAndClickElement    xpath=(//*[text()[contains(.,'Перелік')]]/..//*[text()[contains(.,'Запитання')]])[1]
 
 Перехід на запитання до участником тендеру/предмету/лоту
   [Arguments]   ${question_id}  ${username}  ${tender_uaid}
