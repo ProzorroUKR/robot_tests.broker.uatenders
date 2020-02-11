@@ -687,23 +687,25 @@ DismissAlertPopUp
 Можливість додати лот до тендеру
   [Arguments]  ${tender_data}  ${methodType}  ${mode}
   ${scenarios_name}=  get_scenarios_name
+  ${scenarios_name_1}=    Fetch From Right    ${scenarios_name}    /
+  ${scenarios_name_2}=    Fetch From Left    ${scenarios_name_1}    .
   ${LOTS_NUM}=  Run Keyword If
   ...   '${NUMBER_OF_LOTS}' == '0'   Set Variable   1
   ...   ELSE IF   '${NUMBER_OF_LOTS}' != '0'   Set Variable   ${NUMBER_OF_LOTS}
   ${milestonesStatus}=    Run Keyword And Return Status    Get From Dictionary    ${tender_data.data}     milestones
   :FOR   ${lot_index}   IN RANGE   ${LOTS_NUM}
   \  uatenders.Завантажити документ до створення 'Нової закупівлі' - тендер        ${tender_data}
-  \  Run Keyword IF    '${TENDER_MEAT}' == 'True'
+  \  Run Keyword IF   '${TENDER_MEAT}' == 'True'
   \  ...    uatenders.Можливість заповнити Tender info   ${tender_data}  ${methodType}  ${mode}  ${lot_index}
-  \  Run Keyword IF   'single_item_tender' in '${scenarios_name}' or '0' == '${NUMBER_OF_LOTS}' and '${methodType}' != 'reporting'
+  \  Run Keyword IF   'single_item_tender' == '${scenarios_name_2}' and '${LOT_MEAT}' == 'False' and '${methodType}' != 'reporting'
   \  ...    uatenders.Можливість заповнити безлотовий Lots info     ${tender_data}  ${methodType}  ${mode}
-  \  ...   ELSE IF    '' in '${scenarios_name}' and '${methodType}' != 'reporting' and '${LOT_MEAT}' == 'True'
+  \  Run Keyword IF   'single_item_tender' != '${scenarios_name_2}' and '${LOT_MEAT}' == 'True' and '${methodType}' != 'reporting'
   \  ...    uatenders.Можливість заповнити Lots info          ${tender_data}  ${methodType}   ${mode}        ${lot_index}
-  \  Run Keyword IF   '' in '${scenarios_name}' and '${methodType}' != 'reporting'
+  \  Run Keyword IF   'single_item_tender' != '${scenarios_name_2}' and '${methodType}' != 'reporting'
   \  ...    uatenders.Можливість в тендері заповнити поля роздiлу ЛОТИ                     ${tender_data}  ${lot_index}  #lot
-  \  Run Keyword IF    '${milestonesStatus}' == 'True'
+  \  Run Keyword IF   '${milestonesStatus}' == 'True'
   \  ...    uatenders.Можливість заповнити Milestones info    ${tender_data.data.milestones}  ${methodType}  ${mode}
-  \  Run Keyword IF    '${methodType}' == 'reporting'
+  \  Run Keyword IF   '${methodType}' == 'reporting'
   \  ...   uatenders.Додати цінову пропозицію до reporting   ${tender_data}
   \  Run Keyword IF   '${ITEM_MEAT}' == 'True'
   \  ...    uatenders.Можливість заповнити Items info    ${tender_data}  ${methodType}  ${mode}  ${lot_index}
@@ -3502,12 +3504,12 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement               xpath=((//*[contains(text(),'№')]/../../..//a)[position() mod 2 = 1])[1]
   Sleep  5
   uatenders.Переміститься до футера
-  Run Keyword if   'Можливість редагувати вартість угоди без урахування ПДВ' in '${TEST_NAME}'   Sleep  500
+  Run Keyword if   'Можливість редагувати вартість угоди без урахування ПДВ' in '${TEST_NAME}'   Sleep  600
   Wait Until Keyword Succeeds   5 x   60 s     Run Keywords
   ...   Reload Page
   ...   AND   Sleep  2
   ...   AND   Run Keyword If     '${field_name}' == 'value.amount'     Run Keyword
-  ...      ClearFildAndInputText         name=amount          ${value}
+  ...      ClearFildAndInputText      name=amount          ${value}
   ...      ELSE IF   '${field_name}' == 'value.amountNet'  Run Keyword
   ...      ClearFildAndInputText      name=amount_net      ${value}
   ...   AND   WaitVisibilityAndClickElement    name=period_date_start
