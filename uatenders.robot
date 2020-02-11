@@ -2005,20 +2005,26 @@ DismissAlertPopUp
 Перехід на запитання замовником до тендеру/предмету/лоту
   [Arguments]   ${question_id}  ${username}  ${tender_uaid}
   #отримати з тендеру
-  Run Keyword IF   'запитання на тендер' in '${TEST_NAME}'            Run Keywords
-  ...    ScrollToElement                              (//div[@class='col-md-12']/p)[1]    # заголовок тендера
-  ...    AND   Sleep  2
-  ...    AND   WaitVisibilityAndClickElement    xpath=(//*[contains(@class,'${tender_uaid}') and contains(.,'Запитання')])
+  Run Keyword IF   'запитання на тендер' in '${TEST_NAME}'    Wait Until Keyword Succeeds   10 x   25 s     Run Keywords
+  ...   Reload Page
+  ...   AND   Sleep  2
+  ...   AND   ScrollToElement                        (//div[@class='col-md-12']/p)[1]    # заголовок тендера
+  ...   AND   Element Should Be Visible        xpath=(//*[contains(@class,'${tender_uaid}') and contains(.,'Запитання')])      Запитання
+  ...   AND   WaitVisibilityAndClickElement    xpath=(//*[contains(@class,'${tender_uaid}') and contains(.,'Запитання')])
   #отримати з лоту
-  Run Keyword IF   'на всі лоти' in '${TEST_NAME}'                    Run Keywords
-  ...    ScrollToElement            (//*[text()[contains(.,'Документи')]]/..//*[. = 'Документи'])[1]
-  ...    AND   Sleep  2
-  ...    AND   WaitVisibilityAndClickElement    xpath=(//*[text()[contains(.,'Лоти')]]/..//*[text()[contains(.,'Запитання')]])[1]
+  Run Keyword IF   'на всі лоти' in '${TEST_NAME}'    Wait Until Keyword Succeeds   10 x   25 s     Run Keywords
+  ...   Reload Page
+  ...   AND   Sleep  2
+  ...   AND   ScrollToElement                        (//*[text()[contains(.,'Документи')]]/..//*[. = 'Документи'])[1]
+  ...   AND   Element Should Be Visible        xpath=(//*[text()[contains(.,'Лоти')]]/..//*[text()[contains(.,'Запитання')]])[1]      Запитання
+  ...   AND   WaitVisibilityAndClickElement    xpath=(//*[text()[contains(.,'Лоти')]]/..//*[text()[contains(.,'Запитання')]])[1]
   #отримати з предмету
-  Run Keyword IF   'на всі предмети' in '${TEST_NAME}'                Run Keywords
-  ...    ScrollToElement                       (//*[text()[contains(.,'Критерії оцінки') or contains(.,'Перелік')]])[1]
-  ...    AND   Sleep  2
-  ...    AND   WaitVisibilityAndClickElement    xpath=(//*[text()[contains(.,'Перелік')]]/..//*[text()[contains(.,'Запитання')]])[1]
+  Run Keyword IF   'на всі предмети' in '${TEST_NAME}'    Wait Until Keyword Succeeds   10 x   25 s     Run Keywords
+  ...   Reload Page
+  ...   AND   Sleep  2
+  ...   AND   ScrollToElement                        (//*[text()[contains(.,'Критерії оцінки') or contains(.,'Перелік')]])[1]
+  ...   AND   Element Should Be Visible        xpath=(//*[text()[contains(.,'Перелік')]]/..//*[text()[contains(.,'Запитання')]])[1]      Запитання
+  ...   AND   WaitVisibilityAndClickElement    xpath=(//*[text()[contains(.,'Перелік')]]/..//*[text()[contains(.,'Запитання')]])[1]
 
 Перехід на запитання до участником тендеру/предмету/лоту
   [Arguments]   ${question_id}  ${username}  ${tender_uaid}
@@ -3466,11 +3472,14 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement               xpath=((//*[contains(text(),'№')]/../../..//a)[position() mod 2 = 1])[1]
   uatenders.Переміститься до футера
   WaitVisibilityAndClickElement    name=period_date_start
+  WaitVisibilityAndClickElement    xpath=(.//*[@class='glyphicon glyphicon-calendar'])[2]
   WaitVisibilityAndClickElement    name=period_date_end
+  WaitVisibilityAndClickElement    xpath=(.//*[@class='glyphicon glyphicon-calendar'])[3]
   Sleep  2
   Choose File                      name=contract[files][]               ${filepath}
   Sleep  3
   WaitVisibilityAndClickElement    name=date_signed
+  WaitVisibilityAndClickElement    xpath=(.//*[@class='glyphicon glyphicon-calendar'])[1]
   Input Text                       name=contract_number          1234567890
   WaitVisibilityAndClickElement    name=tax
   WaitVisibilityAndClickElement    xpath=(//*[contains(@value,'Зберегти')])[1]
@@ -3493,22 +3502,32 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement               xpath=((//*[contains(text(),'№')]/../../..//a)[position() mod 2 = 1])[1]
   Sleep  5
   uatenders.Переміститься до футера
-  Run Keyword if   'Можливість редагувати вартість угоди без урахування ПДВ' in '${TEST_NAME}'   Sleep  600
-  Run Keyword If     '${field_name}' == 'value.amount'     Run Keyword
-  ...   ClearFildAndInputText         name=amount          ${value}
+  Run Keyword if   'Можливість редагувати вартість угоди без урахування ПДВ' in '${TEST_NAME}'   Sleep  500
+  Wait Until Keyword Succeeds   5 x   60 s     Run Keywords
+  ...   Reload Page
+  ...   AND   Sleep  2
+  ...   AND   Run Keyword If     '${field_name}' == 'value.amount'     Run Keyword
+  ...      ClearFildAndInputText         name=amount          ${value}
   ...      ELSE IF   '${field_name}' == 'value.amountNet'  Run Keyword
-  ...   ClearFildAndInputText      name=amount_net      ${value}
-  WaitVisibilityAndClickElement    name=period_date_start
-  WaitVisibilityAndClickElement    name=period_date_end
-  Sleep  2
-  Choose File                      name=contract[files][]               ${filepath}
-  Sleep  3
-  Clear Element Text               name=date_signed
-  Click Element                    xpath=(.//*[contains(text(),'Дата підписання')])[last()]
-  WaitVisibilityAndClickElement    name=date_signed
-  Input Text                       name=contract_number          1234567890
-  Sleep  2
-  WaitVisibilityAndClickElement    xpath=(//*[contains(@value,'Зберегти')])[1]
+  ...      ClearFildAndInputText      name=amount_net      ${value}
+  ...   AND   WaitVisibilityAndClickElement    name=period_date_start
+  ...   AND   WaitVisibilityAndClickElement    xpath=(.//*[@class='glyphicon glyphicon-calendar'])[2]
+  ...   AND   WaitVisibilityAndClickElement    name=period_date_end
+  ...   AND   WaitVisibilityAndClickElement    xpath=(.//*[@class='glyphicon glyphicon-calendar'])[3]
+  ...   AND   Sleep  2
+  ...   AND   Choose File                      name=contract[files][]               ${filepath}
+  ...   AND   Sleep  3
+  ...   AND   Clear Element Text               name=date_signed
+  ...   AND   Click Element                    xpath=(.//*[contains(text(),'Дата підписання')])[last()]
+  ...   AND   WaitVisibilityAndClickElement    name=date_signed
+  ...   AND   WaitVisibilityAndClickElement    xpath=(.//*[@class='glyphicon glyphicon-calendar'])[1]
+  ...   AND   Input Text                       name=contract_number          1234567890
+  ...   AND   Sleep  2
+  ...   AND   WaitVisibilityAndClickElement    xpath=(//*[contains(@value,'Зберегти')])[1]
+  ...   AND   Sleep  3
+  ...   AND   uatenders.Переміститься до хедера
+  ...   AND   Sleep  3
+  ...   AND   Element Should Be Visible       xpath=(.//*[@class='alert-cont']//*[contains(text(),'Дані контракту збережні')])    Дані контракту збережні
 
 Встановити дату підписання угоди
   [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${dateSigned}
