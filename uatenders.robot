@@ -457,12 +457,9 @@ DismissAlertPopUp
   \  Input Text                          name=items[${index+1}][quantity]                 ${quantityItems}
   \  ${deliveryEndDate}=  Convert Date   ${items[${index}].deliveryDate.endDate}          result_format=%d.%m.%Y
   \  Input Text                          name=items[${index+1}][delivery_end_date]        ${deliveryEndDate}
-  #  17 17 17
-  \  ${items_unit}=  convert_uatenders_string_to_common_string  ${items[${index}].unit.name}
-  \  Select From List                    name=items[${index+1}][unit_id]    ${items_unit}
-  # \  Select From List                    xpath=//*[@name="items[${index+1}][unit_id]"]    ${items[${index}].unit.name}
+  \  Select From List                    name=items[${index+1}][unit_id]    ${items[${index}].unit.name}
   \  Input Text                          name=items[${index+1}][cpv]                      ${items[${index}].classification.id}      #24910000-6     #${classificationID}
-  \  WaitVisibilityAndClickElement      xpath=(//*[contains(@class,'ui-menu-item')])[last()]
+  \  WaitVisibilityAndClickElement       xpath=(//*[contains(@class,'ui-menu-item')])[last()]
 
 ######################################    СТВОРЕННЯ ТЕНДЕРУ    ################################################
 Створити тендер
@@ -1037,10 +1034,7 @@ DismissAlertPopUp
   ${itemQuantity}=                   Get From Dictionary             ${item}                     quantity
   ${quantity}=                        Convert To String              ${itemQuantity}
   Input Text                                    name=lots[${defoultLot_index}][items][${item_index}][quantity]         ${quantity}
-  # #  17 17 17
-  ${unit_id}=  convert_uatenders_string_to_common_string  ${unit_id}
   Select From List                    name=lots[${defoultLot_index}][items][${item_index}][unit_id]    ${unit_id}
-  # Select From List                              name=lots[${defoultLot_index}][items][${item_index}][unit_id]          ${unit_id}
   Input Text                          name=lots[${defoultLot_index}][items][${item_index}][delivery_date_start]          ${delivery_start_date}  #${delivery_end_plus_date}
   Input Text                          name=lots[${defoultLot_index}][items][${item_index}][delivery_date_end]            ${delivery_end_date}  #${delivery_end_plus_date}
 
@@ -2461,10 +2455,7 @@ DismissAlertPopUp
   Input Text                          name=items[${index}][description]              ${item.description}
   ${quantityItems}=                   Convert To String                                ${item.quantity}
   Input Text                          name=items[${index}][quantity]                 ${quantityItems}
-  #  17 17 17
-  ${items_unit}=   convert_uatenders_string_to_common_string  ${item.unit.name}
-  Select From List                    xpath=//*[@name="items[${index}][unit_id]"]    ${items_unit}
-  # Select From List                    xpath=//*[@name="items[${index}][unit_id]"]    ${item.unit.name}
+  Select From List                    xpath=//*[@name="items[${index}][unit_id]"]    ${item.unit.name}
   ${deliveryEndDate}=  Convert Date   ${item.deliveryDate.endDate}          result_format=%d.%m.%Y
   Input Text                          name=items[${index}][delivery_end_date]        ${deliveryEndDate}
   Input Text                          name=items[${index}][cpv]                      ${item.classification.id}      #24910000-6     #${classificationID}
