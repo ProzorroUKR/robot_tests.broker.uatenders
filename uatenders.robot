@@ -1875,6 +1875,7 @@ DismissAlertPopUp
   ...   ELSE IF      '${fieldname}' == 'minimalStep.amount'     Run Keywords
   ...     Clear Element Text               xpath=(.//*[contains(@class,'budjet-step-interest')])
   ...   AND  Input Text           name=lots[0][${fieldNameLot}]            ${fieldValueLot}
+  uatenders.Заповнити поля регіону доставки першого предмета   ${0}
   uatenders.DismissAlertPopUp
   Run Keyword if   'внести зміни у лот після запитання' in '${TEST_NAME}'
   ...   uatenders.Підписати ЕЦП   ${username}   ${tender_uaid}
