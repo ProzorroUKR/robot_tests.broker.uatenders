@@ -459,7 +459,7 @@ DismissAlertPopUp
   \  Input Text                          name=items[${index+1}][delivery_end_date]        ${deliveryEndDate}
   \  Select From List                    name=items[${index+1}][unit_id]    ${items[${index}].unit.name}
   \  Input Text                          name=items[${index+1}][cpv]                      ${items[${index}].classification.id}      #24910000-6     #${classificationID}
-  \  WaitVisibilityAndClickElement      xpath=(//*[contains(@class,'ui-menu-item')])[last()]
+  \  WaitVisibilityAndClickElement       xpath=(//*[contains(@class,'ui-menu-item')])[last()]
 
 ######################################    СТВОРЕННЯ ТЕНДЕРУ    ################################################
 Створити тендер
