@@ -359,6 +359,7 @@ def convert_uatenders_string_to_common_string(string):
         u'лот': u'Лот',
 
         u'Україна': u'UA',
+        u'Не відображене в інших розділах': u'Не визначено',
 # Cтатус в процедуре: -> reporting
         u"value.amount": u"amount",
         u"minimalStep.amount": u"minimal_step",

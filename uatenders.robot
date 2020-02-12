@@ -168,7 +168,9 @@ ${locator.ownerViewer.contactPoint.status}                                  xpat
 ${locator.ownerViewer.contracts[0].status}                                  xpath=(//*[contains(text(),'Статус:')]/..//*[position() mod 2 = 0]/span)[1]
 ${locator.ownerViewer.contracts[1].status}                                  xpath=(//*[contains(text(),'Статус:')]/..//*[position() mod 2 = 0]/span)[1]
 ${locator.ownerViewer.contracts[0].value.amount}                            xpath=(.//*[@class='current_amount'])
+${locator.ownerViewer.contracts[1].value.amount}                            xpath=(.//*[@class='current_amount'])
 ${locator.ownerViewer.contracts[0].value.amountNet}                         xpath=(//*[contains(text(),'Ціна договору без ПДВ:')]/..//*[position() mod 2 = 0]/p)[1]
+${locator.ownerViewer.contracts[1].value.amountNet}                         xpath=(//*[contains(text(),'Ціна договору без ПДВ:')]/..//*[position() mod 2 = 0]/p)[1]
 ${locator.ownerViewer.contracts[0].dateSigned}                              xpath=(//*[contains(text(),'Дата підписання:')]/..//*[position() mod 2 = 0])
 ${locator.ownerViewer.contracts[0].period.startDate}                        xpath=(//*[contains(text(),'Початок дії договору:')]/..//*[position() mod 2 = 0])
 ${locator.ownerViewer.contracts[0].period.endDate}                          xpath=(//*[contains(text(),'Закінчення дії договору:')]/..//*[position() mod 2 = 0])
@@ -687,23 +689,25 @@ DismissAlertPopUp
 Можливість додати лот до тендеру
   [Arguments]  ${tender_data}  ${methodType}  ${mode}
   ${scenarios_name}=  get_scenarios_name
+  ${scenarios_name_1}=    Fetch From Right    ${scenarios_name}    /
+  ${scenarios_name_2}=    Fetch From Left    ${scenarios_name_1}    .
   ${LOTS_NUM}=  Run Keyword If
   ...   '${NUMBER_OF_LOTS}' == '0'   Set Variable   1
   ...   ELSE IF   '${NUMBER_OF_LOTS}' != '0'   Set Variable   ${NUMBER_OF_LOTS}
   ${milestonesStatus}=    Run Keyword And Return Status    Get From Dictionary    ${tender_data.data}     milestones
   :FOR   ${lot_index}   IN RANGE   ${LOTS_NUM}
   \  uatenders.Завантажити документ до створення 'Нової закупівлі' - тендер        ${tender_data}
-  \  Run Keyword IF    '${TENDER_MEAT}' == 'True'
+  \  Run Keyword IF   '${TENDER_MEAT}' == 'True'
   \  ...    uatenders.Можливість заповнити Tender info   ${tender_data}  ${methodType}  ${mode}  ${lot_index}
-  \  Run Keyword IF   'single_item_tender' in '${scenarios_name}' or '0' == '${NUMBER_OF_LOTS}' and '${methodType}' != 'reporting'
+  \  Run Keyword IF   'single_item_tender' == '${scenarios_name_2}' and '${LOT_MEAT}' == 'False' and '${methodType}' != 'reporting'
   \  ...    uatenders.Можливість заповнити безлотовий Lots info     ${tender_data}  ${methodType}  ${mode}
-  \  ...   ELSE IF    '' in '${scenarios_name}' and '${methodType}' != 'reporting' and '${LOT_MEAT}' == 'True'
+  \  Run Keyword IF   'single_item_tender' != '${scenarios_name_2}' and '${LOT_MEAT}' == 'True' and '${methodType}' != 'reporting'
   \  ...    uatenders.Можливість заповнити Lots info          ${tender_data}  ${methodType}   ${mode}        ${lot_index}
-  \  Run Keyword IF   '' in '${scenarios_name}' and '${methodType}' != 'reporting'
+  \  Run Keyword IF   'single_item_tender' != '${scenarios_name_2}' and '${methodType}' != 'reporting'
   \  ...    uatenders.Можливість в тендері заповнити поля роздiлу ЛОТИ                     ${tender_data}  ${lot_index}  #lot
-  \  Run Keyword IF    '${milestonesStatus}' == 'True'
+  \  Run Keyword IF   '${milestonesStatus}' == 'True'
   \  ...    uatenders.Можливість заповнити Milestones info    ${tender_data.data.milestones}  ${methodType}  ${mode}
-  \  Run Keyword IF    '${methodType}' == 'reporting'
+  \  Run Keyword IF   '${methodType}' == 'reporting'
   \  ...   uatenders.Додати цінову пропозицію до reporting   ${tender_data}
   \  Run Keyword IF   '${ITEM_MEAT}' == 'True'
   \  ...    uatenders.Можливість заповнити Items info    ${tender_data}  ${methodType}  ${mode}  ${lot_index}
@@ -1134,6 +1138,7 @@ DismissAlertPopUp
 Пошук тендера по ідентифікатору
   [Arguments]   ${username}  ${tender_uaid}  ${second_stage_data}=${EMPTY}
   Switch Browser  ${BROWSER_ALIAS}
+  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME}'    Sleep   300
   Wait Until Keyword Succeeds   10 x   5 s     Run Keywords
   ...   Run Keyword IF    '${tender_uaid}' == 'PASS'    Input Text    name=search[s]    ${tender_uaid}
   ...   AND   Go To   ${USERS.users['${username}'].homepage}
@@ -1870,6 +1875,7 @@ DismissAlertPopUp
   ...   ELSE IF      '${fieldname}' == 'minimalStep.amount'     Run Keywords
   ...     Clear Element Text               xpath=(.//*[contains(@class,'budjet-step-interest')])
   ...   AND  Input Text           name=lots[0][${fieldNameLot}]            ${fieldValueLot}
+  uatenders.Заповнити поля регіону доставки першого предмета   ${0}
   uatenders.DismissAlertPopUp
   Run Keyword if   'внести зміни у лот після запитання' in '${TEST_NAME}'
   ...   uatenders.Підписати ЕЦП   ${username}   ${tender_uaid}
@@ -3502,12 +3508,12 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement               xpath=((//*[contains(text(),'№')]/../../..//a)[position() mod 2 = 1])[1]
   Sleep  5
   uatenders.Переміститься до футера
-  Run Keyword if   'Можливість редагувати вартість угоди без урахування ПДВ' in '${TEST_NAME}'   Sleep  500
+  Run Keyword if   'Можливість редагувати вартість угоди без урахування ПДВ' in '${TEST_NAME}'   Sleep  600
   Wait Until Keyword Succeeds   5 x   60 s     Run Keywords
   ...   Reload Page
   ...   AND   Sleep  2
   ...   AND   Run Keyword If     '${field_name}' == 'value.amount'     Run Keyword
-  ...      ClearFildAndInputText         name=amount          ${value}
+  ...      ClearFildAndInputText      name=amount          ${value}
   ...      ELSE IF   '${field_name}' == 'value.amountNet'  Run Keyword
   ...      ClearFildAndInputText      name=amount_net      ${value}
   ...   AND   WaitVisibilityAndClickElement    name=period_date_start
@@ -3655,6 +3661,7 @@ DismissAlertPopUp
   Run Keyword If    '${mode}' == 'aboveThresholdEU' or '${mode}' == 'openeu' or '${mode}' == 'open_esco' or '${mode}' == 'closeFrameworkAgreementUA' or '${mode}' == 'open_framework'    ClearFildAndInputText    name=contact_name_en    Petrov
   #featereData   index   defoultIndex
   uatenders.Додати нецінові показники до тендеру  ${feature}  ${1}  ${0}
+  uatenders.Заповнити поля регіону доставки першого предмета   ${0}
   uatenders.DismissAlertPopUp
 
 Додати неціновий показник на предмет
@@ -3680,6 +3687,7 @@ DismissAlertPopUp
   Run Keyword If    '${mode}' == 'aboveThresholdEU' or '${mode}' == 'openeu' or '${mode}' == 'open_esco' or '${mode}' == 'closeFrameworkAgreementUA' or '${mode}' == 'open_framework'    ClearFildAndInputText    name=contact_name_en    Petrov
   Run Keyword And Ignore Error         ScrollToElementToFalse         (//*[contains(@class,'${feature_id}')]/..//following-sibling::*//*[. = 'Коментар'])[1]
   WaitVisibilityAndClickElement               xpath=(//*[contains(@class,'${feature_id}')])[1]
+  uatenders.Заповнити поля регіону доставки першого предмета   ${0}
   uatenders.DismissAlertPopUp
 
 Отримати інформацію із нецінового показника
@@ -3951,6 +3959,8 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement       xpath=(//*[text()[contains(.,'Оскарження')]])[1]
   WaitVisibilityAndClickElement       xpath=(.//*[contains(text(),'Подати скаргу')])[1]
   uatenders.Заповнити поля для вимоги/скарги  ${username}  ${tender_uaid}  ${claim}
+  Sleep  2
+  WaitVisibilityAndClickElement       xpath=(//*[contains(@type,'submit') and contains(@value,'Подати')])
   Run Keyword And Return        Get Element Attribute     xpath=(//*[contains(text(),"${claim.data.title}")]/..//../..)@data-complaintid
 
 Отримати інформацію із документа до скарги
