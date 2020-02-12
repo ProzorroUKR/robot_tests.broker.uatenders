@@ -3661,6 +3661,7 @@ DismissAlertPopUp
   Run Keyword If    '${mode}' == 'aboveThresholdEU' or '${mode}' == 'openeu' or '${mode}' == 'open_esco' or '${mode}' == 'closeFrameworkAgreementUA' or '${mode}' == 'open_framework'    ClearFildAndInputText    name=contact_name_en    Petrov
   #featereData   index   defoultIndex
   uatenders.Додати нецінові показники до тендеру  ${feature}  ${1}  ${0}
+  uatenders.Заповнити поля регіону доставки першого предмета   ${0}
   uatenders.DismissAlertPopUp
 
 Додати неціновий показник на предмет
@@ -3686,6 +3687,7 @@ DismissAlertPopUp
   Run Keyword If    '${mode}' == 'aboveThresholdEU' or '${mode}' == 'openeu' or '${mode}' == 'open_esco' or '${mode}' == 'closeFrameworkAgreementUA' or '${mode}' == 'open_framework'    ClearFildAndInputText    name=contact_name_en    Petrov
   Run Keyword And Ignore Error         ScrollToElementToFalse         (//*[contains(@class,'${feature_id}')]/..//following-sibling::*//*[. = 'Коментар'])[1]
   WaitVisibilityAndClickElement               xpath=(//*[contains(@class,'${feature_id}')])[1]
+  uatenders.Заповнити поля регіону доставки першого предмета   ${0}
   uatenders.DismissAlertPopUp
 
 Отримати інформацію із нецінового показника
