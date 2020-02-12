@@ -1138,6 +1138,7 @@ DismissAlertPopUp
 Пошук тендера по ідентифікатору
   [Arguments]   ${username}  ${tender_uaid}  ${second_stage_data}=${EMPTY}
   Switch Browser  ${BROWSER_ALIAS}
+  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME}'    Sleep   300
   Wait Until Keyword Succeeds   10 x   5 s     Run Keywords
   ...   Run Keyword IF    '${tender_uaid}' == 'PASS'    Input Text    name=search[s]    ${tender_uaid}
   ...   AND   Go To   ${USERS.users['${username}'].homepage}
