@@ -168,7 +168,9 @@ ${locator.ownerViewer.contactPoint.status}                                  xpat
 ${locator.ownerViewer.contracts[0].status}                                  xpath=(//*[contains(text(),'Статус:')]/..//*[position() mod 2 = 0]/span)[1]
 ${locator.ownerViewer.contracts[1].status}                                  xpath=(//*[contains(text(),'Статус:')]/..//*[position() mod 2 = 0]/span)[1]
 ${locator.ownerViewer.contracts[0].value.amount}                            xpath=(.//*[@class='current_amount'])
+${locator.ownerViewer.contracts[1].value.amount}                            xpath=(.//*[@class='current_amount'])
 ${locator.ownerViewer.contracts[0].value.amountNet}                         xpath=(//*[contains(text(),'Ціна договору без ПДВ:')]/..//*[position() mod 2 = 0]/p)[1]
+${locator.ownerViewer.contracts[1].value.amountNet}                         xpath=(//*[contains(text(),'Ціна договору без ПДВ:')]/..//*[position() mod 2 = 0]/p)[1]
 ${locator.ownerViewer.contracts[0].dateSigned}                              xpath=(//*[contains(text(),'Дата підписання:')]/..//*[position() mod 2 = 0])
 ${locator.ownerViewer.contracts[0].period.startDate}                        xpath=(//*[contains(text(),'Початок дії договору:')]/..//*[position() mod 2 = 0])
 ${locator.ownerViewer.contracts[0].period.endDate}                          xpath=(//*[contains(text(),'Закінчення дії договору:')]/..//*[position() mod 2 = 0])
