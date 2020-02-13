@@ -1133,8 +1133,8 @@ DismissAlertPopUp
   [Arguments]   ${username}  ${tender_uaid}  ${second_stage_data}=${EMPTY}
   Switch Browser  ${BROWSER_ALIAS}
   # for exclude Quinta errors added Sleeep 600
-  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME}'                Sleep   600
-  Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME}'    Sleep   600
+  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'                Sleep   600
+  Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'    Sleep   600
   Wait Until Keyword Succeeds   10 x   5 s     Run Keywords
   ...   Run Keyword IF    '${tender_uaid}' == 'PASS'    Input Text    name=search[s]    ${tender_uaid}
   ...   AND   Go To   ${USERS.users['${username}'].homepage}
@@ -2596,7 +2596,7 @@ DismissAlertPopUp
   uatenders.Заповнити поля регіону доставки першого предмета   ${0}
   uatenders.DismissAlertPopUp
   Sleep  3
-  Run Keyword if   'більше ніж за 7 днів до завершення періоду подання пропозицій' in '${TEST_NAME}'
+  Run Keyword if   'більше ніж за 7 днів до завершення періоду подання пропозицій' in '${TEST_NAME.replace('\'', '')}'
   ...   uatenders.Підписати ЕЦП   ${username}   ${tender_uaid}
   [Return]  ${return_value}
 
@@ -3041,7 +3041,7 @@ DismissAlertPopUp
   ${filepath}=               get_file_path
   WaitVisibilityAndClickElement         xpath=(//*[contains(@class,'btn btn-warning') and contains(.,'Кваліфікація')])[1]
 #  Квалификация победителя по Допорогам проходит, через этот кейВорд
-  Run Keyword if   'Неможливість' in '${TEST_NAME}'    Run Keywords
+  Run Keyword if   'Неможливість' in '${TEST_NAME.replace('\'', '')}'    Run Keywords
   ...   Sleep  300
   ...   AND   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   ...   AND   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Угоди')]])
@@ -3297,7 +3297,7 @@ DismissAlertPopUp
 
 Отримати доступ до угоди
   [Arguments]  ${username}  ${agreement_uaid}
-  Run Keyword if   'Можливість отримати доступ до угоди' in '${TEST_NAME}'   Sleep  300
+  Run Keyword if   'Можливість отримати доступ до угоди' in '${TEST_NAME.replace('\'', '')}'   Sleep  300
   Wait Until Keyword Succeeds   15 x   45 s     Run Keywords
   ...   uatenders.Пошук угоди по ідентифікатору  ${username}  ${agreement_uaid}
   ...   AND   Sleep  2
