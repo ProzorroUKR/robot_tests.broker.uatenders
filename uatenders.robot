@@ -331,7 +331,7 @@ DismissAlertPopUp
   Set Window Size       @{USERS.users['${ARGUMENTS[0]}'].size}
   Set Window Position   @{USERS.users['${ARGUMENTS[0]}'].position}
   ############   Login
-  maximize browser window
+  # maximize browser window
   Delete All Cookies
   WaitVisibilityAndClickElement      xpath=(//*[text()[contains(.,'Вхід')]])[1]
   Wait Until Page Contains Element   name=email
@@ -1238,8 +1238,11 @@ DismissAlertPopUp
   [Arguments]   ${username}  ${tender_uaid}  ${lot_id}  ${field}
   Run Keyword IF   '${field}' == 'auctionPeriod.startDate'
   ...       Run Keyword And Return    Отримати інформацію із лоту про замовника lots[0].${field}
-  Run Keyword IF   '${field}' != 'auctionPeriod.startDate'
+  Run Keyword IF   '${field}' != 'auctionPeriod.startDate' or '${field}' != 'lots[0].fundingKind'
   ...       Run Keyword And Return    Отримати інформацію із лоту про замовника lots[0].${field}  ${lot_id}  ${username}  ${tender_uaid}
+  Run Keyword IF   '${field}' == 'lots[0].fundingKind'
+  ...       Run Keyword And Return    Отримати інформацію із лоту про замовника ${field}  ${lot_id}  ${username}  ${tender_uaid}
+
 
 Отримати текст плана із поля
   [Arguments]   ${fieldname}
@@ -1506,6 +1509,11 @@ DismissAlertPopUp
 
 Отримати інформацію про замовника fundingKind
   ${return_value}=                 Отримати текст із поля для замовника               fundingKind
+  Run Keyword And Return           convert_fundingKind                                ${return_value}
+
+Отримати інформацію із лоту про замовника lots[0].fundingKind
+  [Arguments]   ${lot_id}  ${username}  ${tender_uaid}
+  ${return_value}=    Get Text   xpath=((//*[contains(text(),'Лоти')]//following::*)[contains(text(),'${lot_id}')]//following::*[@class='clean-table']//*[contains(text(),'Джерело фінансування лота:')]/../td)[1]
   Run Keyword And Return           convert_fundingKind                                ${return_value}
 
 Отримати інформацію про замовника maxAwardsCount
@@ -2706,8 +2714,8 @@ DismissAlertPopUp
   ${yearlyPaymentsPercentageRange}=      Evaluate      ${bid.data.lotValues[0].value.yearlyPaymentsPercentage}*${100}
   ${yearlyPaymentsPercentageRange}=      Convert To String      ${yearlyPaymentsPercentageRange}
   Run Keyword if   'Неможливість подати цінову пропозицію' in '${TEST_NAME}'      Fail
-  Run Keyword if   '${username}' == 'uatenders_Provider' and '${username}' == 'uatenders_Provider1' and '${username}' == 'uatenders_Provider2'
-  ...     WaitVisibilityAndClickElement           xpath=(//*[text()[contains(.,'Подати пропозицію')]])[1]
+  Run Keyword if   '${username}' == 'uatenders_Provider' or '${username}' == 'uatenders_Provider1' or '${username}' == 'uatenders_Provider2'
+  ...     WaitVisibilityAndClickElement           xpath=(//*[contains(text(),'Подати пропозицію')])[1]
   Sleep  5
   Input Text        name=esco_year                         ${bid.data.lotValues[0].value.contractDuration.years}
   Input Text        name=esco_day                          ${bid.data.lotValues[0].value.contractDuration.days}
@@ -2732,7 +2740,7 @@ DismissAlertPopUp
 
   Sleep  1
   Choose File                             css=[name*=files]                         ${filepath}
-  Sleep  4
+  Sleep  3
   Select From List                        xpath=//*[@id='out-select']      27    # Цінова пропозиція
   Sleep  1
   Run Keyword And Ignore Error     WaitVisibilityAndClickElement     xpath=(//label[@class='labelCheck'])
@@ -2757,9 +2765,9 @@ DismissAlertPopUp
   [Arguments]  ${username}  ${tender_uaid}  ${fieldname}  ${fieldvalue}
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   WaitVisibilityAndClickElement         xpath=(.//*[@class='Propoz-panel']//*[contains(text(),'Редагувати') or contains(text(),'Оновити')])
-  Sleep  5
+  Sleep  2
   Reload Page
-  Sleep  5
+  Sleep  2
   Reload Page
   # Run Keyword And Return If    '${fieldvalue}' == 'None'    uatenders.Дочекатися кнопку Активувати    ${username}  ${tender_uaid}
   Run Keyword And Return If    'після зміни умов тендера' in '${TEST_NAME}'    uatenders.Дочекатися кнопку Активувати    ${username}  ${tender_uaid}

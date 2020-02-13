@@ -339,6 +339,9 @@ def convert_status(string):
         u"Період запрошень": u"active.enquiries",
         u"Укладена рамкова угода": u"active",
 
+
+        u"Очікування другого етапу": u"active.stage2.pending",
+
     }.get(string, string)
 
 def convert_uatenders_string_to_common_string(string):
