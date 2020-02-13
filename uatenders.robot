@@ -1132,7 +1132,9 @@ DismissAlertPopUp
 Пошук тендера по ідентифікатору
   [Arguments]   ${username}  ${tender_uaid}  ${second_stage_data}=${EMPTY}
   Switch Browser  ${BROWSER_ALIAS}
-  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME}'    Sleep   300
+  # for exclude Quinta errors added Sleeep 600
+  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME}'                Sleep   600
+  Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME}'    Sleep   600
   Wait Until Keyword Succeeds   10 x   5 s     Run Keywords
   ...   Run Keyword IF    '${tender_uaid}' == 'PASS'    Input Text    name=search[s]    ${tender_uaid}
   ...   AND   Go To   ${USERS.users['${username}'].homepage}
@@ -1307,7 +1309,16 @@ DismissAlertPopUp
   Sleep  2
   ${return_value}=                  Отримати текст із поля для замовника             status
   Run Keyword if   'Неможливість підтвердити постачальника після закінчення періоду кваліфікації' in '${TEST_NAME}'       Sleep  60
-  Run Keyword And Return            convert_status                 ${return_value}
+  ${return_value}=               convert_status               ${return_value}
+# Expected error '*' did not occur.
+  Run Keyword if   'active.pre-qualification.stand-still' == '${return_value}'    Run Keywords
+  ...   Sleep  2
+  ...   AND   Run Keyword And Ignore Error      Click Element          xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  ...   AND   Reload Page
+  ...   AND   Sleep  30
+  ...   AND   Reload Page
+  ...   AND   Sleep  5
+  [Return]    ${return_value}
 
 Отримати інформацію про замовника complaints[${index}].status
   Run Keyword And Ignore Error      Click Element      xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
@@ -2695,9 +2706,9 @@ DismissAlertPopUp
   ${yearlyPaymentsPercentageRange}=      Evaluate      ${bid.data.lotValues[0].value.yearlyPaymentsPercentage}*${100}
   ${yearlyPaymentsPercentageRange}=      Convert To String      ${yearlyPaymentsPercentageRange}
   Run Keyword if   'Неможливість подати цінову пропозицію' in '${TEST_NAME}'      Fail
-  Run Keyword IF   '${username}' == 'uatenders_Provider'
+  Run Keyword if   '${username}' == 'uatenders_Provider' and '${username}' == 'uatenders_Provider1' and '${username}' == 'uatenders_Provider2'
   ...     WaitVisibilityAndClickElement           xpath=(//*[text()[contains(.,'Подати пропозицію')]])[1]
-  Sleep  2
+  Sleep  5
   Input Text        name=esco_year                         ${bid.data.lotValues[0].value.contractDuration.years}
   Input Text        name=esco_day                          ${bid.data.lotValues[0].value.contractDuration.days}
   Input Text        name=yearly_payments_percentage        ${yearlyPaymentsPercentageRange}
