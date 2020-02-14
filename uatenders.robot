@@ -329,7 +329,7 @@ DismissAlertPopUp
   Set Window Size       @{USERS.users['${username}'].size}
   Set Window Position   @{USERS.users['${username}'].position}
   ############   Login
-  maximize browser window
+  # maximize browser window
   Delete All Cookies
   WaitVisibilityAndClickElement      xpath=(//*[text()[contains(.,'Вхід')]])[1]
   Wait Until Page Contains Element   name=email
@@ -1133,6 +1133,7 @@ DismissAlertPopUp
   # for exclude Quinta errors added Sleeep 600
   Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'                Sleep   700
   Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'    Sleep   700
+
   Wait Until Keyword Succeeds   10 x   5 s     Run Keywords
   ...   Run Keyword IF    '${tender_uaid}' == 'PASS'    Input Text    name=search[s]    ${tender_uaid}
   ...   AND   Go To   ${USERS.users['${username}'].homepage}
@@ -1169,7 +1170,7 @@ DismissAlertPopUp
   Log To Console  _
   Log To Console  agreementId --> ${agreementId}
   uatenders.Пошук тендера по ідентифікатору   ${username}  ${agreement_uaid}
-  WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Угоди')]])
+  WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Угоди')]])[1]
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
   Sleep  2
   Page Should Contain  ${agreement_uaid}
@@ -1249,7 +1250,6 @@ DismissAlertPopUp
   ...       Run Keyword And Return    Отримати інформацію із лоту про замовника lots[0].${field}  ${lot_id}  ${username}  ${tender_uaid}
   Run Keyword IF   '${field}' == 'lots[0].fundingKind'
   ...       Run Keyword And Return    Отримати інформацію із лоту про замовника ${field}  ${lot_id}  ${username}  ${tender_uaid}
-
 
 Отримати текст плана із поля
   [Arguments]   ${fieldname}
@@ -2733,32 +2733,23 @@ DismissAlertPopUp
   :FOR  ${index}  IN RANGE  0  ${cost_length}
   \  ${cost}=  Convert To String  ${value[${index}]}
   \  ClearFildAndInputText           name=step[${index}]    ${cost}
-
-  Run Keyword And Ignore Error     WaitVisibilityAndClickElement     xpath=(//*[@name='values[0]'])
-  Run Keyword And Ignore Error     WaitVisibilityAndClickElement     xpath=(//*[@name='values[0]']//option[2])
-  Run Keyword And Ignore Error     ScrollToElement                   (//*[text()[contains(.,'Нецінові показники')]]/..//*[. = 'Нецінові показники'])
-
-  Run Keyword And Ignore Error     WaitVisibilityAndClickElement     xpath=(//*[@name='values[1]'])
-  Run Keyword And Ignore Error     WaitVisibilityAndClickElement     xpath=(//*[@name='values[1]']//option[3])
-  Run Keyword And Ignore Error     ScrollToElement                   (//*[text()[contains(.,'Нецінові показники')]]/..//*[. = 'Нецінові показники'])
-
-  Run Keyword And Ignore Error     WaitVisibilityAndClickElement     xpath=(//*[@name='values[2]'])
-  Run Keyword And Ignore Error     WaitVisibilityAndClickElement     xpath=(//*[@name='values[2]']//option[4])
-
+  ${feature_index}=   Get Matching Xpath Count   xpath=(.//*[contains(@name,'values[')])
+  :FOR  ${index}  IN RANGE  0  ${feature_index}
+  \  WaitVisibilityAndClickElement     xpath=(//*[@name='values[${index}]'])
+  \  WaitVisibilityAndClickElement     xpath=(//*[@name='values[0]']//option[${index+2}])
+  \  Run Keyword And Ignore Error     ScrollToElement     (//*[text()[contains(.,'Нецінові показники')]]/..//*[. = 'Нецінові показники'])
   Sleep  1
   Choose File                             css=[name*=files]                         ${filepath}
-  Sleep  3
+  Sleep  2
   Select From List                        xpath=//*[@id='out-select']      27    # Цінова пропозиція
   Sleep  1
-  Run Keyword And Ignore Error     WaitVisibilityAndClickElement     xpath=(//label[@class='labelCheck'])
-  Run Keyword And Ignore Error              Input Text               xpath=(//*[contains(text(),'Конфіденційні дані')]//..//*[contains(@placeholder,'Причина')])     Конфіденційні дані субпідрядника
-  Run Keyword And Ignore Error              Input Text               name=subcontracting_details                        Iнформація про субпідрядника
-  Run Keyword And Ignore Error     WaitVisibilityAndClickElement     xpath=(//*[@class='consent'])[1]
-  Run Keyword And Ignore Error     WaitVisibilityAndClickElement     xpath=(//*[@class='consent'])[2]
+  ClearFildAndInputText             name=subcontracting_details             Iнформація про субпідрядника
+  WaitVisibilityAndClickElement     xpath=(//*[@class='consent'])[1]
+  WaitVisibilityAndClickElement     xpath=(//*[@class='consent'])[2]
+
   WaitVisibilityAndClickElement                                      xpath=(//*[contains(@type,'submit') and contains(@value,'Опублікувати') or contains(text(),'Опублікувати зміни') or contains(@value,'Подати пропозицію')])[1]
   Run Keyword And Ignore Error     Wait Until Element Is Visible     xpath=(//*[text()[contains(.,'Документи завантажуються до ЦБД Prozorro.')]])     10
-
-  Wait Until Keyword Succeeds   10 x   30 s     Run Keywords
+  Wait Until Keyword Succeeds   10 x   15 s     Run Keywords
   ...   Run Keyword IF      '${username}' == 'PASS'     Element Should Be Visible       xpath=(//*[@class='bidBlock docInfo']/p)[1]      Документи реєструються у ЦБД Prozorro.
   ...   AND   Reload Page
   ...   AND   Sleep  1
@@ -2928,7 +2919,7 @@ DismissAlertPopUp
   Run Keyword And Ignore Error     ScrollToElementToFalse     (//*[contains(text(),'Підтверджую відсутність підстав для відмови')])[1]
   Sleep  1
   Choose File                      css=[name*=files]                 ${filePath}
-  Sleep  4
+  Sleep  2
   Run Keyword if   'завантажити фінансовий документ до пропозиції' in '${TEST_NAME}'
   ...   Select From List                 xpath=//*[@id='out-select']       27  #${doc_type}   # financial_documents
   ...     ELSE IF   'завантажити кваліфікаційний документ до пропозиції' in '${TEST_NAME}'
@@ -2977,13 +2968,10 @@ DismissAlertPopUp
   ScrollToElementToFalse                                (//*[contains(text(),'З 8 до 18')])[2]
   Sleep  1
   Choose File        css=[name*=files]        ${filepath}
-  Sleep  4
+  Sleep  2
   Select From List     xpath=//*[@id='out-select']       27 #  Цінова пропозиція
-  Sleep  2
   WaitVisibilityAndClickElement     xpath=(//label[@class='labelCheck'])
-  Sleep  2
-  Input Text               xpath=(//*[contains(text(),'Конфіденційні дані')]//..//*[contains(@placeholder,'Причина')])     ${doc_data.data.confidentialityRationale}
-  Sleep  2
+  ClearFildAndInputText               xpath=(//*[contains(text(),'Конфіденційні дані')]//..//*[contains(@placeholder,'Причина')])     ${doc_data.data.confidentialityRationale}
   Run Keyword And Ignore Error      WaitVisibilityAndClickElement          xpath=(//*[contains(text(),'Активувати')])
   WaitVisibilityAndClickElement                   xpath=(//*[contains(@value,'Опублікувати') or contains(text(),'Опублікувати зміни') or contains(text(),'Оновити')])[1]
   Run Keyword And Ignore Error      Wait Until Element Is Visible          xpath=(//*[text()[contains(.,'Документи завантажуються до')]])     10
