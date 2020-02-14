@@ -1131,8 +1131,8 @@ DismissAlertPopUp
   [Arguments]   ${username}  ${tender_uaid}  ${second_stage_data}=${EMPTY}
   Switch Browser  ${BROWSER_ALIAS_USERNAME}
   # for exclude Quinta errors added Sleeep 600
-  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'                Sleep   600
-  Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'    Sleep   600
+  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'                Sleep   700
+  Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'    Sleep   700
   Wait Until Keyword Succeeds   10 x   5 s     Run Keywords
   ...   Run Keyword IF    '${tender_uaid}' == 'PASS'    Input Text    name=search[s]    ${tender_uaid}
   ...   AND   Go To   ${USERS.users['${username}'].homepage}
@@ -1201,6 +1201,12 @@ DismissAlertPopUp
 Отримати інформацію із тендера
   [Arguments]   ${username}  ${tender_uaid}  ${field_name}
   Switch Browser  ${BROWSER_ALIAS_USERNAME}
+  Run Keyword IF   'Відображення статусу блокування перед початком аукціону' in '${TEST_NAME}'   Wait Until Keyword Succeeds   5 x   35 s   Run Keywords
+  ...   Reload Page
+  ...   AND   Sleep  2
+  ...   AND   Run Keyword And Ignore Error      Click Element          xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  ...   AND   Sleep  2
+  ...   AND   Element Should Be Visible         xpath=(//table[@class="clean-table"]//span)[1]      Прекваліфікація (період оскаржень)
   Run Keyword IF   '${username}' == 'uatenders_Owner' or '${username}' == 'uatenders_Viewer'
   ...   Run Keyword And Return    Отримати інформацію про замовника ${field_name}
   Run Keyword IF   '${username}' != 'uatenders_Owner' or '${username}' != 'uatenders_Viewer'
@@ -2407,7 +2413,7 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
   ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].value.amount
  # слип от "Calling method 'get_tender' failed: ConnectionError: ('Connection aborted.', BadStatusLine('No status line received - the server has closed the connection',))"
-  Run Keyword IF    '${MODE}' == 'negotiation'   Sleep   600
+  Run Keyword IF    '${MODE}' == 'negotiation'   Sleep   700
   Run Keyword And Return               string_to_float                  ${return_value}
 
 Отримати інформацію про замовника contracts[${index}].value.amountNet
@@ -3519,7 +3525,7 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement               xpath=((//*[contains(text(),'№')]/../../..//a)[position() mod 2 = 1])[1]
   Sleep  5
   uatenders.Переміститься до футера
-  Run Keyword if   'Можливість редагувати вартість угоди без урахування ПДВ' in '${TEST_NAME}'   Sleep  600
+  Run Keyword if   'Можливість редагувати вартість угоди без урахування ПДВ' in '${TEST_NAME}'   Sleep  700
   Wait Until Keyword Succeeds   5 x   60 s     Run Keywords
   ...   Reload Page
   ...   AND   Sleep  2
