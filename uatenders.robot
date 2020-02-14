@@ -317,26 +317,24 @@ DismissAlertPopUp
 ############################################################################################################
 
 Підготувати клієнт для користувача
-  [Arguments]  @{ARGUMENTS}
+  [Arguments]  ${username}
   ${chrome_options}=    Evaluate   sys.modules['selenium.webdriver'].ChromeOptions()    sys
   Call Method    ${chrome_options}    add_argument    --disable-notifications
   Call Method    ${chrome_options}  add_argument    --allow-running-insecure-content
   Call Method    ${chrome_options}  add_argument    --disable-web-security
   Call Method    ${chrome_options}  add_argument    --nativeEvents\=false
   # Create Webdriver    Chrome    chrome_options=${chrome_options}
-  Set Global Variable   ${GLOBAL_USER_NAME}    ${ARGUMENTS[0]}
-  ${alias}=    Convert To String    ${ARGUMENTS[0]}
-  Set Global Variable   ${BROWSER_ALIAS}   ${alias}
-  Open Browser   ${USERS.users['${ARGUMENTS[0]}'].homepage}   ${USERS.users['${ARGUMENTS[0]}'].browser}   alias=${BROWSER_ALIAS}
-  Set Window Size       @{USERS.users['${ARGUMENTS[0]}'].size}
-  Set Window Position   @{USERS.users['${ARGUMENTS[0]}'].position}
+  Set Global Variable   ${BROWSER_ALIAS_USERNAME}   ${username}
+  Open Browser   ${USERS.users['${username}'].homepage}   ${USERS.users['${username}'].browser}   alias=${BROWSER_ALIAS_USERNAME}
+  Set Window Size       @{USERS.users['${username}'].size}
+  Set Window Position   @{USERS.users['${username}'].position}
   ############   Login
-  # maximize browser window
+  maximize browser window
   Delete All Cookies
   WaitVisibilityAndClickElement      xpath=(//*[text()[contains(.,'Вхід')]])[1]
   Wait Until Page Contains Element   name=email
-  Input Text                         name=email      ${USERS.users['${ARGUMENTS[0]}'].login}
-  Input Text                         name=password   ${USERS.users['${ARGUMENTS[0]}'].password}
+  Input Text                         name=email      ${USERS.users['${username}'].login}
+  Input Text                         name=password   ${USERS.users['${username}'].password}
   WaitVisibilityAndClickElement      xpath=//input[contains(@class, 'btn btn-success zak-log-btn')]
 
 ######################################    Tender operations    ################################################
@@ -1131,7 +1129,7 @@ DismissAlertPopUp
 ######################################    ПОШУК Тендеру   ################################################
 Пошук тендера по ідентифікатору
   [Arguments]   ${username}  ${tender_uaid}  ${second_stage_data}=${EMPTY}
-  Switch Browser  ${BROWSER_ALIAS}
+  Switch Browser  ${BROWSER_ALIAS_USERNAME}
   # for exclude Quinta errors added Sleeep 600
   Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'                Sleep   600
   Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'    Sleep   600
@@ -1163,6 +1161,7 @@ DismissAlertPopUp
 ######################################    ПОШУК Угоди   ################################################
 Пошук угоди по ідентифікатору
   [Arguments]  ${username}  ${agreement_uaid}
+  Switch Browser  ${BROWSER_ALIAS_USERNAME}
   Log To Console  _
   Log To Console  agreement_id --> ${agreement_uaid}
   ${agreementId}=  Remove String Using Regexp  ${agreement_uaid}  -\\w+\\d$
@@ -1180,7 +1179,7 @@ DismissAlertPopUp
 ######################################    ОНОВИТИ СТОРІНКУ для Тендера    ################################################
 Оновити сторінку з тендером
   [Arguments]   ${username}  ${tender_uaid}
-  Switch Browser  ${BROWSER_ALIAS}
+  Switch Browser  ${BROWSER_ALIAS_USERNAME}
   Run Keyword And Ignore Error    Click Element           xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
   Sleep  2
   Reload Page
@@ -1188,7 +1187,7 @@ DismissAlertPopUp
 ######################################    ОНОВИТИ СТОРІНКУ для Плана    ################################################
 Оновити сторінку з планом
   [Arguments]   ${username}  ${plan_uaid}
-  Switch Browser  ${BROWSER_ALIAS}
+  Switch Browser  ${BROWSER_ALIAS_USERNAME}
   Reload Page
   Sleep  2
   Run Keyword And Ignore Error      Click Element                      xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
@@ -1196,10 +1195,12 @@ DismissAlertPopUp
 ######################################    Отримати інформацію    ################################################
 Отримати інформацію із плану
   [Arguments]   ${username}  ${tender_uaid}  ${field_name}
+  Switch Browser  ${BROWSER_ALIAS_USERNAME}
   Run Keyword And Return    Отримати інформацію про план поля ${field_name}
 
 Отримати інформацію із тендера
   [Arguments]   ${username}  ${tender_uaid}  ${field_name}
+  Switch Browser  ${BROWSER_ALIAS_USERNAME}
   Run Keyword IF   '${username}' == 'uatenders_Owner' or '${username}' == 'uatenders_Viewer'
   ...   Run Keyword And Return    Отримати інформацію про замовника ${field_name}
   Run Keyword IF   '${username}' != 'uatenders_Owner' or '${username}' != 'uatenders_Viewer'
