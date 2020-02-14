@@ -317,26 +317,24 @@ DismissAlertPopUp
 ############################################################################################################
 
 Підготувати клієнт для користувача
-  [Arguments]  @{ARGUMENTS}
+  [Arguments]  ${username}
   ${chrome_options}=    Evaluate   sys.modules['selenium.webdriver'].ChromeOptions()    sys
   Call Method    ${chrome_options}    add_argument    --disable-notifications
   Call Method    ${chrome_options}  add_argument    --allow-running-insecure-content
   Call Method    ${chrome_options}  add_argument    --disable-web-security
   Call Method    ${chrome_options}  add_argument    --nativeEvents\=false
   # Create Webdriver    Chrome    chrome_options=${chrome_options}
-  Set Global Variable   ${GLOBAL_USER_NAME}    ${ARGUMENTS[0]}
-  ${alias}=    Convert To String    ${ARGUMENTS[0]}
-  Set Global Variable   ${BROWSER_ALIAS}   ${alias}
-  Open Browser   ${USERS.users['${ARGUMENTS[0]}'].homepage}   ${USERS.users['${ARGUMENTS[0]}'].browser}   alias=${BROWSER_ALIAS}
-  Set Window Size       @{USERS.users['${ARGUMENTS[0]}'].size}
-  Set Window Position   @{USERS.users['${ARGUMENTS[0]}'].position}
+  Set Global Variable   ${BROWSER_ALIAS_USERNAME}   ${username}
+  Open Browser   ${USERS.users['${username}'].homepage}   ${USERS.users['${username}'].browser}   alias=${BROWSER_ALIAS_USERNAME}
+  Set Window Size       @{USERS.users['${username}'].size}
+  Set Window Position   @{USERS.users['${username}'].position}
   ############   Login
   maximize browser window
   Delete All Cookies
   WaitVisibilityAndClickElement      xpath=(//*[text()[contains(.,'Вхід')]])[1]
   Wait Until Page Contains Element   name=email
-  Input Text                         name=email      ${USERS.users['${ARGUMENTS[0]}'].login}
-  Input Text                         name=password   ${USERS.users['${ARGUMENTS[0]}'].password}
+  Input Text                         name=email      ${USERS.users['${username}'].login}
+  Input Text                         name=password   ${USERS.users['${username}'].password}
   WaitVisibilityAndClickElement      xpath=//input[contains(@class, 'btn btn-success zak-log-btn')]
 
 ######################################    Tender operations    ################################################
@@ -1131,10 +1129,10 @@ DismissAlertPopUp
 ######################################    ПОШУК Тендеру   ################################################
 Пошук тендера по ідентифікатору
   [Arguments]   ${username}  ${tender_uaid}  ${second_stage_data}=${EMPTY}
-  Switch Browser  ${BROWSER_ALIAS}
+  Switch Browser  ${BROWSER_ALIAS_USERNAME}
   # for exclude Quinta errors added Sleeep 600
-  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME}'                Sleep   600
-  Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME}'    Sleep   600
+  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'                Sleep   700
+  Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'    Sleep   700
   Wait Until Keyword Succeeds   10 x   5 s     Run Keywords
   ...   Run Keyword IF    '${tender_uaid}' == 'PASS'    Input Text    name=search[s]    ${tender_uaid}
   ...   AND   Go To   ${USERS.users['${username}'].homepage}
@@ -1163,6 +1161,7 @@ DismissAlertPopUp
 ######################################    ПОШУК Угоди   ################################################
 Пошук угоди по ідентифікатору
   [Arguments]  ${username}  ${agreement_uaid}
+  Switch Browser  ${BROWSER_ALIAS_USERNAME}
   Log To Console  _
   Log To Console  agreement_id --> ${agreement_uaid}
   ${agreementId}=  Remove String Using Regexp  ${agreement_uaid}  -\\w+\\d$
@@ -1180,7 +1179,7 @@ DismissAlertPopUp
 ######################################    ОНОВИТИ СТОРІНКУ для Тендера    ################################################
 Оновити сторінку з тендером
   [Arguments]   ${username}  ${tender_uaid}
-  Switch Browser  ${BROWSER_ALIAS}
+  Switch Browser  ${BROWSER_ALIAS_USERNAME}
   Run Keyword And Ignore Error    Click Element           xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
   Sleep  2
   Reload Page
@@ -1188,7 +1187,7 @@ DismissAlertPopUp
 ######################################    ОНОВИТИ СТОРІНКУ для Плана    ################################################
 Оновити сторінку з планом
   [Arguments]   ${username}  ${plan_uaid}
-  Switch Browser  ${BROWSER_ALIAS}
+  Switch Browser  ${BROWSER_ALIAS_USERNAME}
   Reload Page
   Sleep  2
   Run Keyword And Ignore Error      Click Element                      xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
@@ -1196,10 +1195,18 @@ DismissAlertPopUp
 ######################################    Отримати інформацію    ################################################
 Отримати інформацію із плану
   [Arguments]   ${username}  ${tender_uaid}  ${field_name}
+  Switch Browser  ${BROWSER_ALIAS_USERNAME}
   Run Keyword And Return    Отримати інформацію про план поля ${field_name}
 
 Отримати інформацію із тендера
   [Arguments]   ${username}  ${tender_uaid}  ${field_name}
+  Switch Browser  ${BROWSER_ALIAS_USERNAME}
+  Run Keyword IF   'Відображення статусу блокування перед початком аукціону' in '${TEST_NAME}'   Wait Until Keyword Succeeds   5 x   35 s   Run Keywords
+  ...   Reload Page
+  ...   AND   Sleep  2
+  ...   AND   Run Keyword And Ignore Error      Click Element          xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  ...   AND   Sleep  2
+  ...   AND   Element Should Be Visible         xpath=(//table[@class="clean-table"]//span)[1]      Прекваліфікація (період оскаржень)
   Run Keyword IF   '${username}' == 'uatenders_Owner' or '${username}' == 'uatenders_Viewer'
   ...   Run Keyword And Return    Отримати інформацію про замовника ${field_name}
   Run Keyword IF   '${username}' != 'uatenders_Owner' or '${username}' != 'uatenders_Viewer'
@@ -1238,8 +1245,11 @@ DismissAlertPopUp
   [Arguments]   ${username}  ${tender_uaid}  ${lot_id}  ${field}
   Run Keyword IF   '${field}' == 'auctionPeriod.startDate'
   ...       Run Keyword And Return    Отримати інформацію із лоту про замовника lots[0].${field}
-  Run Keyword IF   '${field}' != 'auctionPeriod.startDate'
+  Run Keyword IF   '${field}' != 'auctionPeriod.startDate' or '${field}' != 'lots[0].fundingKind'
   ...       Run Keyword And Return    Отримати інформацію із лоту про замовника lots[0].${field}  ${lot_id}  ${username}  ${tender_uaid}
+  Run Keyword IF   '${field}' == 'lots[0].fundingKind'
+  ...       Run Keyword And Return    Отримати інформацію із лоту про замовника ${field}  ${lot_id}  ${username}  ${tender_uaid}
+
 
 Отримати текст плана із поля
   [Arguments]   ${fieldname}
@@ -1506,6 +1516,11 @@ DismissAlertPopUp
 
 Отримати інформацію про замовника fundingKind
   ${return_value}=                 Отримати текст із поля для замовника               fundingKind
+  Run Keyword And Return           convert_fundingKind                                ${return_value}
+
+Отримати інформацію із лоту про замовника lots[0].fundingKind
+  [Arguments]   ${lot_id}  ${username}  ${tender_uaid}
+  ${return_value}=    Get Text   xpath=((//*[contains(text(),'Лоти')]//following::*)[contains(text(),'${lot_id}')]//following::*[@class='clean-table']//*[contains(text(),'Джерело фінансування лота:')]/../td)[1]
   Run Keyword And Return           convert_fundingKind                                ${return_value}
 
 Отримати інформацію про замовника maxAwardsCount
@@ -2398,7 +2413,7 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
   ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].value.amount
  # слип от "Calling method 'get_tender' failed: ConnectionError: ('Connection aborted.', BadStatusLine('No status line received - the server has closed the connection',))"
-  Run Keyword IF    '${MODE}' == 'negotiation'   Sleep   600
+  Run Keyword IF    '${MODE}' == 'negotiation'   Sleep   700
   Run Keyword And Return               string_to_float                  ${return_value}
 
 Отримати інформацію про замовника contracts[${index}].value.amountNet
@@ -2596,7 +2611,7 @@ DismissAlertPopUp
   uatenders.Заповнити поля регіону доставки першого предмета   ${0}
   uatenders.DismissAlertPopUp
   Sleep  3
-  Run Keyword if   'більше ніж за 7 днів до завершення періоду подання пропозицій' in '${TEST_NAME}'
+  Run Keyword if   'більше ніж за 7 днів до завершення періоду подання пропозицій' in '${TEST_NAME.replace('\'', '')}'
   ...   uatenders.Підписати ЕЦП   ${username}   ${tender_uaid}
   [Return]  ${return_value}
 
@@ -2706,8 +2721,8 @@ DismissAlertPopUp
   ${yearlyPaymentsPercentageRange}=      Evaluate      ${bid.data.lotValues[0].value.yearlyPaymentsPercentage}*${100}
   ${yearlyPaymentsPercentageRange}=      Convert To String      ${yearlyPaymentsPercentageRange}
   Run Keyword if   'Неможливість подати цінову пропозицію' in '${TEST_NAME}'      Fail
-  Run Keyword if   '${username}' == 'uatenders_Provider' and '${username}' == 'uatenders_Provider1' and '${username}' == 'uatenders_Provider2'
-  ...     WaitVisibilityAndClickElement           xpath=(//*[text()[contains(.,'Подати пропозицію')]])[1]
+  Run Keyword if   '${username}' == 'uatenders_Provider' or '${username}' == 'uatenders_Provider1' or '${username}' == 'uatenders_Provider2'
+  ...     WaitVisibilityAndClickElement           xpath=(//*[contains(text(),'Подати пропозицію')])[1]
   Sleep  5
   Input Text        name=esco_year                         ${bid.data.lotValues[0].value.contractDuration.years}
   Input Text        name=esco_day                          ${bid.data.lotValues[0].value.contractDuration.days}
@@ -2732,7 +2747,7 @@ DismissAlertPopUp
 
   Sleep  1
   Choose File                             css=[name*=files]                         ${filepath}
-  Sleep  4
+  Sleep  3
   Select From List                        xpath=//*[@id='out-select']      27    # Цінова пропозиція
   Sleep  1
   Run Keyword And Ignore Error     WaitVisibilityAndClickElement     xpath=(//label[@class='labelCheck'])
@@ -2757,9 +2772,9 @@ DismissAlertPopUp
   [Arguments]  ${username}  ${tender_uaid}  ${fieldname}  ${fieldvalue}
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   WaitVisibilityAndClickElement         xpath=(.//*[@class='Propoz-panel']//*[contains(text(),'Редагувати') or contains(text(),'Оновити')])
-  Sleep  5
+  Sleep  2
   Reload Page
-  Sleep  5
+  Sleep  2
   Reload Page
   # Run Keyword And Return If    '${fieldvalue}' == 'None'    uatenders.Дочекатися кнопку Активувати    ${username}  ${tender_uaid}
   Run Keyword And Return If    'після зміни умов тендера' in '${TEST_NAME}'    uatenders.Дочекатися кнопку Активувати    ${username}  ${tender_uaid}
@@ -3041,7 +3056,7 @@ DismissAlertPopUp
   ${filepath}=               get_file_path
   WaitVisibilityAndClickElement         xpath=(//*[contains(@class,'btn btn-warning') and contains(.,'Кваліфікація')])[1]
 #  Квалификация победителя по Допорогам проходит, через этот кейВорд
-  Run Keyword if   'Неможливість' in '${TEST_NAME}'    Run Keywords
+  Run Keyword if   'Неможливість' in '${TEST_NAME.replace('\'', '')}'    Run Keywords
   ...   Sleep  300
   ...   AND   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   ...   AND   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Угоди')]])
@@ -3297,7 +3312,7 @@ DismissAlertPopUp
 
 Отримати доступ до угоди
   [Arguments]  ${username}  ${agreement_uaid}
-  Run Keyword if   'Можливість отримати доступ до угоди' in '${TEST_NAME}'   Sleep  300
+  Run Keyword if   'Можливість отримати доступ до угоди' in '${TEST_NAME.replace('\'', '')}'   Sleep  300
   Wait Until Keyword Succeeds   15 x   45 s     Run Keywords
   ...   uatenders.Пошук угоди по ідентифікатору  ${username}  ${agreement_uaid}
   ...   AND   Sleep  2
@@ -3510,7 +3525,7 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement               xpath=((//*[contains(text(),'№')]/../../..//a)[position() mod 2 = 1])[1]
   Sleep  5
   uatenders.Переміститься до футера
-  Run Keyword if   'Можливість редагувати вартість угоди без урахування ПДВ' in '${TEST_NAME}'   Sleep  600
+  Run Keyword if   'Можливість редагувати вартість угоди без урахування ПДВ' in '${TEST_NAME}'   Sleep  700
   Wait Until Keyword Succeeds   5 x   60 s     Run Keywords
   ...   Reload Page
   ...   AND   Sleep  2
