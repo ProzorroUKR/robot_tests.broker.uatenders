@@ -172,6 +172,7 @@ ${locator.ownerViewer.contracts[1].value.amount}                            xpat
 ${locator.ownerViewer.contracts[0].value.amountNet}                         xpath=(//*[contains(text(),'Ціна договору без ПДВ:')]/..//*[position() mod 2 = 0]/p)[1]
 ${locator.ownerViewer.contracts[1].value.amountNet}                         xpath=(//*[contains(text(),'Ціна договору без ПДВ:')]/..//*[position() mod 2 = 0]/p)[1]
 ${locator.ownerViewer.contracts[0].dateSigned}                              xpath=(//*[contains(text(),'Дата підписання:')]/..//*[position() mod 2 = 0])
+${locator.ownerViewer.contracts[1].dateSigned}                              xpath=(//*[contains(text(),'Дата підписання:')]/..//*[position() mod 2 = 0])
 ${locator.ownerViewer.contracts[0].period.startDate}                        xpath=(//*[contains(text(),'Початок дії договору:')]/..//*[position() mod 2 = 0])
 ${locator.ownerViewer.contracts[0].period.endDate}                          xpath=(//*[contains(text(),'Закінчення дії договору:')]/..//*[position() mod 2 = 0])
 ${locator.ownerViewer.procuringEntity.identifier.legalName}                 xpath=(//*[contains(text(),'Назва організації:')]/..//*[position() mod 2 = 0])
@@ -377,6 +378,10 @@ DismissAlertPopUp
   ...   AND   Reload Page
   ...   AND   Sleep  2
   ...   AND   Run Keyword And Ignore Error        Click Element      xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  Wait Until Keyword Succeeds   20 x   20 s    Run Keyword IF    'Відображення заголовку документа' == '${TEST_NAME.replace('\'', '')}'
+  ...   Element Should Be Enabled                xpath=//a[contains(text(),'${doc_id}')]
+  ...   AND   Reload Page
+  ...   AND   Sleep 2
   uatenders.Оновити сторінку з тендером  ${username}  ${tender_uaid}
   uatenders.Переміститься до футера
   Sleep  2
@@ -1129,18 +1134,17 @@ DismissAlertPopUp
 ######################################    ПОШУК Тендеру   ################################################
 Пошук тендера по ідентифікатору
   [Arguments]   ${username}  ${tender_uaid}  ${second_stage_data}=${EMPTY}
-  Switch Browser  ${BROWSER_ALIAS_USERNAME}
+  Switch Browser    1
   # for exclude Quinta errors added Sleeep 600
   Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'                Sleep   700
   Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'    Sleep   700
-
   Wait Until Keyword Succeeds   10 x   5 s     Run Keywords
   ...   Run Keyword IF    '${tender_uaid}' == 'PASS'    Input Text    name=search[s]    ${tender_uaid}
   ...   AND   Go To   ${USERS.users['${username}'].homepage}
   ...   AND   Input Text                                  name=search[s]                ${tender_uaid}
   ...   AND   WaitVisibilityAndClickElement               xpath=(//*[contains(@type,'submit') and contains(.,'Знайти')])
   ...   AND   Wait Until Element Is Visible               xpath=(//*[contains(text(),'Загальна інформація')])[1]    30
-  Sleep  5
+  Sleep  2
   Run Keyword And Ignore Error    Click Element           xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
   Log To Console  _
   Log To Console  tender_id --> ${tender_uaid}
@@ -1162,7 +1166,7 @@ DismissAlertPopUp
 ######################################    ПОШУК Угоди   ################################################
 Пошук угоди по ідентифікатору
   [Arguments]  ${username}  ${agreement_uaid}
-  Switch Browser  ${BROWSER_ALIAS_USERNAME}
+  Switch Browser    1
   Log To Console  _
   Log To Console  agreement_id --> ${agreement_uaid}
   ${agreementId}=  Remove String Using Regexp  ${agreement_uaid}  -\\w+\\d$
@@ -1180,7 +1184,7 @@ DismissAlertPopUp
 ######################################    ОНОВИТИ СТОРІНКУ для Тендера    ################################################
 Оновити сторінку з тендером
   [Arguments]   ${username}  ${tender_uaid}
-  Switch Browser  ${BROWSER_ALIAS_USERNAME}
+  Switch Browser    1
   Run Keyword And Ignore Error    Click Element           xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
   Sleep  2
   Reload Page
@@ -1188,7 +1192,7 @@ DismissAlertPopUp
 ######################################    ОНОВИТИ СТОРІНКУ для Плана    ################################################
 Оновити сторінку з планом
   [Arguments]   ${username}  ${plan_uaid}
-  Switch Browser  ${BROWSER_ALIAS_USERNAME}
+  Switch Browser    1
   Reload Page
   Sleep  2
   Run Keyword And Ignore Error      Click Element                      xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
@@ -1196,12 +1200,12 @@ DismissAlertPopUp
 ######################################    Отримати інформацію    ################################################
 Отримати інформацію із плану
   [Arguments]   ${username}  ${tender_uaid}  ${field_name}
-  Switch Browser  ${BROWSER_ALIAS_USERNAME}
+  Switch Browser    1
   Run Keyword And Return    Отримати інформацію про план поля ${field_name}
 
 Отримати інформацію із тендера
   [Arguments]   ${username}  ${tender_uaid}  ${field_name}
-  Switch Browser  ${BROWSER_ALIAS_USERNAME}
+  Switch Browser    1
   Run Keyword IF   'Відображення статусу блокування перед початком аукціону' in '${TEST_NAME}'   Wait Until Keyword Succeeds   5 x   35 s   Run Keywords
   ...   Reload Page
   ...   AND   Sleep  2
