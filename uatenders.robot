@@ -3452,6 +3452,11 @@ DismissAlertPopUp
   Run Keyword And Return       Отримати текст із поля для посточальника       description
 
 Отримати інформацію про посточальника procuringEntity.name
+  Sleep  3 min
+  Reload Page
+  Sleep  5
+  Switch Browser    1
+  Sleep  5
   Run Keyword And Return       Отримати текст із поля для посточальника       procuringEntity.name
 
 ####################################################################################################
@@ -3976,13 +3981,6 @@ DismissAlertPopUp
   Log To Console   ${complaintID}===${complaintID}
   WaitVisibilityAndClickElement         xpath=(//*[contains(@data-complaintid,'${complaintID}')]//*[contains(text(),'Відкликати')])[1]
   uatenders.Заповнити дані по скасуванню вимоги  ${complaintID}  ${cancellationDataOrFieldName}
-Отримати айди скарги для status openua
-  [Arguments]  ${tender_uaid}  ${field_name}
-  ${complaintID}=     Get Element Attribute     xpath=(//*[contains(text(),'Відкликана, очікується рішення про припинення розгляду')]//..//../.)@data-complaintid
-  Sleep  2
-  uatenders.Переміститься до футера
-  Sleep  2
-  Run Keyword And Return    Get Text    xpath=//*[@data-complaintid='${complaintID}']/*[contains(@class,'label')]/span
 
 Скасувати вимогу про виправлення умов лоту
   [Arguments]  ${username}  ${tender_uaid}  ${complaintID}  ${cancellation_data}
@@ -4000,7 +3998,14 @@ DismissAlertPopUp
   uatenders.Заповнити поля для вимоги/скарги  ${username}  ${tender_uaid}  ${claim}
   Sleep  2
   WaitVisibilityAndClickElement       xpath=(//*[contains(@type,'submit') and contains(@value,'Подати')])
-  Run Keyword And Return        Get Element Attribute     xpath=(//*[contains(text(),"${claim.data.title}")]/..//../..)@data-complaintid
+  Sleep  5
+  Reload Page
+  Sleep  2
+  ${return_value_1}=   Run Keyword IF   'Можливість створити скаргу про виправлення визначення переможця' == '${TEST_NAME.replace('\'', '')}' and '${MODE}' == 'openua'
+  ...   uatenders.Переміститься до футера
+  Sleep  2
+  ${complaintID}=        Get Element Attribute     xpath=(//*[contains(text(),'${claim.data.title}')]/..//../..)@data-complaintid
+  [Return]  ${complaintID}
 
 Отримати інформацію із документа до скарги
   [Arguments]  ${username}  ${tender_uaid}  ${complaintID}  ${doc_id}  ${field_name}
@@ -4074,17 +4079,12 @@ DismissAlertPopUp
 
 Отримати значення поля Claims Provider complaints[0].status
   [Arguments]   ${tender_uaid}  ${complaintID}  ${field_name}
-  ${return_value_1}=   Run Keyword IF   'Можливість скасувати скаргу про виправлення визначення переможця' == '${TEST_NAME.replace('\'', '')}' and '${MODE}' == 'openua'
-  ...   uatenders.Отримати айди скарги для status openua  ${tender_uaid}  ${field_name}
-  ${return_value}=   Run Keyword IF   'Можливість скасувати скаргу про виправлення визначення переможця' != '${TEST_NAME.replace('\'', '')}'
-  ...   Get Text   xpath=//*[@data-complaintid='${complaintID}']/*[contains(@class,'label')]/span
+  ${return_value}=     Get Text   xpath=//*[@data-complaintid='${complaintID}']/*[contains(@class,'label')]/span
   ${return_value}=   Run Keyword IF    'вимогу про виправлення умов лоту' in '${TEST_NAME.replace('\'', '')}'   Run Keyword And Return    convert_status    ${return_value}
   ...   ELSE IF   'вимогу про виправлення умов закупівлі' in '${TEST_NAME.replace('\'', '')}'                   Run Keyword And Return    convert_status    ${return_value}
   ...   ELSE IF   'вимогу про виправлення визначення переможця' in '${TEST_NAME.replace('\'', '')}'             Run Keyword And Return    convert_status    ${return_value}
-  ...   ELSE IF   'вимогу про виправлення умов лоту' != '${TEST_NAME.replace('\'', '')}' or 'вимогу про виправлення умов закупівлі' != '${TEST_NAME.replace('\'', '')}' or 'вимогу про виправлення визначення переможця' != '${TEST_NAME.replace('\'', '')}'
+  ...   ELSE IF   'вимогу про виправлення умов лоту' != '${TEST_NAME.replace('\'', '')}' or 'вимогу про виправлення умов закупівлі' != '${TEST_NAME.replace('\'', '')}' or 'вимогу про виправлення визначення переможця' != '${TEST_NAME.replace('\'', '')}' or 'Можливість скасувати скаргу про виправлення визначення переможця' != '${TEST_NAME.replace('\'', '')}'
   ...     Run Keyword And Return   convert_uatenders_string_to_ClaimsStatus    ${return_value}
-  ...   ELSE IF    'Можливість скасувати скаргу про виправлення визначення переможця' == '${TEST_NAME.replace('\'', '')}' and '${MODE}' == 'openua'
-  ...     Run Keyword And Return    convert_uatenders_string_to_ClaimsStatus    ${return_value_1}
   [Return]         ${return_value}
 
 Отримати значення поля Claims Provider complaints[0].title
