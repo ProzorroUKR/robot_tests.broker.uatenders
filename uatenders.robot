@@ -378,10 +378,14 @@ DismissAlertPopUp
   ...   AND   Reload Page
   ...   AND   Sleep  2
   ...   AND   Run Keyword And Ignore Error        Click Element      xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
-  Wait Until Keyword Succeeds   20 x   20 s    Run Keyword IF    'Відображення заголовку документа' == '${TEST_NAME.replace('\'', '')}'
-  ...   Element Should Be Enabled                xpath=//a[contains(text(),'${doc_id}')]
-  ...   AND   Reload Page
-  ...   AND   Sleep 2
+
+# документы и дата подписания, для viewer & provider, выводятся после подписания "остоточного рішення" контракта => tests non-critical
+  Wait Until Keyword Succeeds   10 x   20 s   Run Keyword IF   'Відображення заголовку документа' == '${TEST_NAME.replace('\'', '')}'   Run Keywords
+  ...   Reload Page
+  ...   AND   Sleep  2
+  ...   AND   Element Should Be Enabled    xpath=//a[contains(text(),'${doc_id}')]
+  ...   AND   Click Element                xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+
   uatenders.Оновити сторінку з тендером  ${username}  ${tender_uaid}
   uatenders.Переміститься до футера
   Sleep  2
@@ -1136,8 +1140,8 @@ DismissAlertPopUp
   [Arguments]   ${username}  ${tender_uaid}  ${second_stage_data}=${EMPTY}
   Switch Browser    1
   # for exclude Quinta errors added Sleeep 600
-  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'                Sleep   700
-  Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'    Sleep   700
+  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'                Sleep   15 min
+  Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'    Sleep   15 min
   Wait Until Keyword Succeeds   10 x   5 s     Run Keywords
   ...   Run Keyword IF    '${tender_uaid}' == 'PASS'    Input Text    name=search[s]    ${tender_uaid}
   ...   AND   Go To   ${USERS.users['${username}'].homepage}
@@ -3942,17 +3946,43 @@ DismissAlertPopUp
   ...   Reload Page
   ...   AND   Run Keyword And Ignore Error    Page Should Contain Element    xpath=(//*[contains(@value,'${complaintID}')]/..//following-sibling::*/*[contains(.,'Розглянуто замовником. Задоволена')])
   ...   AND   Run Keyword And Ignore Error    Page Should Contain Element    xpath=(//*[contains(@value,'${complaintID}')]/..//following-sibling::*/*[contains(.,'Вирішена')])
-
   ScrollToElementToFalse                (//*[@class='footer'])[1]
 
-  Run Keyword IF   '${statusAnswer}' == 'cancelled' or '${statusAnswer}' == 'stopping'
-  ...     WaitVisibilityAndClickElement         xpath=(//*[contains(@data-complaintid,'${complaintID}')]//*[contains(text(),'Відкликати')])[1]
+  Run Keyword IF   '${statusAnswer}' != 'cancelled' and '${statusAnswer}' != 'stopping'
+  ...   uatenders.Заповнити дані по скасуванню вимоги  ${complaintID}  ${cancellation_data}
+
+
+  Run Keyword IF   '${statusAnswer}' == 'cancelled'   Run Keywords
+  ...   WaitVisibilityAndClickElement         xpath=(//*[contains(@data-complaintid,'${complaintID}')]//*[contains(text(),'Відкликати')])[1]
+  ...   AND   uatenders.Заповнити дані по скасуванню вимоги  ${complaintID}  ${cancellation_data}
+
+  Run Keyword IF   '${statusAnswer}' == 'stopping' and 'Можливість скасувати скаргу про виправлення визначення переможця' != '${TEST_NAME.replace('\'', '')}' and '${MODE}' != 'openua'  Run Keywords
+  ...   WaitVisibilityAndClickElement         xpath=(//*[contains(@data-complaintid,'${complaintID}')]//*[contains(text(),'Відкликати')])[1]
+  ...   AND   uatenders.Заповнити дані по скасуванню вимоги  ${complaintID}  ${cancellation_data}
+# скасування Скарги в openUA
+  Log    MODE ==> ${MODE}
+  Run Keyword IF   '${statusAnswer}' == 'stopping' and 'Можливість скасувати скаргу про виправлення визначення переможця' == '${TEST_NAME.replace('\'', '')}' and '${MODE}' == 'openua'
+  ...  uatenders.Отримати айди скарги для openua  ${tender_uaid}  ${cancellation_data}
+
+Заповнити дані по скасуванню вимоги
+  [Arguments]  ${complaintID}  ${cancellation_data}
   Sleep  2
-  WaitVisibilityAndClickElement    xpath=((.//*[@data-complaintid='${complaintID}'])//*[@class='modal-body']/*[@name='cancellation_reason'])[1]
-
-  ClearFildAndInputText            xpath=((.//*[@data-complaintid='${complaintID}'])//*[@class='modal-body']/*[@name='cancellation_reason'])[1]   ${cancellation_data.data.cancellationReason}
-
-  WaitVisibilityAndClickElement    xpath=((.//*[@data-complaintid='${complaintID}'])//*[@class='modal-footer']/*[@type='submit'])[1]
+  WaitVisibilityAndClickElement   xpath=((.//*[@data-complaintid='${complaintID}'])//*[@class='modal-body']/*[@name='cancellation_reason'])[1]
+  ClearFildAndInputText           xpath=((.//*[@data-complaintid='${complaintID}'])//*[@class='modal-body']/*[@name='cancellation_reason'])[1]   ${cancellation_data.data.cancellationReason}
+  WaitVisibilityAndClickElement   xpath=((.//*[@data-complaintid='${complaintID}'])//*[@class='modal-footer']/*[@type='submit'])[1]
+Отримати айди скарги для openua
+  [Arguments]  ${tender_uaid}  ${cancellationDataOrFieldName}
+  ${complaintID}=    Get Element Attribute     xpath=(//*[contains(text(),'Очікує прийняття до розгляду АМКУ')]//..//../.)@data-complaintid
+  Log To Console   ${complaintID}===${complaintID}
+  WaitVisibilityAndClickElement         xpath=(//*[contains(@data-complaintid,'${complaintID}')]//*[contains(text(),'Відкликати')])[1]
+  uatenders.Заповнити дані по скасуванню вимоги  ${complaintID}  ${cancellationDataOrFieldName}
+Отримати айди скарги для status openua
+  [Arguments]  ${tender_uaid}  ${field_name}
+  ${complaintID}=     Get Element Attribute     xpath=(//*[contains(text(),'Відкликана, очікується рішення про припинення розгляду')]//..//../.)@data-complaintid
+  Sleep  2
+  uatenders.Переміститься до футера
+  Sleep  2
+  Run Keyword And Return    Get Text    xpath=//*[@data-complaintid='${complaintID}']/*[contains(@class,'label')]/span
 
 Скасувати вимогу про виправлення умов лоту
   [Arguments]  ${username}  ${tender_uaid}  ${complaintID}  ${cancellation_data}
@@ -4004,7 +4034,7 @@ DismissAlertPopUp
   ...   AND   WaitVisibilityAndClickElement    xpath=(//*[contains(@class,'${complaintID}') and contains(.,'Детальніше')])[1]
   ...   AND   Run Keyword And Return    Отримати значення поля complaints[0].${field_name}  ${tender_uaid}    #${complaintIDZak}
   ...   ELSE IF    '${username}' != 'uatenders_Owner' or '${username}' != 'uatenders_Viewer'
-  ...         Run Keyword And Return    Отримати значення поля Claims Provider complaints[0].${field_name}  ${tender_uaid}  ${complaintID}
+  ...         Run Keyword And Return    Отримати значення поля Claims Provider complaints[0].${field_name}  ${tender_uaid}  ${complaintID}  ${field_name}
 
 Отримати значення поля complaints[0].status
   [Arguments]   ${tender_uaid}
@@ -4043,26 +4073,31 @@ DismissAlertPopUp
   Run Keyword And Return      Get Text      xpath=((//*[contains(text(),'Відповідь:')])[1]//..//*[position() mod 2 = 0])/span
 
 Отримати значення поля Claims Provider complaints[0].status
-  [Arguments]   ${tender_uaid}  ${complaintID}
-  ${return_value}=     Get Text     xpath=//*[@data-complaintid='${complaintID}']/*[contains(@class,'label')]/span
-  ${return_value}=   Run Keyword IF    'вимогу про виправлення умов лоту' in '${TEST_NAME.replace('\'', '')}'    Run Keyword And Return    convert_status    ${return_value}
-  ...    ELSE IF    'вимогу про виправлення умов закупівлі' in '${TEST_NAME.replace('\'', '')}'                  Run Keyword And Return    convert_status    ${return_value}
-  ...    ELSE IF    'вимогу про виправлення визначення переможця' in '${TEST_NAME.replace('\'', '')}'            Run Keyword And Return    convert_status    ${return_value}
-  ...    ELSE IF    'вимогу про виправлення умов лоту' != '${TEST_NAME.replace('\'', '')}' or 'вимогу про виправлення умов закупівлі' != '${TEST_NAME.replace('\'', '')}' or 'вимогу про виправлення визначення переможця' != '${TEST_NAME.replace('\'', '')}'
-  ...       Run Keyword And Return    convert_uatenders_string_to_ClaimsStatus    ${return_value}
+  [Arguments]   ${tender_uaid}  ${complaintID}  ${field_name}
+  ${return_value_1}=   Run Keyword IF   'Можливість скасувати скаргу про виправлення визначення переможця' == '${TEST_NAME.replace('\'', '')}' and '${MODE}' == 'openua'
+  ...   uatenders.Отримати айди скарги для status openua  ${tender_uaid}  ${field_name}
+  ${return_value}=   Run Keyword IF   'Можливість скасувати скаргу про виправлення визначення переможця' != '${TEST_NAME.replace('\'', '')}'
+  ...   Get Text   xpath=//*[@data-complaintid='${complaintID}']/*[contains(@class,'label')]/span
+  ${return_value}=   Run Keyword IF    'вимогу про виправлення умов лоту' in '${TEST_NAME.replace('\'', '')}'   Run Keyword And Return    convert_status    ${return_value}
+  ...   ELSE IF   'вимогу про виправлення умов закупівлі' in '${TEST_NAME.replace('\'', '')}'                   Run Keyword And Return    convert_status    ${return_value}
+  ...   ELSE IF   'вимогу про виправлення визначення переможця' in '${TEST_NAME.replace('\'', '')}'             Run Keyword And Return    convert_status    ${return_value}
+  ...   ELSE IF   'вимогу про виправлення умов лоту' != '${TEST_NAME.replace('\'', '')}' or 'вимогу про виправлення умов закупівлі' != '${TEST_NAME.replace('\'', '')}' or 'вимогу про виправлення визначення переможця' != '${TEST_NAME.replace('\'', '')}'
+  ...     Run Keyword And Return   convert_uatenders_string_to_ClaimsStatus    ${return_value}
+  ...   ELSE IF    'Можливість скасувати скаргу про виправлення визначення переможця' == '${TEST_NAME.replace('\'', '')}' and '${MODE}' == 'openua'
+  ...     Run Keyword And Return    convert_uatenders_string_to_ClaimsStatus    ${return_value_1}
   [Return]         ${return_value}
 
 Отримати значення поля Claims Provider complaints[0].title
-  [Arguments]   ${tender_uaid}  ${complaintID}
+  [Arguments]   ${tender_uaid}  ${complaintID}  ${field_name}
   Run Keyword And Return       Get Text        xpath=//*[@data-complaintid='${complaintID}']//*[@class='TitleComplaint']
 
 Отримати значення поля Claims Provider complaints[0].description
-  [Arguments]   ${tender_uaid}  ${complaintID}
+  [Arguments]   ${tender_uaid}  ${complaintID}  ${field_name}
   Run Keyword And Return       Get Text        xpath=//*[@data-complaintid='${complaintID}']//*[@class='DescriptComplaint']
 
 Отримати значення поля Claims Provider complaints[0].docFieldVisibleQuestionClaim
-  [Arguments]   ${tender_uaid}  ${complaintID}
+  [Arguments]   ${tender_uaid}  ${complaintID}  ${field_name}
   Run Keyword And Return       Get Text        xpath=(//*[@data-complaintid='${complaintID}']/*[@class='complaintWrapBlock'])//*[@class='ClameDocument']
 Отримати значення поля Claims Provider complaints[0].docFieldVisibleAnswerClaim
-  [Arguments]   ${tender_uaid}  ${complaintID}
+  [Arguments]   ${tender_uaid}  ${complaintID}  ${field_name}
   Run Keyword And Return       Get Text        xpath=(//*[@data-complaintid='${complaintID}']/*[@class='answerBlock'])//*[@class='ClameDocument']
