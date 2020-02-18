@@ -25,7 +25,7 @@ ${locator.provider.minimalStep.amount}                                      xpat
 ${locator.provider.value.currency}                                          xpath=//*[@class='data-currency_code ifua']
 ${locator.provider.value.valueAddedTaxIncluded}                             xpath=(//*[contains(text(),'Очікувана вартість закупівлі')]/..//*[position() mod 2 = 0]/span)[3]
 ${locator.provider.tenderId}                                                xpath=(//*[contains(text(),'Ідентифікаційний номер')]/..//*[position() mod 2 = 0])
-${locator.provider.procuringEntity.name}                                    xpath=((//*[contains(text(),'Поштова адреса')]/..//../following-sibling::*/td)[4])
+${locator.provider.procuringEntity.name}                                    xpath=(.//*[@class='item-procuringEntity.name'])[1]
 ${locator.provider.enquiryPeriod.startDate}                                 xpath=(//*[text()[contains(.,'Дати')]]/..//*[@class='tenderPeriod']//span)[1]
 ${locator.provider.enquiryPeriod.endDate}                                   xpath=(//*[text()[contains(.,'Дати')]]/..//*[@class='tenderPeriod']//span)[1]
 ${locator.provider.tenderPeriod.startDate}                                  xpath=(//*[contains(text(),'Подача пропозицій')]/..//*[position() mod 2 = 0]/span)
@@ -2434,7 +2434,8 @@ DismissAlertPopUp
 Отримати інформацію про замовника contracts[${index}].dateSigned
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Контракти') or contains(.,'Визначити учасників')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
-  Wait Until Keyword Succeeds   10 x   20 s   Run Keyword IF   'Відображення дати підписання угоди' == '${TEST_NAME.replace('\'', '')}'   Run Keywords
+  Run Keyword IF   'Відображення дати підписання угоди' == '${TEST_NAME.replace('\'', '')}'   Sleep  10 min
+  Wait Until Keyword Succeeds   10 x   30 s   Run Keyword IF   'Відображення дати підписання угоди' == '${TEST_NAME.replace('\'', '')}'   Run Keywords
   ...   Reload Page
   ...   AND   Sleep  2
   ...   AND   Click Element                xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
@@ -3457,9 +3458,6 @@ DismissAlertPopUp
   Run Keyword And Return       Отримати текст із поля для посточальника       description
 
 Отримати інформацію про посточальника procuringEntity.name
-  Sleep  3 min
-  Reload Page
-  Sleep  5
   Switch Browser    1
   Sleep  5
   Run Keyword And Return       Отримати текст із поля для посточальника       procuringEntity.name
@@ -3717,7 +3715,7 @@ DismissAlertPopUp
   [Arguments]   ${username}  ${tender_uaid}  ${feature_id}  ${field_name}
   uatenders.Оновити сторінку з тендером  ${username}  ${tender_uaid}
   Sleep  2
-  ScrollToElementToFalse                    //h4[text()[contains(.,'Лоти')]]
+  Run Keyword And Ignore Error        ScrollToElementToFalse        //h4[text()[contains(.,'Лоти')]]
   Run Keyword And Return If   '${field_name}' == 'title'         Get Text                xpath=(//*[contains(text(),'${feature_id}')]/..//*)[1]
   Run Keyword And Return If   '${field_name}' == 'description'   Get Text                xpath=(//*[contains(text(),'${feature_id}')]/..//*)[2]
   Run Keyword And Return If   '${field_name}' == 'featureOf'     uatenders.Отримати неціновий показник   ${feature_id}
