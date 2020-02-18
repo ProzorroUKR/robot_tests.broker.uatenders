@@ -3715,7 +3715,7 @@ DismissAlertPopUp
   [Arguments]   ${username}  ${tender_uaid}  ${feature_id}  ${field_name}
   uatenders.Оновити сторінку з тендером  ${username}  ${tender_uaid}
   Sleep  2
-  ScrollToElementToFalse                    //h4[text()[contains(.,'Лоти')]]
+  Run Keyword And Ignore Error        ScrollToElementToFalse        //h4[text()[contains(.,'Лоти')]]
   Run Keyword And Return If   '${field_name}' == 'title'         Get Text                xpath=(//*[contains(text(),'${feature_id}')]/..//*)[1]
   Run Keyword And Return If   '${field_name}' == 'description'   Get Text                xpath=(//*[contains(text(),'${feature_id}')]/..//*)[2]
   Run Keyword And Return If   '${field_name}' == 'featureOf'     uatenders.Отримати неціновий показник   ${feature_id}
