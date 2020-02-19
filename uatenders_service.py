@@ -359,9 +359,8 @@ def convert_uatenders_string_to_common_string(string):
         u'кілограми': u'Кілограми',
         u'набір': u'Набір',
         u'лот': u'Лот',
-
         u'Україна': u'UA',
-        u'Не відображене в інших розділах': u'Не визначено',
+        u'Не визначено': u'Не відображене в інших розділах',
 # Cтатус в процедуре: -> reporting
         u"value.amount": u"amount",
         u"minimalStep.amount": u"minimal_step",
