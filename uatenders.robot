@@ -1168,7 +1168,7 @@ DismissAlertPopUp
   Log To Console  agreementId <<====>> ${agreementId}
   Log To Console  _
   Log To Console  agreementId --> ${agreementId}
-  uatenders.Пошук тендера по ідентифікатору   ${username}  ${agreement_uaid}
+  uatenders.Пошук тендера по ідентифікатору   ${username}  ${agreementId}
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Угоди')]])[1]
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
   Sleep  2
