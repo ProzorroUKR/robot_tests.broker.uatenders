@@ -1164,11 +1164,11 @@ DismissAlertPopUp
   Switch Browser    1
   Log To Console  _
   Log To Console  agreement_id --> ${agreement_uaid}
-  ${agreementId}=  Remove String Using Regexp  ${agreement_uaid}  -\\w+\\d$
-  Log To Console  agreementId <<====>> ${agreementId}
+  ${agreementChangesID}=  Remove String Using Regexp  ${agreement_uaid}  -\\w+\\d$
+  Log To Console  agreementChangesID <<====>> ${agreementChangesID}
   Log To Console  _
-  Log To Console  agreementId --> ${agreementId}
-  uatenders.Пошук тендера по ідентифікатору   ${username}  ${agreementId}
+  Log To Console  agreementChangesID --> ${agreementChangesID}
+  uatenders.Пошук тендера по ідентифікатору   ${username}  ${agreementChangesID}
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Угоди')]])[1]
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
   Sleep  2
