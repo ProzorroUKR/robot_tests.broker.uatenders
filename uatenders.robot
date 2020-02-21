@@ -253,9 +253,7 @@ ClearFildAndInputText
   [Arguments]  ${elementLocator}  ${elementText}
   Wait Until Element Is Visible   ${elementLocator}   10
   Clear Element Text              ${elementLocator}
-  Sleep  1
   Input Text                      ${elementLocator}   ${elementText}
-  Sleep  1
 
 WaitVisibilityAndClickElement
   [Arguments]  ${elementLocator}
@@ -381,8 +379,8 @@ DismissAlertPopUp
   uatenders.Оновити сторінку з тендером  ${username}  ${tender_uaid}
   uatenders.Переміститься до футера
   Sleep  3
-  Run Keyword if   'documentOf' == '${field}'    Get Element Attribute    xpath=(//*[contains(text(),'${doc_id}')]//../span)@value
-  Run Keyword if   'documentOf' != '${field}'    Get Text                 xpath=//a[contains(text(),'${doc_id}')]
+  Run Keyword And Return If   '${field}' == 'documentOf'    Get Element Attribute    xpath=(//*[contains(text(),'${doc_id}')]//../span)@value
+  Run Keyword And Return If   '${field}' != 'documentOf'    Get Text                 xpath=//a[contains(text(),'${doc_id}')]
 
 Отримати документ
   [Arguments]  ${username}  ${tender_uaid}  ${doc_id}
@@ -1166,11 +1164,11 @@ DismissAlertPopUp
   Switch Browser    1
   Log To Console  _
   Log To Console  agreement_id --> ${agreement_uaid}
-  ${agreementId}=  Remove String Using Regexp  ${agreement_uaid}  -\\w+\\d$
-  Log To Console  agreementId <<====>> ${agreementId}
+  ${agreementChangesID}=  Remove String Using Regexp  ${agreement_uaid}  -\\w+\\d$
+  Log To Console  agreementChangesID <<====>> ${agreementChangesID}
   Log To Console  _
-  Log To Console  agreementId --> ${agreementId}
-  uatenders.Пошук тендера по ідентифікатору   ${username}  ${agreement_uaid}
+  Log To Console  agreementChangesID --> ${agreementChangesID}
+  uatenders.Пошук тендера по ідентифікатору   ${username}  ${agreementChangesID}
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Угоди')]])[1]
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
   Sleep  2
@@ -1219,6 +1217,8 @@ DismissAlertPopUp
   ScrollToElementToFalse                      (//*[contains(text(),'Результати') or contains(text(),'З 8 до 18')])[1]
   ${statusShowLots}=       Run Keyword And Return Status
   ...   Element Should Be Visible    xpath=(.//*[contains(text(),'Переглянути інформацію про лот')]/../*[@style='display: none;'])[1]
+  Switch Browser    1
+  Sleep  5
   Run Keyword IF   '${statusShowLots}' == 'PASS'   Run Keyword
   ...   WaitVisibilityAndClickElement       xpath=(.//*[contains(text(),'Переглянути інформацію про лот')])[1]
   Run Keyword IF   'items[0].${field_name}' == 'items[0].${field_name}'
@@ -1321,6 +1321,14 @@ DismissAlertPopUp
   ${return_value}=                  Отримати текст із поля для замовника             status
   Run Keyword if   'Неможливість підтвердити постачальника після закінчення періоду кваліфікації' in '${TEST_NAME}'       Sleep  60
   ${return_value}=               convert_status               ${return_value}
+
+  Run Keyword if   'Можливість дочекатися початку періоду очікування' == '${TEST_NAME}'   Wait Until Keyword Succeeds   5 x   1 min   Run Keywords
+  ...   Reload Page
+  ...   AND   Sleep  2
+  ...   AND   Run Keyword And Ignore Error      Click Element          xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  ...   AND   Sleep  2
+  ...   AND   Element Should Be Visible         xpath=(//table[@class="clean-table"]//span)[1]      Очікування другого етапу
+
 # Expected error '*' did not occur.
   Run Keyword if   'active.pre-qualification.stand-still' == '${return_value}'    Run Keywords
   ...   Sleep  2
@@ -2429,10 +2437,11 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
 # документы и дата подписания, для viewer & provider, выводятся после подписания "остоточного рішення" контракта => tests non-critical
   Run Keyword IF   'Відображення дати підписання угоди' == '${TEST_NAME.replace('\'', '')}'   Sleep  15 min
-  Wait Until Keyword Succeeds   10 x   35 s   Run Keyword IF   'Відображення дати підписання угоди' == '${TEST_NAME.replace('\'', '')}'   Run Keywords
+  Wait Until Keyword Succeeds   10 x   90 s   Run Keyword IF   'Відображення дати підписання угоди' == '${TEST_NAME.replace('\'', '')}'   Run Keywords
   ...   Reload Page
-  ...   AND   Sleep  2
+  ...   AND   Sleep  3
   ...   AND   Click Element                xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  ...   AND   Sleep  3
   ...   AND   Element Should Be Enabled    xpath=(//*[contains(text(),'Дата підписання')])[1]
   ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].dateSigned
   Run Keyword And Return               convert_timeDate                  ${return_value}
@@ -3138,7 +3147,7 @@ DismissAlertPopUp
   [Arguments]  ${username}  ${tender_uaid}  ${qualification_num}
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   ${filepath}=                            get_file_path
-  WaitVisibilityAndClickElement           xpath=(//*[contains(@class,'btn btn-warning') and contains(.,'Прекваліфікація')])
+  WaitVisibilityAndClickElement           xpath=(//*[contains(@class,'btn btn-warning') and contains(.,'Прекваліфікація')])[1]
 ######################################################################################################
   Run Keyword if   'підтвердити першу' in '${TEST_NAME}'
   ...    WaitVisibilityAndClickElement    xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Кваліфікація') or contains(text(),'Прекваліфікація')])[1]
@@ -3810,7 +3819,7 @@ DismissAlertPopUp
   ...   AND   Sleep  2
   Sleep  5
   WaitVisibilityAndClickElement       xpath=(//*[contains(@type,'submit') and contains(@value,'Подати')])
-  Sleep  10
+  Sleep  5
   Reload Page
   Sleep  2
   Run Keyword And Return        Get Element Attribute     xpath=(//*[contains(text(),"${claim.data.title}")]/..//../..)@data-complaintid
@@ -3923,13 +3932,17 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement            xpath=(//*[text()[contains(.,'Оскарження')]])[1]
   Run Keyword IF   '${status_1}' == 'resolved'
   ...   WaitVisibilityAndClickElement      xpath=(//*[contains(@data-complaintid,'${complaintID}') or contains(@class,'${complaintID}')])[1]//*[contains(text(),'Задоволена замовником')]
-  Run Keyword IF   '${status_1}' != 'resolved'
-  ...   WaitVisibilityAndClickElement      xpath=(//*[contains(@value,'${complaintID}') or contains(@data-complaintid,'${complaintID}')]//..//following-sibling::*//*[@class='switcNotSatisfied'])
-# клик по кнопке [Не задоволений]==False, а вот если то по дефолту выставлена кнопка [Задоволений]==True
-  Run Keyword IF   '${status_2}' == 'False'
-  ...   WaitVisibilityAndClickElement      xpath=(//*[contains(@value,'${complaintID}') or contains(@data-complaintid,'${complaintID}')]//..//following-sibling::*//*[@class='switcNotSatisfied'])
 
-  WaitVisibilityAndClickElement            xpath=(//*[contains(@value,'${complaintID}') or contains(@data-complaintid,'${complaintID}')]//..//following-sibling::*//*[@class='btn btn-answer'])
+  Run Keyword IF   '${status_1}' != 'resolved'
+  ...   WaitVisibilityAndClickElement      xpath=(//*[contains(@value,'${complaintID}') or contains(@data-complaintid,'${complaintID}')]//*[@class='switcNotSatisfied'])[1]
+# клик по кнопке [Не задоволений]==False, а вот, если то по дефолту выставлена кнопка [Задоволений]==True
+  Run Keyword IF   '${status_2}' == 'False'
+  ...   WaitVisibilityAndClickElement      xpath=(//*[contains(@value,'${complaintID}') or contains(@data-complaintid,'${complaintID}')]//*[@class='switcNotSatisfied'])[1]
+
+  WaitVisibilityAndClickElement            xpath=(//*[contains(@value,'${complaintID}') or contains(@data-complaintid,'${complaintID}')]//*[@class='btn btn-answer'])[1]
+  Sleep  60
+  Reload Page
+  Sleep  2
 
 Підтвердити вирішення вимоги про виправлення умов лоту
   [Arguments]  ${username}  ${tender_uaid}  ${complaintID}  ${confirmation_data}
@@ -3944,7 +3957,7 @@ DismissAlertPopUp
   ${statusAnswer}=             Get From Dictionary         ${cancellation_data.data}             status
   uatenders.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
   WaitVisibilityAndClickElement       xpath=(//*[text()[contains(.,'Оскарження')]])[1]
-  Wait Until Keyword Succeeds   15 x   25 s     Run Keywords
+  Wait Until Keyword Succeeds   5 x   25 s     Run Keywords
   ...   Reload Page
   ...   AND   Run Keyword And Ignore Error    Page Should Contain Element    xpath=(//*[contains(@value,'${complaintID}')]/..//following-sibling::*/*[contains(.,'Розглянуто замовником. Задоволена')])
   ...   AND   Run Keyword And Ignore Error    Page Should Contain Element    xpath=(//*[contains(@value,'${complaintID}')]/..//following-sibling::*/*[contains(.,'Вирішена')])
@@ -3975,7 +3988,7 @@ DismissAlertPopUp
 Отримати айди скарги для openua
   [Arguments]  ${tender_uaid}  ${cancellationDataOrFieldName}
   ${complaintID}=    Get Element Attribute     xpath=(//*[contains(text(),'Очікує прийняття до розгляду АМКУ')]//..//../.)@data-complaintid
-  Log To Console   ${complaintID}===${complaintID}
+  Log    complaintID ==> ${complaintID}
   WaitVisibilityAndClickElement         xpath=(//*[contains(@data-complaintid,'${complaintID}')]//*[contains(text(),'Відкликати')])[1]
   uatenders.Заповнити дані по скасуванню вимоги  ${complaintID}  ${cancellationDataOrFieldName}
 
