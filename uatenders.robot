@@ -251,32 +251,32 @@ ${locator.planningOwnerViewer.tender.tenderPeriod.startDate}                xpat
 ############################################################################################################
 ClearFildAndInputText
   [Arguments]  ${elementLocator}  ${elementText}
-  Wait Until Element Is Visible   ${elementLocator}   10
+  Wait Until Element Is Visible   ${elementLocator}   5
   Clear Element Text              ${elementLocator}
   Input Text                      ${elementLocator}   ${elementText}
 
 WaitVisibilityAndClickElement
   [Arguments]  ${elementLocator}
-  Wait Until Element Is Visible   ${elementLocator}   10
+  Wait Until Element Is Visible   ${elementLocator}   5
   Click Element                   ${elementLocator}
   Sleep  1
 
 ScrollToAndClickElement
   [Arguments]  ${elementLocator}
-  Sleep  2
+  Sleep  1
   Execute Javascript  window.document.evaluate("${elementLocator}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
-  Sleep  2
+  Sleep  1
   Click Element                   ${elementLocator}
 
 ScrollToElement
   [Arguments]  ${elementLocator}
   Execute Javascript  window.document.evaluate("${elementLocator}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(true);
-  Sleep  2
+  Sleep  1
 
 ScrollToElementToFalse
   [Arguments]  ${elementLocator}
   Execute Javascript  window.document.evaluate("${elementLocator}", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollIntoView(false);
-  Sleep  2
+  Sleep  1
 
 DismissAlertPopUp
   WaitVisibilityAndClickElement               xpath=//*[@type='submit']
@@ -298,7 +298,7 @@ DismissAlertPopUp
 Заповнити поля регіону доставки першого предмета
   [Arguments]  ${index_0}
   ScrollToElementToFalse           (.//*[contains(text(),'Поштова адреса')])[1]
-  Sleep  2
+  Sleep  1
   Select From List           xpath=(//*[@name='lots[0][items][${index_0}][region_id]'])[3]           ${regionDeliveryGlobal_1}
   ClearFildAndInputText      xpath=(//*[@name='lots[0][items][${index_0}][postal_code]'])[2]         ${postalCodeDeliveryGlobal_1}
   ClearFildAndInputText      xpath=(//*[@name='lots[0][items][${index_0}][locality]'])[2]            ${localityDeliveryGlobal_1}
@@ -307,7 +307,7 @@ DismissAlertPopUp
 Заповнити поля регіону доставки другого предмета
   [Arguments]  ${index_1}
   ScrollToElementToFalse           (.//*[contains(text(),'Поштова адреса')])[2]
-  Sleep  2
+  Sleep  1
   Select From List           xpath=(//*[@name='lots[0][items][${index_1}][region_id]'])[3]           ${regionDeliveryGlobal_2}
   ClearFildAndInputText      xpath=(//*[@name='lots[0][items][${index_1}][postal_code]'])[2]         ${postalCodeDeliveryGlobal_2}
   ClearFildAndInputText      xpath=(//*[@name='lots[0][items][${index_1}][locality]'])[2]            ${localityDeliveryGlobal_2}
@@ -1906,8 +1906,6 @@ DismissAlertPopUp
   ...   AND  Input Text           name=lots[0][${fieldNameLot}]            ${fieldValueLot}
   uatenders.Заповнити поля регіону доставки першого предмета   ${0}
   uatenders.DismissAlertPopUp
-  Run Keyword if   'внести зміни у лот після запитання' in '${TEST_NAME}'
-  ...   uatenders.Підписати ЕЦП   ${username}   ${tender_uaid}
 
 Видалити предмет закупівлі
   [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${lot_id}
@@ -2436,13 +2434,13 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Контракти') or contains(.,'Визначити учасників')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
 # документы и дата подписания, для viewer & provider, выводятся после подписания "остоточного рішення" контракта => tests non-critical
-  Run Keyword IF   'Відображення дати підписання угоди' == '${TEST_NAME.replace('\'', '')}'   Sleep  15 min
-  Wait Until Keyword Succeeds   10 x   90 s   Run Keyword IF   'Відображення дати підписання угоди' == '${TEST_NAME.replace('\'', '')}'   Run Keywords
-  ...   Reload Page
-  ...   AND   Sleep  3
-  ...   AND   Click Element                xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
-  ...   AND   Sleep  3
-  ...   AND   Element Should Be Enabled    xpath=(//*[contains(text(),'Дата підписання')])[1]
+  Run Keyword IF   'Відображення дати підписання угоди' == '${TEST_NAME.replace('\'', '')}'   Sleep  17 min
+  # Wait Until Keyword Succeeds   10 x   90 s   Run Keyword IF   'Відображення дати підписання угоди' == '${TEST_NAME.replace('\'', '')}'   Run Keywords
+  # ...   Reload Page
+  # ...   AND   Sleep  3
+  # ...   AND   Click Element                xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  # ...   AND   Sleep  3
+  # ...   AND   Element Should Be Enabled    xpath=(//*[contains(text(),'Дата підписання')])[1]
   ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].dateSigned
   Run Keyword And Return               convert_timeDate                  ${return_value}
 
@@ -3940,6 +3938,8 @@ DismissAlertPopUp
   ...   WaitVisibilityAndClickElement      xpath=(//*[contains(@value,'${complaintID}') or contains(@data-complaintid,'${complaintID}')]//*[@class='switcNotSatisfied'])[1]
 
   WaitVisibilityAndClickElement            xpath=(//*[contains(@value,'${complaintID}') or contains(@data-complaintid,'${complaintID}')]//*[@class='btn btn-answer'])[1]
+
+  Run Keyword IF   'Можливість підтвердити задоволення вимоги про виправлення визначення переможця' == '${TEST_NAME.replace('\'', '')}'    Sleep  3 min
   Sleep  60
   Reload Page
   Sleep  2
