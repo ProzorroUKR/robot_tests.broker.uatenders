@@ -72,7 +72,12 @@ ${locator.ownerViewer.agreements[0].agreementID}                            xpat
 ####################################    Selections
 ${locator.ownerViewer.lots[0].value.amount}                                xpath=(.//*[@class='data-amount'])[1]
 ${locator.ownerViewer.lots[0].minimalStep.amount}                          xpath=(.//*[@class='data-minimal_step'])[1]
+${locator.ownerViewer.lots[0].title}                                       xpath=(.//h4[contains(text(),'Лоти')]//..//span)[1]
 ${locator.ownerViewer.items[0].description}                                xpath=(.//*[@class='item-description'])[1]
+${locator.ownerViewer.items[0].quantity}                                   xpath=(.//*[@class='data-item-amount'])[1]
+
+
+
 ####################################    Milestones Locators
 ${locator.ownerViewer.milestones[0].title}                                  xpath=(//*[contains(text(),'Умови оплати')]/..//td[1])[1]
 ${locator.ownerViewer.milestones[0].code}                                   xpath=(//*[contains(text(),'Умови оплати')]/..//td[3])[1]
@@ -298,6 +303,9 @@ DismissAlertPopUp
 Заповнити поля регіону доставки першого предмета
   [Arguments]  ${index_0}
   ScrollToElementToFalse           (.//*[contains(text(),'Поштова адреса')])[1]
+  Sleep  1
+  Run Keyword if   'Можливість змінити дату закінчення періоду подання пропозиції на 10 днів' == '${TEST_NAME.replace('\'', '')}'
+  ...   WaitVisibilityAndClickElement     xpath=(.//*[@name='lots[0][items][${index_0}][same_delivery_address]'])[2]
   Sleep  1
   Select From List           xpath=(//*[@name='lots[0][items][${index_0}][region_id]'])[3]           ${regionDeliveryGlobal_1}
   ClearFildAndInputText      xpath=(//*[@name='lots[0][items][${index_0}][postal_code]'])[2]         ${postalCodeDeliveryGlobal_1}
@@ -1321,14 +1329,12 @@ DismissAlertPopUp
   ${return_value}=                  Отримати текст із поля для замовника             status
   Run Keyword if   'Неможливість підтвердити постачальника після закінчення періоду кваліфікації' in '${TEST_NAME}'       Sleep  60
   ${return_value}=               convert_status               ${return_value}
-
   Run Keyword if   'Можливість дочекатися початку періоду очікування' == '${TEST_NAME}'   Wait Until Keyword Succeeds   5 x   1 min   Run Keywords
   ...   Reload Page
   ...   AND   Sleep  2
   ...   AND   Run Keyword And Ignore Error      Click Element          xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
   ...   AND   Sleep  2
   ...   AND   Element Should Be Visible         xpath=(//table[@class="clean-table"]//span)[1]      Очікування другого етапу
-
 # Expected error '*' did not occur.
   Run Keyword if   'active.pre-qualification.stand-still' == '${return_value}'    Run Keywords
   ...   Sleep  2
@@ -1399,14 +1405,14 @@ DismissAlertPopUp
   ...   AND   WaitVisibilityAndClickElement    xpath=(//*[text()[contains(.,'Угоди')]])
   ${return_value}=                 Отримати текст із поля для замовника               agreements[0].agreementID
 # переход на 2-й єтап
-  Run Keyword If  '${MODE}' == 'framework_selection' and '${ROLE}' == 'tender_owner'   Run Keywords
+  Run Keyword If  '${MODE}' == 'framework_selection' and '${ROLE}' == 'tender_owner' or '${ROLE}' == 'viewer'   Run Keywords
   ...   WaitVisibilityAndClickElement           xpath=(.//*[contains(text(),'Закупівля')])[1]
   ...   AND   WaitVisibilityAndClickElement     xpath=(.//*[contains(text(),'Другі етапи')]/..//./*[@class='row']//a)[last()]
   [Return]    ${return_value}
 
 Отримати інформацію про замовника lots[0].value.amount
-  ${return_value}=                  Отримати текст із поля для замовника             lots[0].value.amount
-  ${return_value}            convert_status                 ${return_value}
+  ${return_value}=                 Отримати текст із поля для замовника             lots[0].value.amount
+  Run Keyword And Return           Convert To Number                                  ${return_value.replace(' ', '')}
 # переход на 2-й єтап
   Run Keyword If  '${MODE}' == 'framework_selection' and '${ROLE}' == 'viewer'
   ...   WaitVisibilityAndClickElement     xpath=(.//*[contains(text(),'Другі етапи')]/..//./*[@class='row']//a)[last()]
@@ -1414,7 +1420,10 @@ DismissAlertPopUp
 
 Отримати інформацію про замовника lots[0].minimalStep.amount
   ${return_value}=                  Отримати текст із поля для замовника             lots[0].minimalStep.amount
-  Run Keyword And Return            convert_status                 ${return_value}
+  Run Keyword And Return           Convert To Number                                  ${return_value.replace(' ', '')}
+
+Отримати інформацію про замовника lots[0].title
+  Run Keyword And Return                  Отримати текст із поля для замовника             lots[0].title
 
 Отримати інформацію про замовника procuringEntity.name
   Run Keyword IF  '${MODE}' == 'framework_selection' and '${ROLE}' == 'viewer'  WaitVisibilityAndClickElement  xpath=(.//*[contains(text(),'Закупівля')])[1]
@@ -1430,6 +1439,11 @@ DismissAlertPopUp
 
 Отримати інформацію про замовника items[0].description
   Run Keyword And Return           Отримати текст із поля для замовника               items[0].description
+
+Отримати інформацію про замовника items[0].quantity
+  ${return_value}=                 Отримати текст із поля для замовника               items[0].quantity
+  Run Keyword And Return           Convert To Number                                  ${return_value}
+
 
 ###### provider
 Отримати інформацію про посточальника agreements[0].agreementID
@@ -1660,10 +1674,11 @@ DismissAlertPopUp
 #########################  Items  ##############################
 Отримати значення поля items[0].description
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
-  Run Keyword IF   '${username}' == 'uatenders_Provider' or '${username}' == 'uatenders_Provider1' or '${username}' == 'uatenders_Provide2'
-  ...     Run Keyword And Return    Get Text    xpath=(//*[contains(text(),'${item_id}')])[1]
+  Run Keyword IF   '${username}' == 'uatenders_Provider' or '${username}' == 'uatenders_Provider1' or '${username}' == 'uatenders_Provide2'    Run Keywords
+  ...   ScrollToElementToFalse                            (//*[contains(text(),'Інформація про замовника')])[1]
+  ...   AND   Run Keyword And Return    Get Text    xpath=(//*[contains(text(),'${item_id}')])[1]
   Run Keyword IF   '${username}' == 'uatenders_Owner' or '${username}' == 'uatenders_Viewer'
-  ...     Run Keyword And Return    Get Text    xpath=(//*[contains(text(),'${item_id}')])[1]
+  ...   Run Keyword And Return    Get Text    xpath=(//*[contains(text(),'${item_id}')])[1]
 
 Отримати значення поля items[0].description_ru
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
@@ -2622,26 +2637,38 @@ DismissAlertPopUp
   ${return_value}=  Run Keyword  Змінити поле в тендері на ${fieldname}  ${fieldvalue}
   ScrollToElementToFalse               (.//h3[contains(text(),'Дати')])
   Run Keyword If    '${mode}' == 'aboveThresholdEU' or '${mode}' == 'openeu' or '${mode}' == 'open_esco' or '${mode}' == 'closeFrameworkAgreementUA' or '${mode}' == 'open_framework'    ClearFildAndInputText    name=contact_name_en    Petrov
-  Sleep  2
+  Sleep  1
   uatenders.Заповнити поля регіону доставки першого предмета   ${0}
+  Run Keyword if   'Можливість змінити дату закінчення періоду подання пропозиції на 10 днів' == '${TEST_NAME.replace('\'', '')}'
+  ...   uatenders.Додати дату періоду доставки   ${fieldvalue}
   uatenders.DismissAlertPopUp
-  Sleep  3
-  Run Keyword if   'більше ніж за 7 днів до завершення періоду подання пропозицій' in '${TEST_NAME.replace('\'', '')}'
-  ...   uatenders.Підписати ЕЦП   ${username}   ${tender_uaid}
   [Return]  ${return_value}
+
+Додати дату періоду доставки
+  [Arguments]  ${fieldvalue}
+  ${deliveryEndDate}=    Convert Date        ${fieldvalue}            result_format=%d-%m-%Y %H:%M
+  ${dateEndDate}=        convert_datetime_for_delivery_plus_25_day    ${deliveryEndDate}
+  ${dateStartDate}=      convert_datetime_for_delivery_plus_2_day     ${deliveryEndDate}
+  ClearFildAndInputText       xpath=(.//*[@name='lots[0][items][0][delivery_date_end]'])    ${dateEndDate}
+  ClearFildAndInputText       xpath=(.//*[@name='lots[0][items][0][delivery_date_start]'])    ${dateStartDate}
 
 Змінити поле в тендері на description
   [Arguments]   ${description}
-  Input Text          name=description              ${description}
+  Run Keyword And Return    Input Text    name=description         ${description}
 
 Змінити поле в тендері на tenderPeriod.endDate
   [Arguments]   ${endDate}
   ${tenderEndDate}=   convert_enquiry_tenderPeriod    ${endDate}
-  Input Text          name=tender_end_date           ${tenderEndDate}
+  Run Keyword And Return    Input Text    name=tender_end_date     ${tenderEndDate}
 
 Змінити поле в тендері на maxAwardsCount
   [Arguments]   ${maxAwardsCount}
-  Input Text               name=max_awards_count                             ${maxAwardsCount}
+  Run Keyword And Return    Input Text    name=max_awards_count    ${maxAwardsCount}
+
+Змінити поле в тендері на items[0].quantity
+  [Arguments]   ${items_0_Quantity}
+  ${quantityItems}=                   Convert To String                                ${items_0_Quantity}
+  Run Keyword And Return    ClearFildAndInputText    xpath=(.//*[@name='lots[0][items][0][quantity]'])[1]    ${quantityItems}
 
 #######################################################
   # Возможность в тендере подписать ЕЦП
@@ -3431,15 +3458,17 @@ DismissAlertPopUp
   ${lots_count}=  Get Length  ${adapted_data.data.lots}
   ${presence}=  Run Keyword And Return Status  List Should Contain Value  ${adapted_data.data}  items
   @{items}=  Run Keyword If  ${presence}  Get From Dictionary  ${adapted_data.data}  items
+  Run Keyword If    '${NUMBER_OF_ITEMS}' == '1'
+  ...   uatenders.Сформувати глобальні змінні по ОДНОМУ предмету    ${items[0]}
+  Run Keyword If    '${NUMBER_OF_ITEMS}' == '2'
+  ...   uatenders.Сформувати глобальні змінні по ДВОХ предметах     ${items[0]}  ${items[1]}
+  @{items}=  Run Keyword If  ${presence}  Get From Dictionary  ${adapted_data.data}  items
   :FOR   ${lots_count}   IN RANGE   ${lots_count}
   \   ClearFildAndInputText       name=lots[${lots_count}][items][0][description]      ${adapted_data.data.lots[0].description}
   \   ClearFildAndInputText       name=lots[${lots_count}][items][0][description_en]   ${adapted_data.data.lots[0].description_en}
   \   uatenders.Додати до предмет одиниці виміру    ${items[0]}  ${0}  ${0}
   uatenders.Переміститься до футера
-  WaitVisibilityAndClickElement       xpath=//*[@type='submit']
-  Sleep  2
-  Dismiss Alert
-  Sleep  2
+  uatenders.DismissAlertPopUp
   uatenders.Дочикатися появи кнопки Опублікувати  ${username}
     #pop-up window
   Run Keyword And Ignore Error            WaitVisibilityAndClickElement       xpath=(//*[@class='btn btn-primary text-center'])
@@ -3930,17 +3959,15 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement            xpath=(//*[text()[contains(.,'Оскарження')]])[1]
   Run Keyword IF   '${status_1}' == 'resolved'
   ...   WaitVisibilityAndClickElement      xpath=(//*[contains(@data-complaintid,'${complaintID}') or contains(@class,'${complaintID}')])[1]//*[contains(text(),'Задоволена замовником')]
-
-  Run Keyword IF   '${status_1}' != 'resolved'
-  ...   WaitVisibilityAndClickElement      xpath=(//*[contains(@value,'${complaintID}') or contains(@data-complaintid,'${complaintID}')]//*[@class='switcNotSatisfied'])[1]
 # клик по кнопке [Не задоволений]==False, а вот, если то по дефолту выставлена кнопка [Задоволений]==True
   Run Keyword IF   '${status_2}' == 'False'
   ...   WaitVisibilityAndClickElement      xpath=(//*[contains(@value,'${complaintID}') or contains(@data-complaintid,'${complaintID}')]//*[@class='switcNotSatisfied'])[1]
-
   WaitVisibilityAndClickElement            xpath=(//*[contains(@value,'${complaintID}') or contains(@data-complaintid,'${complaintID}')]//*[@class='btn btn-answer'])[1]
-
-  Run Keyword IF   'Можливість підтвердити задоволення вимоги про виправлення визначення переможця' == '${TEST_NAME.replace('\'', '')}'    Sleep  3 min
-  Sleep  60
+  Run Keyword IF   'Можливість підтвердити задоволення вимоги про виправлення визначення переможця' == '${TEST_NAME.replace('\'', '')}'    Wait Until Keyword Succeeds   25 x   60 s   Run Keywords
+  ...   Reload Page
+  ...   AND   Sleep  2
+  ...   AND   Page Should Contain Element       xpath=(//*[contains(@value,'${complaintID}') or contains(@data-complaintid,'${complaintID}')]//*[contains(@class,'claim') and contains(text(),'Виконана замовником')])[1]
+  Sleep  5
   Reload Page
   Sleep  2
 
