@@ -75,9 +75,6 @@ ${locator.ownerViewer.lots[0].minimalStep.amount}                          xpath
 ${locator.ownerViewer.lots[0].title}                                       xpath=(.//h4[contains(text(),'Лоти')]//..//span)[1]
 ${locator.ownerViewer.items[0].description}                                xpath=(.//*[@class='item-description'])[1]
 ${locator.ownerViewer.items[0].quantity}                                   xpath=(.//*[@class='data-item-amount'])[1]
-
-
-
 ####################################    Milestones Locators
 ${locator.ownerViewer.milestones[0].title}                                  xpath=(//*[contains(text(),'Умови оплати')]/..//td[1])[1]
 ${locator.ownerViewer.milestones[0].code}                                   xpath=(//*[contains(text(),'Умови оплати')]/..//td[3])[1]
@@ -1444,7 +1441,6 @@ DismissAlertPopUp
   ${return_value}=                 Отримати текст із поля для замовника               items[0].quantity
   Run Keyword And Return           Convert To Number                                  ${return_value}
 
-
 ###### provider
 Отримати інформацію про посточальника agreements[0].agreementID
   WaitVisibilityAndClickElement    xpath=(.//*[@class='show-first-stage'][contains(text(),'Рамкова угода')])
@@ -2426,50 +2422,44 @@ DismissAlertPopUp
 Отримати інформацію про замовника items[${index}].unit.code
   WaitVisibilityAndClickElement        xpath=((//*[text()[contains(.,'Закупівля')]][. = 'Закупівля']))
   ${return_value}=       Отримати текст із поля для замовника              items[${index}].unit.code
-  Run Keyword And Return            convert_unit_code               ${return_value}
+  Run Keyword And Return               convert_unit_code               ${return_value}
 
 ##################################################################
 #########################  Contracts  ##############################
 Отримати інформацію про замовника contracts[${index}].value.amount
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Контракти') or contains(.,'Визначити учасників')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
-  ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].value.amount
+  ${return_value}=                      Отримати текст із поля для замовника              contracts[${index}].value.amount
  # слип от "Calling method 'get_tender' failed: ConnectionError: ('Connection aborted.', BadStatusLine('No status line received - the server has closed the connection',))"
   Run Keyword IF    '${MODE}' == 'negotiation'   Sleep   700
-  Run Keyword And Return               string_to_float                  ${return_value}
+  Run Keyword And Return                string_to_float                ${return_value}
 
 Отримати інформацію про замовника contracts[${index}].value.amountNet
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Контракти') or contains(.,'Визначити учасників')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
-  ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].value.amountNet
-  ${return_value}=             Fetch From Left         ${return_value}     ${SPACE}
-  Run Keyword And Return               string_to_float                  ${return_value}
+  ${return_value}=                      Отримати текст із поля для замовника              contracts[${index}].value.amountNet
+  ${return_value}=                      Fetch From Left                ${return_value}     ${SPACE}
+  Run Keyword And Return                string_to_float                ${return_value}
 
 Отримати інформацію про замовника contracts[${index}].dateSigned
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Контракти') or contains(.,'Визначити учасників')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
 # документы и дата подписания, для viewer & provider, выводятся после подписания "остоточного рішення" контракта => tests non-critical
-  Run Keyword IF   'Відображення дати підписання угоди' == '${TEST_NAME.replace('\'', '')}'   Sleep  17 min
-  # Wait Until Keyword Succeeds   10 x   90 s   Run Keyword IF   'Відображення дати підписання угоди' == '${TEST_NAME.replace('\'', '')}'   Run Keywords
-  # ...   Reload Page
-  # ...   AND   Sleep  3
-  # ...   AND   Click Element                xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
-  # ...   AND   Sleep  3
-  # ...   AND   Element Should Be Enabled    xpath=(//*[contains(text(),'Дата підписання')])[1]
-  ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].dateSigned
-  Run Keyword And Return               convert_timeDate                  ${return_value}
+  Run Keyword IF   'Відображення дати підписання угоди' == '${TEST_NAME.replace('\'', '')}'   Sleep  15 min
+  ${return_value}=                      Отримати текст із поля для замовника              contracts[${index}].dateSigned
+  Run Keyword And Return                convert_timeDate               ${return_value}
 
 Отримати інформацію про замовника contracts[${index}].period.startDate
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Контракти') or contains(.,'Визначити учасників')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
-  ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].period.startDate
-  Run Keyword And Return               convert_delivery_endDate                  ${return_value}
+  ${return_value}=                      Отримати текст із поля для замовника              contracts[${index}].period.startDate
+  Run Keyword And Return                convert_delivery_endDate       ${return_value}
 
 Отримати інформацію про замовника contracts[${index}].period.endDate
   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Контракти') or contains(.,'Визначити учасників')]])
   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
-  ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].period.endDate
-  Run Keyword And Return               convert_delivery_endDate                  ${return_value}
+  ${return_value}=                      Отримати текст із поля для замовника              contracts[${index}].period.endDate
+  Run Keyword And Return                convert_delivery_endDate       ${return_value}
 
 ##################################################################
 #########################  Planning  ##############################
@@ -2505,9 +2495,9 @@ DismissAlertPopUp
   [Arguments]  ${username}  ${tender_uaid}  ${item}
   uatenders.Пошук плану по ідентифікатору    ${username}   ${tender_uaid}
   WaitVisibilityAndClickElement           xpath=//*[text()='Редагування']
-  ${index_xpath}=  Get Webelements  xpath=(.//*[@class='item-container item-section'])
+  ${index_xpath}=   Get Webelements       xpath=(.//*[@class='item-container item-section'])
   ${index}=  Get_Length  ${index_xpath}
-  WaitVisibilityAndClickElement   xpath=(.//*[contains(@class,'add-item-section-plan')])[1]
+  WaitVisibilityAndClickElement           xpath=(.//*[contains(@class,'add-item-section-plan')])[1]
   Input Text                          name=items[${index}][description]              ${item.description}
   ${quantityItems}=                   Convert To String                                ${item.quantity}
   Input Text                          name=items[${index}][quantity]                 ${quantityItems}
@@ -2515,7 +2505,7 @@ DismissAlertPopUp
   ${deliveryEndDate}=  Convert Date   ${item.deliveryDate.endDate}          result_format=%d.%m.%Y
   Input Text                          name=items[${index}][delivery_end_date]        ${deliveryEndDate}
   Input Text                          name=items[${index}][cpv]                      ${item.classification.id}      #24910000-6     #${classificationID}
-  WaitVisibilityAndClickElement      xpath=(//*[contains(@class,'ui-menu-item')])[last()]
+  WaitVisibilityAndClickElement       xpath=(//*[contains(@class,'ui-menu-item')])[last()]
   uatenders.Підписати ЕЦП   ${username}  ${tender_uaid}
 
 Видалити предмет закупівлі плану
@@ -2558,15 +2548,15 @@ DismissAlertPopUp
   Run Keyword And Return           Fetch From Left         ${return_value}     ${SPACE}
 
 Отримати інформацію про план поля budget.amount
-  ${return_value}=              Отримати текст плана із поля              budget.amount
+  ${return_value}=                 Отримати текст плана із поля              budget.amount
   ${mainSup}=                      Get Text                             xpath=(//*[text()[contains(.,'Планована сума закупівлі')]]/..//*[@class='centPrice'])
   ${return_value}=                 Catenate               SEPARATOR=.   ${return_value}  ${mainSup}
-  Run Keyword And Return        string_to_float             ${return_value.replace(' ', '')}
+  Run Keyword And Return           string_to_float             ${return_value.replace(' ', '')}
 Отримати інформацію про замовника budget.amount
-  ${return_value}=              Отримати текст плана із поля              budget.amount
+  ${return_value}=                 Отримати текст плана із поля              budget.amount
   ${mainSup}=                      Get Text                             xpath=(//*[text()[contains(.,'Планована сума закупівлі')]]/..//*[@class='centPrice'])
   ${return_value}=                 Catenate               SEPARATOR=.   ${return_value}  ${mainSup}
-  Run Keyword And Return        string_to_float             ${return_value.replace(' ', '')}
+  Run Keyword And Return           string_to_float             ${return_value.replace(' ', '')}
 
 Отримати інформацію про план поля budget.description
   Run Keyword And Return           Отримати текст плана із поля               budget.description
@@ -2587,41 +2577,41 @@ DismissAlertPopUp
   ${return_value}=      Fetch From Left         ${return_value}     ${SPACE}
   Run Keyword And Return        Convert To Number                ${return_value}
   ${return_value}=    Get Text    xpath=((//*[contains(text(),'${item_id}')]/../*)/..//following-sibling::*//*[@class='data-item-amount'])
-  Run Keyword And Return             Convert To Number                                             ${return_value}
+  Run Keyword And Return          Convert To Number                           ${return_value}
 
 Отримати інформацію про план поля items[${index}].unit.name
   ${return_value}=           Отримати текст плана із поля              items[${index}].unit.name
   ${return_value}=           Fetch From Right         ${return_value}     ${SPACE}
-  Run Keyword And Return           convert_uatenders_string_to_ClaimsStatus                   ${return_value}
+  Run Keyword And Return     convert_uatenders_string_to_ClaimsStatus     ${return_value}
 
 Отримати інформацію про план поля items[${index}].unit.code
   ${return_value}=              Отримати текст плана із поля              items[${index}].unit.code
-  ${return_value}=           Fetch From Right         ${return_value}     ${SPACE}
-  Run Keyword And Return           convert_unit_code               ${return_value}
+  ${return_value}=              Fetch From Right      ${return_value}     ${SPACE}
+  Run Keyword And Return        convert_unit_code                         ${return_value}
 
 Отримати інформацію про план поля items[${index}].id
-  Run Keyword And Return           Отримати текст плана із поля               items[${index}].id
+  Run Keyword And Return       Отримати текст плана із поля               items[${index}].id
 
 Отримати інформацію про план поля items[${index}].scheme
-  Run Keyword And Return           Отримати текст плана із поля               items[${index}].scheme
+  Run Keyword And Return       Отримати текст плана із поля               items[${index}].scheme
 
 Отримати інформацію про план поля items[${index}].description
-  Run Keyword And Return           Отримати текст плана із поля               items[${index}].description
+  Run Keyword And Return       Отримати текст плана із поля               items[${index}].description
 
 Отримати інформацію про план поля items[${index}].deliveryDate.endDate
-  ${return_value}=                 Отримати текст плана із поля               items[${index}].deliveryDate.endDate
-  Run Keyword And Return           convert_delivery_endDate              ${return_value}   #.replace(' ,', ',')}
+  ${return_value}=             Отримати текст плана із поля               items[${index}].deliveryDate.endDate
+  Run Keyword And Return           convert_delivery_endDate               ${return_value}   #.replace(' ,', ',')}
 
 Отримати інформацію про план поля items[${index}].classification.id
-  ${return_value}=                Отримати текст плана із поля                items[${index}].classification.id
-  Run Keyword And Return          Fetch From Left         ${return_value}     ${SPACE}
+  ${return_value}=            Отримати текст плана із поля                items[${index}].classification.id
+  Run Keyword And Return      Fetch From Left         ${return_value}     ${SPACE}
 
 Отримати інформацію про план поля items[${index}].classification.description
-  Run Keyword And Return         Отримати текст плана із поля                 items[${index}].classification.description
+  Run Keyword And Return     Отримати текст плана із поля                 items[${index}].classification.description
 
 Отримати інформацію про план поля items[${index}].classification.scheme
-  ${return_value}=                 Отримати текст плана із поля               items[${index}].classification.scheme
-  Run Keyword And Return    convert_uatenders_string_to_common_string                 ${return_value}
+  ${return_value}=             Отримати текст плана із поля               items[${index}].classification.scheme
+  Run Keyword And Return    convert_uatenders_string_to_common_string     ${return_value}
 
 ######################################    ЗМІНИТИ    ################################################
 Внести зміни в тендер
@@ -2689,14 +2679,14 @@ DismissAlertPopUp
   ...   AND   Choose File                         css=[id*=PKeyFileInput]                    ${filepath}
   ...   AND   Input Text                          xpath=//*[@id='PKeyPassword']            12345677
   ...   AND   WaitVisibilityAndClickElement       xpath=(//button[contains(text(),'Зчитати')])[1]
-  ...   AND   Sleep  5
+  ...   AND   Sleep  2
   ...   AND   Element Text Should Be              xpath=(//*[@id='PKStatusInfo'])[1]         Ключ успішно завантажено
   ...      ELSE IF   '${value}' == 'Ключ успішно завантажено'     Run Keyword
   ...   Element Should Be Visible                 xpath=(//*[@id='PKStatusInfo'])[1]               Ключ успішно завантажено
   Element Should Be Visible                       xpath=(//*[@id='PKStatusInfo'])[1]               Ключ успішно завантажено
   Wait Until Element Is Visible                   xpath=(//*[text()[contains(.,'Накладення ЕЦП')]]/..//*[contains(text(),'Підписати')])[1]     15
   WaitVisibilityAndClickElement                   xpath=(//*[text()[contains(.,'Накладення ЕЦП')]]/..//*[contains(text(),'Підписати')])[1]
-  Sleep  5
+  Sleep  2
 
 ######################################        ПОДАТИ Пропозицію        ################################################
 Подати цінову пропозицію
@@ -2832,7 +2822,7 @@ DismissAlertPopUp
   ...   Reload Page
   ...   AND  Sleep  5
   ...   AND  WaitVisibilityAndClickElement          xpath=(//*[contains(text(),'Активувати')])
-  ...   AND  Sleep  3
+  ...   AND  Sleep  5
   ...   AND  Reload Page
   ...   AND  Sleep  5
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
@@ -2930,13 +2920,13 @@ DismissAlertPopUp
   Run Keyword And Return           Catenate               SEPARATOR=,   ${return_value_1}  ${return_value_2}
 
 Отримати інформацію про посточальника funders[0].contactPoint.url
-  Run Keyword And Return              Get Element Attribute              xpath=(//*[contains(text(),'Сайт')]/..//*[position() mod 2 = 0]/a)@href
+  Run Keyword And Return           Get Element Attribute              xpath=(//*[contains(text(),'Сайт')]/..//*[position() mod 2 = 0]/a)@href
 
 Отримати інформацію про посточальника funders[0].identifier.legalName
   Run Keyword And Return           Отримати текст із поля для посточальника               funders[0].identifier.legalName
 
 Отримати інформацію про посточальника funders[0].identifier.id
-  Run Keyword And Return    Get Text    xpath=(.//*[@class='donorModalTable']//td[2])[4]
+  Run Keyword And Return           Get Text                           xpath=(.//*[@class='donorModalTable']//td[2])[4]
 
 Отримати інформацію про посточальника funders[0].identifier.scheme
   Run Keyword And Return           Convert To String           XM-DAC
@@ -3077,7 +3067,7 @@ DismissAlertPopUp
   Run Keyword And Ignore Error    Choose File    id=award-0-1             ${document}
   Run Keyword And Ignore Error    Choose File    id=award-1-1             ${document}
   Run Keyword And Ignore Error    Choose File    id=award-2-1             ${document}
-  Sleep  3
+  Sleep  2
   Run Keyword And Ignore Error    ScrollToElementToFalse    (//*[@type='submit'])[1]
   WaitVisibilityAndClickElement         xpath=(//*[@type='submit'])[1]
 
