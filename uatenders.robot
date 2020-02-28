@@ -1693,7 +1693,7 @@ DismissAlertPopUp
   [Arguments]   ${item_id}  ${username}  ${tender_uaid}
   Run Keyword IF   '${username}' == 'uatenders_Provider' or '${username}' == 'uatenders_Provider1' or '${username}' == 'uatenders_Provide2'    Run Keywords
   ...   ScrollToElementToFalse                            (//*[contains(text(),'Інформація про замовника')])[1]
-  ...   AND   Run Keyword And Return    Get Text    xpath=(//*[contains(text(),'${item_id}')])[1]
+  ...   AND   Run Keyword And Return    Get Text    xpath=(.//*[@class='showLot']//*[contains(text(),'${item_id}')])[1]
   Run Keyword IF   '${username}' == 'uatenders_Owner' or '${username}' == 'uatenders_Viewer'
   ...   Run Keyword And Return    Get Text    xpath=(//*[contains(text(),'${item_id}')])[1]
 
