@@ -169,6 +169,8 @@ ${locator.ownerViewer.procuringEntity.contactPoint.url}                     xpat
 ${locator.ownerViewer.contactPoint.status}                                  xpath=(//*[@class='label label-info'])[1]
 ${locator.ownerViewer.contracts[0].status}                                  xpath=(//*[contains(text(),'Статус:')]/..//*[position() mod 2 = 0]/span)[1]
 ${locator.ownerViewer.contracts[1].status}                                  xpath=(//*[contains(text(),'Статус:')]/..//*[position() mod 2 = 0]/span)[1]
+${locator.ownerViewer.agreements[0].status}                                 xpath=(//*[contains(text(),'Статус:')]/..//*[position() mod 2 = 0]/span)[1]
+${locator.ownerViewer.agreements[1].status}                                 xpath=(//*[contains(text(),'Статус:')]/..//*[position() mod 2 = 0]/span)[1]
 ${locator.ownerViewer.contracts[0].value.amount}                            xpath=(.//*[@class='current_amount'])
 ${locator.ownerViewer.contracts[1].value.amount}                            xpath=(.//*[@class='current_amount'])
 ${locator.ownerViewer.contracts[0].value.amountNet}                         xpath=(//*[contains(text(),'Ціна договору без ПДВ:')]/..//*[position() mod 2 = 0]/p)[1]
@@ -521,9 +523,10 @@ DismissAlertPopUp
   ...   '${procurementMethodType}' == 'reporting'               reporting
   Run Keyword IF    '${procurementMethodType}' == 'reporting'
   ...   uatenders.Додати цінову пропозицію до reporting   ${tender_data}
+
 # Создание тендера с одним \ много - лотами
-  Run Keyword IF    '${NUMBER_OF_LOTS}' == '0'      Run Keyword
-  ...   uatenders.Можливість додати лот до тендеру            ${tender_data}  ${procurementMethodType}  ${mode}
+  # Run Keyword IF    '${NUMBER_OF_LOTS}' == '0'      Run Keyword
+  # ...   uatenders.Можливість додати лот до тендеру            ${tender_data}  ${procurementMethodType}  ${mode}
   ...     ELSE IF   '${NUMBER_OF_LOTS}' == '1'      Run Keyword
   ...   uatenders.Можливість додати лот до тендеру            ${tender_data}  ${procurementMethodType}  ${mode}
   ...     ELSE IF   '${NUMBER_OF_LOTS}' == '2'      Run Keyword
@@ -690,7 +693,7 @@ DismissAlertPopUp
   [Arguments]  ${tender_data}  ${methodType}  ${mode}
   ${scenarios_name}=  get_scenarios_name
   ${scenarios_name_1}=    Fetch From Right    ${scenarios_name}    /
-  ${scenarios_name_2}=    Fetch From Left    ${scenarios_name_1}    .
+  ${scenarios_name_2}=    Fetch From Left    ${scenarios_name_1}   .
   ${LOTS_NUM}=  Run Keyword If
   ...   '${NUMBER_OF_LOTS}' == '0'   Set Variable   1
   ...   ELSE IF   '${NUMBER_OF_LOTS}' != '0'   Set Variable   ${NUMBER_OF_LOTS}
@@ -1127,17 +1130,19 @@ DismissAlertPopUp
 Дочикатися появи айди тендера plan_uaid
   [Arguments]   ${username}
   Wait Until Keyword Succeeds   25 x   5 s     Run Keywords
-  ...   Run Keyword IF      '${username}' == 'PASS'     Element Should Be Enabled       xpath=(//*[contains(text(),'Ідентифікаційний номер')]/..//*[position() mod 2 = 0])
-  ...   AND   Reload Page
+  ...   Reload Page
   ...   AND   Sleep  1
+  ...   AND   Element Should Be Visible       xpath=(//*[contains(text(),'UA-P-2')])[1]      UA-P-20
 
 ######################################    ПОШУК Тендеру   ################################################
 Пошук тендера по ідентифікатору
   [Arguments]   ${username}  ${tender_uaid}  ${second_stage_data}=${EMPTY}
   Switch Browser    1
-  # for exclude Quinta errors added Sleeep 600
-  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'                Sleep   15 min
-  Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'    Sleep   15 min
+#############################
+  # for exclude Quinta errors added Sleeep for waiting create data
+  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME.replace('\'', '')}' and '${MODE}' != 'open_framework'   Sleep   15 min
+  Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'    Sleep   20 min
+#############################
   Wait Until Keyword Succeeds   10 x   5 s     Run Keywords
   ...   Run Keyword IF    '${tender_uaid}' == 'PASS'    Input Text    name=search[s]    ${tender_uaid}
   ...   AND   Go To   ${USERS.users['${username}'].homepage}
@@ -1280,21 +1285,30 @@ DismissAlertPopUp
 Отримати інформацію із угоди
   [Arguments]  ${username}  ${agreement_uaid}  ${field_name}
   uatenders.Пошук угоди по ідентифікатору  ${username}  ${agreement_uaid}
-  uatenders.Переміститься до футера
   ${fieldNum}=    uatenders.Отримати індекс з назви поля  ${field_name}
-  Run Keyword And Return If  'rationaleType' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationaleType')])@value
-  Run Keyword And Return If  'rationale' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationale')])@value
-  Run Keyword And Return If  'status' in '${field_name}'         Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'status')])@value
-  Run Keyword And Return If  'modifications[0].itemId' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'itemId')])
+  Wait Until Keyword Succeeds   20 x   60 s   Run Keywords
+  ...   uatenders.Перезавантажити сторінку з угодою
+  ...   AND   Element Should Be Visible    xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')])[1]
+  uatenders.Переміститься до футера
+  Run Keyword And Return If  'rationaleType' in '${field_name}'   Get Element Attribute   xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationaleType')])@value
+  Run Keyword And Return If  'rationale' in '${field_name}'       Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationale')])@value
+  Run Keyword And Return If  'status' in '${field_name}'          Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'status')])@value
+  Run Keyword And Return If  'modifications[0].itemId' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'itemId')])
   Run Keyword And Return If  'modifications[0].contractId' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'contractId')])
-  Run Keyword And Return If  'modifications[0].addend' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'addend')])
-  Run Keyword And Return If  'modifications[0].factor' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'factor')])
+  Run Keyword And Return If  'modifications[0].addend' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'addend')])
+  Run Keyword And Return If  'modifications[0].factor' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'factor')])
 
 Отримати індекс з назви поля
   [Arguments]  ${field_name}
   ${fieldNum_1}       Fetch From Right     ${field_name}      [
   ${fieldNum_2}       Fetch From Left      ${fieldNum_1}      ]
   Run Keyword And Return    Convert To String    ${fieldNum_2}
+
+Перезавантажити сторінку з угодою
+  Reload Page
+  Sleep  1
+  Run Keyword And Ignore Error      Click Element          xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  Sleep  1
 
 ##################################################################################################################
 ###############################################      ОТРИМАТИ      ###############################################
@@ -1392,6 +1406,12 @@ DismissAlertPopUp
   ${return_value}=                  Отримати текст із поля для посточальника             status
   Run Keyword And Return            convert_status            ${return_value}
 
+Отримати інформацію про замовника agreements[${index}].status
+  WaitVisibilityAndClickElement     xpath=(//*[text()[contains(.,'Угоди')]])
+  WaitVisibilityAndClickElement     xpath=(//*[contains(text(),'№')]/../../..//a)[1]
+  ${return_value}=                  Отримати текст із поля для замовника              agreements[${index}].status
+  Run Keyword And Return            convert_status                  ${return_value}
+
 #########################  Selections  ##############################
 ###### owner
 Отримати інформацію про замовника agreements[0].agreementID
@@ -1402,7 +1422,8 @@ DismissAlertPopUp
   ...   AND   WaitVisibilityAndClickElement    xpath=(//*[text()[contains(.,'Угоди')]])
   ${return_value}=                 Отримати текст із поля для замовника               agreements[0].agreementID
 # переход на 2-й єтап
-  Run Keyword If  '${MODE}' == 'framework_selection' and '${ROLE}' == 'tender_owner' or '${ROLE}' == 'viewer'   Run Keywords
+  Run Keyword If  '${MODE}' == 'framework_selection'   Run Keyword
+  ...   '${ROLE}' == 'tender_owner' or '${ROLE}' == 'viewer'   Run Keywords
   ...   WaitVisibilityAndClickElement           xpath=(.//*[contains(text(),'Закупівля')])[1]
   ...   AND   WaitVisibilityAndClickElement     xpath=(.//*[contains(text(),'Другі етапи')]/..//./*[@class='row']//a)[last()]
   [Return]    ${return_value}
@@ -2701,9 +2722,7 @@ DismissAlertPopUp
   [Arguments]  ${username}  ${tender_uaid}  ${bid}  ${lots_ids}=${None}  ${features_ids}=${None}
   Run Keyword if   'Неможливість подати цінову пропозицію' in '${TEST_NAME}'      Fail
   ${filepath}=                              get_file_path
-  ${bid_value}=  Set Variable If  ${NUMBER_OF_LOTS} == 0  ${bid.data.value.amount}  ${bid.data.lotValues[0].value.amount}
-  ${amount}=          float_to_string_2f                  ${bid_value}
-  ${amount}=          Convert To String                   ${bid_value}
+  ${amount}=          Convert To String                   ${bid.data.lotValues[0].value.amount}
 
   Run Keyword IF   '${username}' == 'uatenders_Provider' or '${username}' == 'uatenders_Provider1' or '${username}' == 'uatenders_Provider2'   Run Keywords
   ...   uatenders.Переміститься до хедера
@@ -3076,11 +3095,7 @@ DismissAlertPopUp
   ${filepath}=               get_file_path
   WaitVisibilityAndClickElement         xpath=(//*[contains(@class,'btn btn-warning') and contains(.,'Кваліфікація')])[1]
 #  Квалификация победителя по Допорогам проходит, через этот кейВорд
-  Run Keyword if   'Неможливість' in '${TEST_NAME.replace('\'', '')}'    Run Keywords
-  ...   Sleep  300
-  ...   AND   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
-  ...   AND   WaitVisibilityAndClickElement         xpath=(//*[text()[contains(.,'Угоди')]])
-  ...   AND   WaitVisibilityAndClickElement         xpath=(//*[contains(text(),'№')]/../../..//a)[1]
+  Run Keyword if   'Неможливість' in '${TEST_NAME.replace('\'', '')}'    Fail
 
   Run Keyword if   'підтвердити постачальника' in '${TEST_NAME}'    Run Keywords
   ...   Sleep  2
@@ -3262,14 +3277,14 @@ DismissAlertPopUp
 Затвердити остаточне рішення кваліфікації
   [Arguments]  ${username}  ${tender_uaid}
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
-  WaitVisibilityAndClickElement                  xpath=(//*[contains(@class,'btn btn-warning') and contains(.,'Прекваліфікація')])
-  WaitVisibilityAndClickElement                  xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Закінчити кваліфікацію') or contains(text(),'Сформувати протокол')])
+  WaitVisibilityAndClickElement    xpath=(//*[contains(@class,'btn btn-warning') and contains(.,'Прекваліфікація')])
+  WaitVisibilityAndClickElement    xpath=(//*[contains(text(),'Пропозицї на розгляді')]/following-sibling::*//*[contains(text(),'Закінчити кваліфікацію') or contains(text(),'Сформувати протокол')])
   Sleep  4
   WaitVisibilityAndClickElement    xpath=(//*[@type='submit'])    # btnValue [Так]
   Sleep  15
   Reload Page
   Sleep  2
-  WaitVisibilityAndClickElement                  xpath=(//a[text()[contains(.,'Закупівля')]])
+  WaitVisibilityAndClickElement    xpath=(//a[text()[contains(.,'Закупівля')]])
   Sleep  2
   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
 
@@ -3280,7 +3295,8 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement    xpath=(//a[text()[contains(.,'Закінчити кваліфікацію')]])[1]
   WaitVisibilityAndClickElement    xpath=(.//*[@class='modal-footer']/*[contains(@value,'Так')])[1]
 #    ${object}' not found.
-  Sleep  360
+  Sleep  8 min
+  Run Keyword if   '${MODE}' == 'open_framework'   Sleep  10 min
 
 Встановити ціну за одиницю для контракту
   [Arguments]  ${username}  ${tender_uaid}  ${contract_data}
@@ -3332,16 +3348,30 @@ DismissAlertPopUp
 
 Отримати доступ до угоди
   [Arguments]  ${username}  ${agreement_uaid}
-  Run Keyword if   'Можливість отримати доступ до угоди' in '${TEST_NAME.replace('\'', '')}'   Sleep  300
+  Run Keyword if   'Можливість отримати доступ до угоди' in '${TEST_NAME.replace('\'', '')}'   Sleep  5 min
   Wait Until Keyword Succeeds   15 x   45 s     Run Keywords
   ...   uatenders.Пошук угоди по ідентифікатору  ${username}  ${agreement_uaid}
   ...   AND   Sleep  2
   ...   AND   Element Should Be Visible    xpath=(//*[contains(@class,'btn-success') and contains(.,'Виконання угоди')])
 
+
+Завантажити документ в рамкову угоду
+  [Arguments]  ${username}  ${file_path}  ${agreementID}
+  WaitVisibilityAndClickElement    xpath=(//*[contains(@class,'btn-warning') and contains(.,'Внести зміни до угоди')])
+
+  WaitVisibilityAndClickElement   name=change[date_signed]
+  ClearFildAndInputText           name=change[agreement_number]    1234567890
+  ClearFildAndInputText           name=change[rationale]           Опис змін, що внесені до угоди
+  Sleep  2
+  Choose File                name=change[files][]             ${file_path}
+  Sleep  2
+  WaitVisibilityAndClickElement    xpath=(//*[contains(@value,'Зберегти') or contains(@value,'Оновити')])[1]
+
+
 Внести зміну в угоду
   [Arguments]  ${username}  ${agreement_uaid}  ${change_data}
   ${filepath}=                            get_file_path
-  WaitVisibilityAndClickElement    xpath=(//*[contains(@class,'btn-warning') and contains(.,'Внести зміни до угоди')])
+  Run Keyword And Ignore Error   WaitVisibilityAndClickElement   xpath=(//*[contains(@class,'btn-warning') and contains(.,'Внести зміни до угоди')])
   ${rationaleType}=  Set Variable  ${change_data.data.rationaleType}
   ${rationaleTypeNum}=   Run Keyword If   '${rationaleType}' == 'itemPriceVariation'   Set Variable   3
   ...   ELSE IF   '${rationaleType}' == 'taxRate'           Set Variable   6
@@ -3355,10 +3385,10 @@ DismissAlertPopUp
   ...   AND   Select From List           id=rationale_type_id             ${rationaleTypeNum}
   ...   AND   Choose File                name=change[files][]             ${filepath}
   ...   AND   Sleep   3
-  WaitVisibilityAndClickElement    xpath=(//*[contains(@value,'Зберегти')])[1]
+  WaitVisibilityAndClickElement    xpath=(//*[contains(@value,'Зберегти') or contains(@value,'Оновити')])[1]
   Sleep  3
   uatenders.Пошук угоди по ідентифікатору  ${username}  ${agreement_uaid}
-  uatenders.Оновити сторінку з тендером  ${username}  ${agreement_uaid}
+  uatenders.Оновити сторінку з тендером    ${username}  ${agreement_uaid}
 
 Оновити властивості угоди
   [Arguments]  ${username}  ${agreement_uaid}  ${change_data}
@@ -3376,7 +3406,7 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement    xpath=(//*[contains(@value,'Оновити')])[1]
   Sleep  3
   uatenders.Пошук угоди по ідентифікатору  ${username}  ${agreement_uaid}
-  uatenders.Оновити сторінку з тендером  ${username}  ${agreement_uaid}
+  uatenders.Оновити сторінку з тендером    ${username}  ${agreement_uaid}
   Sleep  5
   Reload Page
   Sleep  2
@@ -3390,7 +3420,7 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement    xpath=(//*[contains(@value,'Оновити')])[1]
   Sleep  3
   uatenders.Пошук угоди по ідентифікатору  ${username}  ${agreement_uaid}
-  uatenders.Оновити сторінку з тендером  ${username}  ${agreement_uaid}
+  uatenders.Оновити сторінку з тендером    ${username}  ${agreement_uaid}
 
 Застосувати зміну для угоди
   [Arguments]  ${username}  ${agreement_uaid}  ${dateSigned}  ${status}
@@ -3408,6 +3438,7 @@ DismissAlertPopUp
   ...   AND   Sleep  5
   ...   AND   Reload Page
   Sleep  2
+
 
 ####################################################################################################
 ################################    Вторые этапы    ###########################################

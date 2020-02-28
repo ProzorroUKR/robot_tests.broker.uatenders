@@ -338,6 +338,7 @@ def convert_status(string):
 # Конвертация для Selection
         u"Період запрошень": u"active.enquiries",
         u"Укладена рамкова угода": u"active",
+        # u"Укладена рамкова угода": u"complete",
 
         u"Очікування другого етапу": u"active.stage2.pending",
 
