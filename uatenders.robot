@@ -169,6 +169,8 @@ ${locator.ownerViewer.procuringEntity.contactPoint.url}                     xpat
 ${locator.ownerViewer.contactPoint.status}                                  xpath=(//*[@class='label label-info'])[1]
 ${locator.ownerViewer.contracts[0].status}                                  xpath=(//*[contains(text(),'Статус:')]/..//*[position() mod 2 = 0]/span)[1]
 ${locator.ownerViewer.contracts[1].status}                                  xpath=(//*[contains(text(),'Статус:')]/..//*[position() mod 2 = 0]/span)[1]
+${locator.ownerViewer.agreements[0].status}                                 xpath=(//*[contains(text(),'Статус:')]/..//*[position() mod 2 = 0]/span)[1]
+${locator.ownerViewer.agreements[1].status}                                 xpath=(//*[contains(text(),'Статус:')]/..//*[position() mod 2 = 0]/span)[1]
 ${locator.ownerViewer.contracts[0].value.amount}                            xpath=(.//*[@class='current_amount'])
 ${locator.ownerViewer.contracts[1].value.amount}                            xpath=(.//*[@class='current_amount'])
 ${locator.ownerViewer.contracts[0].value.amountNet}                         xpath=(//*[contains(text(),'Ціна договору без ПДВ:')]/..//*[position() mod 2 = 0]/p)[1]
@@ -1283,21 +1285,30 @@ DismissAlertPopUp
 Отримати інформацію із угоди
   [Arguments]  ${username}  ${agreement_uaid}  ${field_name}
   uatenders.Пошук угоди по ідентифікатору  ${username}  ${agreement_uaid}
-  uatenders.Переміститься до футера
   ${fieldNum}=    uatenders.Отримати індекс з назви поля  ${field_name}
-  Run Keyword And Return If  'rationaleType' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationaleType')])@value
-  Run Keyword And Return If  'rationale' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationale')])@value
-  Run Keyword And Return If  'status' in '${field_name}'         Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'status')])@value
-  Run Keyword And Return If  'modifications[0].itemId' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'itemId')])
+  Wait Until Keyword Succeeds   20 x   60 s   Run Keywords
+  ...   uatenders.Перезавантажити сторінку з угодою
+  ...   AND   Element Should Be Visible    xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')])[1]
+  uatenders.Переміститься до футера
+  Run Keyword And Return If  'rationaleType' in '${field_name}'   Get Element Attribute   xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationaleType')])@value
+  Run Keyword And Return If  'rationale' in '${field_name}'       Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationale')])@value
+  Run Keyword And Return If  'status' in '${field_name}'          Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'status')])@value
+  Run Keyword And Return If  'modifications[0].itemId' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'itemId')])
   Run Keyword And Return If  'modifications[0].contractId' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'contractId')])
-  Run Keyword And Return If  'modifications[0].addend' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'addend')])
-  Run Keyword And Return If  'modifications[0].factor' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'factor')])
+  Run Keyword And Return If  'modifications[0].addend' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'addend')])
+  Run Keyword And Return If  'modifications[0].factor' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'factor')])
 
 Отримати індекс з назви поля
   [Arguments]  ${field_name}
   ${fieldNum_1}       Fetch From Right     ${field_name}      [
   ${fieldNum_2}       Fetch From Left      ${fieldNum_1}      ]
   Run Keyword And Return    Convert To String    ${fieldNum_2}
+
+Перезавантажити сторінку з угодою
+  Reload Page
+  Sleep  1
+  Run Keyword And Ignore Error      Click Element          xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  Sleep  1
 
 ##################################################################################################################
 ###############################################      ОТРИМАТИ      ###############################################
@@ -1395,6 +1406,12 @@ DismissAlertPopUp
   ${return_value}=                  Отримати текст із поля для посточальника             status
   Run Keyword And Return            convert_status            ${return_value}
 
+Отримати інформацію про замовника agreements[${index}].status
+  WaitVisibilityAndClickElement     xpath=(//*[text()[contains(.,'Угоди')]])
+  WaitVisibilityAndClickElement     xpath=(//*[contains(text(),'№')]/../../..//a)[1]
+  ${return_value}=                  Отримати текст із поля для замовника              agreements[${index}].status
+  Run Keyword And Return            convert_status                  ${return_value}
+
 #########################  Selections  ##############################
 ###### owner
 Отримати інформацію про замовника agreements[0].agreementID
@@ -1405,7 +1422,8 @@ DismissAlertPopUp
   ...   AND   WaitVisibilityAndClickElement    xpath=(//*[text()[contains(.,'Угоди')]])
   ${return_value}=                 Отримати текст із поля для замовника               agreements[0].agreementID
 # переход на 2-й єтап
-  Run Keyword If  '${MODE}' == 'framework_selection' and '${ROLE}' == 'tender_owner' or '${ROLE}' == 'viewer'   Run Keywords
+  Run Keyword If  '${MODE}' == 'framework_selection'   Run Keyword
+  ...   '${ROLE}' == 'tender_owner' or '${ROLE}' == 'viewer'   Run Keywords
   ...   WaitVisibilityAndClickElement           xpath=(.//*[contains(text(),'Закупівля')])[1]
   ...   AND   WaitVisibilityAndClickElement     xpath=(.//*[contains(text(),'Другі етапи')]/..//./*[@class='row']//a)[last()]
   [Return]    ${return_value}
