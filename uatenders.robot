@@ -525,7 +525,9 @@ DismissAlertPopUp
 # Создание тендера с одним \ много - лотами
   # Run Keyword IF    '${NUMBER_OF_LOTS}' == '0'      Run Keyword
   # ...   uatenders.Можливість додати лот до тендеру            ${tender_data}  ${procurementMethodType}  ${mode}
-  ...     ELSE IF   '${NUMBER_OF_LOTS}' == '1'      Run Keyword
+  # ...     ELSE IF   '${NUMBER_OF_LOTS}' == '1'      Run Keyword
+
+  Run Keyword IF    '${NUMBER_OF_LOTS}' == '1'      Run Keyword
   ...   uatenders.Можливість додати лот до тендеру            ${tender_data}  ${procurementMethodType}  ${mode}
   ...     ELSE IF   '${NUMBER_OF_LOTS}' == '2'      Run Keyword
   ...   uatenders.Можливість додати багато лотів до тендеру   ${tender_data}  ${procurementMethodType}  ${mode}
