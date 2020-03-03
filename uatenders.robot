@@ -523,19 +523,12 @@ DismissAlertPopUp
   ...   uatenders.Додати цінову пропозицію до reporting   ${tender_data}
 
 # Создание тендера с одним \ много - лотами
-  # Run Keyword IF    '${NUMBER_OF_LOTS}' == '0'      Run Keyword
-  # ...   uatenders.Можливість додати лот до тендеру            ${tender_data}  ${procurementMethodType}  ${mode}
-  # ...     ELSE IF   '${NUMBER_OF_LOTS}' == '1'      Run Keyword
-
   Run Keyword IF    '${NUMBER_OF_LOTS}' == '1'      Run Keyword
   ...   uatenders.Можливість додати лот до тендеру            ${tender_data}  ${procurementMethodType}  ${mode}
   ...     ELSE IF   '${NUMBER_OF_LOTS}' == '2'      Run Keyword
   ...   uatenders.Можливість додати багато лотів до тендеру   ${tender_data}  ${procurementMethodType}  ${mode}
   uatenders.Переміститься до футера
-  WaitVisibilityAndClickElement       xpath=//*[@type='submit']
-  Sleep  2
-  Dismiss Alert
-  Sleep  2
+  uatenders.DismissAlertPopUp
 
 Сформувати глобальні змінні по ОДНОМУ предмету
   [Arguments]    ${item_1}
@@ -668,7 +661,6 @@ DismissAlertPopUp
   Input Text        name=ag_minutes               0
   Input Text        name=ag_seconds               0
 
-
 Дані поля для процедури negotiation
   [Arguments]   ${tender_uaid}
   ${cause}=                             Get From Dictionary                            ${tender_uaid.data}          cause
@@ -694,9 +686,9 @@ DismissAlertPopUp
   ${scenarios_name}=  get_scenarios_name
   ${scenarios_name_1}=    Fetch From Right    ${scenarios_name}    /
   ${scenarios_name_2}=    Fetch From Left    ${scenarios_name_1}   .
+
   ${LOTS_NUM}=  Run Keyword If
-  ...   '${NUMBER_OF_LOTS}' == '0'   Set Variable   1
-  ...   ELSE IF   '${NUMBER_OF_LOTS}' != '0'   Set Variable   ${NUMBER_OF_LOTS}
+  ...   '${NUMBER_OF_LOTS}' != '0'   Set Variable   ${NUMBER_OF_LOTS}
   ${milestonesStatus}=    Run Keyword And Return Status    Get From Dictionary    ${tender_data.data}     milestones
   :FOR   ${lot_index}   IN RANGE   ${LOTS_NUM}
   \  uatenders.Завантажити документ до створення 'Нової закупівлі' - тендер        ${tender_data}
@@ -1393,7 +1385,9 @@ DismissAlertPopUp
   ...   Reload Page
   ...   AND   Sleep  2
   Run Keyword if   'Відображення статусу підписаної угоди з постачальником закупівлі' == '${TEST_NAME.replace('\'', '')}'   Run Keywords
-  ...   Sleep  5 min
+  ...   Sleep  7 min
+  ...   AND   Run Keyword And Ignore Error      Click Element                      xpath=(//span[@class='glyphicon glyphicon glyphicon-refresh'])
+  ...   AND   Sleep  2
   ...   AND   Reload Page
   ...   AND   Sleep  2
   ${return_value}=                     Отримати текст із поля для замовника              contracts[${index}].status
@@ -3103,7 +3097,9 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement         xpath=(//*[contains(@class,'btn btn-warning') and contains(.,'Кваліфікація')])[1]
  # Квалификация победителя по Допорогам проходит, через этот кейВорд
   Run Keyword if   'Неможливість' in '${TEST_NAME.replace('\'', '')}'   Run Keyword if   'open_framework' == '${MODE}'   Run Keywords
-  ...   Sleep  25 min
+  ...   Sleep  10 min
+  ...   AND   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
+  ...   AND   Sleep  2
   ...   AND   Reload Page
   ...   AND   Sleep  1
 
@@ -3458,8 +3454,7 @@ DismissAlertPopUp
   ...    uatenders.Підписати ЕЦП   ${username}   ${agreement_uaid}
   ...   AND   Sleep  5
   ...   AND   Reload Page
-  Sleep  2
-
+  Sleep  300
 
 ####################################################################################################
 ################################    Вторые этапы    ###########################################
