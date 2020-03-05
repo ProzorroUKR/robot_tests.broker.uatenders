@@ -3107,7 +3107,7 @@ DismissAlertPopUp
   ...   AND   Reload Page
   ...   AND   Sleep  1
 
-  Run Keyword if   'Неможливість' in '${TEST_NAME.replace('\'', '')}'    Fail
+  # Run Keyword if   'Неможливість' in '${TEST_NAME.replace('\'', '')}'    Fail
 
   Run Keyword if   'підтвердити постачальника' in '${TEST_NAME}'    Run Keywords
   ...   Sleep  1
