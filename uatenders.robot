@@ -519,11 +519,8 @@ DismissAlertPopUp
   ...   '${procurementMethodType}' == 'negotiation'             negotiation
   ...   '${procurementMethodType}' == 'negotiation.quick'       negotiation.quick
   ...   '${procurementMethodType}' == 'reporting'               reporting
-  Run Keyword IF    '${procurementMethodType}' == 'reporting'
-  ...   uatenders.Додати цінову пропозицію до reporting   ${tender_data}
-
 # Создание тендера с одним \ много - лотами
-  Run Keyword IF    '${NUMBER_OF_LOTS}' == '1'      Run Keyword
+  Run Keyword IF    '${NUMBER_OF_LOTS}' == '1' or '${NUMBER_OF_LOTS}' == '0'      Run Keyword
   ...   uatenders.Можливість додати лот до тендеру            ${tender_data}  ${procurementMethodType}  ${mode}
   ...     ELSE IF   '${NUMBER_OF_LOTS}' == '2'      Run Keyword
   ...   uatenders.Можливість додати багато лотів до тендеру   ${tender_data}  ${procurementMethodType}  ${mode}
@@ -686,9 +683,10 @@ DismissAlertPopUp
   ${scenarios_name}=  get_scenarios_name
   ${scenarios_name_1}=    Fetch From Right    ${scenarios_name}    /
   ${scenarios_name_2}=    Fetch From Left    ${scenarios_name_1}   .
-
+  #  для процедуры reporting ${NUMBER_OF_LOTS} == 0
   ${LOTS_NUM}=  Run Keyword If
-  ...   '${NUMBER_OF_LOTS}' != '0'   Set Variable   ${NUMBER_OF_LOTS}
+  ...   '${NUMBER_OF_LOTS}' == '0'   Set Variable   1
+  ...   ELSE IF   '${NUMBER_OF_LOTS}' != '0'   Set Variable   ${NUMBER_OF_LOTS}
   ${milestonesStatus}=    Run Keyword And Return Status    Get From Dictionary    ${tender_data.data}     milestones
   :FOR   ${lot_index}   IN RANGE   ${LOTS_NUM}
   \  uatenders.Завантажити документ до створення 'Нової закупівлі' - тендер        ${tender_data}
@@ -1132,8 +1130,9 @@ DismissAlertPopUp
   Switch Browser    1
 #############################
   # for exclude Quinta errors added Sleeep for waiting create data
-  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' in '${TEST_NAME.replace('\'', '')}' and '${MODE}' != 'open_framework'   Sleep   15 min
-  Run Keyword if   'Можливість знайти однопредметний тендер по ідентифікатору' in '${TEST_NAME.replace('\'', '')}'    Sleep   20 min
+  ${suite_name}=    Fetch From Right    ${SUITE_NAME}   .
+  Run Keyword if   'Можливість знайти закупівлю по ідентифікатору' == '${TEST_NAME.replace('\'', '')}' and '${MODE}' == 'open_framework' and '${suite_name}' == 'Contract Signing'
+  ...   Sleep  15 min
 #############################
   Wait Until Keyword Succeeds   10 x   5 s     Run Keywords
   ...   Run Keyword IF    '${tender_uaid}' == 'PASS'    Input Text    name=search[s]    ${tender_uaid}
@@ -1280,6 +1279,11 @@ DismissAlertPopUp
   ...   uatenders.Перезавантажити сторінку з угодою
   ...   AND   Element Should Be Visible    xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')])[1]
   uatenders.Переміститься до футера
+######################################
+  # for exclude Quinta errors added Sleeep for waiting create data
+  Run Keyword if   'Відображення обгрунтування зміни partyWithdrawal' == '${TEST_NAME.replace('\'', '')}' and '${ROLE}' == 'viewer'
+  ...   Sleep  10 min
+######################################
   Run Keyword And Return If  'rationaleType' in '${field_name}'   Get Element Attribute   xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationaleType')])@value
   Run Keyword And Return If  'rationale' in '${field_name}'       Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationale')])@value
   Run Keyword And Return If  'status' in '${field_name}'          Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'status')])@value
@@ -3750,7 +3754,7 @@ DismissAlertPopUp
   Run Keyword If    '${mode}' == 'aboveThresholdEU' or '${mode}' == 'openeu' or '${mode}' == 'open_esco' or '${mode}' == 'closeFrameworkAgreementUA' or '${mode}' == 'open_framework'    ClearFildAndInputText    name=contact_name_en    Petrov
   #featereData   index   defoultIndex
   uatenders.Додати нецінові показники до тендеру  ${feature}  ${1}  ${0}
-  uatenders.Заповнити поля регіону доставки першого предмета   ${0}
+  uatenders.Заповнити поля регіону доставки першого предмета  ${0}
   uatenders.DismissAlertPopUp
 
 Додати неціновий показник на предмет
