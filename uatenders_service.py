@@ -277,6 +277,7 @@ def convert_method_type(string):
         u"Переговорна процедура для потреб оборони": u"aboveThresholdUA.defense",
         u"Закупівля енергосервісу (ESCO)": u"esco",
         u"Укладання рамкової угоди": u"closeFrameworkAgreementUA",
+        u"Відбір для закупівлі за рамковою угодою": u"closeFrameworkAgreementSelectionUA",
     }.get(string, string)
 
 def convert_status(string):
