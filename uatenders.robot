@@ -305,6 +305,7 @@ DismissAlertPopUp
   Sleep  1
   Run Keyword if   'Можливість змінити дату закінчення періоду подання пропозиції на 10 днів' == '${TEST_NAME.replace('\'', '')}'
   ...   WaitVisibilityAndClickElement     xpath=(.//*[@name='lots[0][items][${index_0}][same_delivery_address]'])[2]
+  WaitVisibilityAndClickElement           xpath=(.//*[@name='lots[0][items][${index_0}][same_delivery_address]'])[2]
   Sleep  1
   Select From List           xpath=(//*[@name='lots[0][items][${index_0}][region_id]'])[3]           ${regionDeliveryGlobal_1}
   ClearFildAndInputText      xpath=(//*[@name='lots[0][items][${index_0}][postal_code]'])[2]         ${postalCodeDeliveryGlobal_1}
@@ -1281,16 +1282,26 @@ DismissAlertPopUp
   uatenders.Переміститься до футера
 ######################################
   # for exclude Quinta errors added Sleeep for waiting create data
-  Run Keyword if   'Відображення обгрунтування зміни partyWithdrawal' == '${TEST_NAME.replace('\'', '')}' and '${ROLE}' == 'viewer'
+  Run Keyword if   'Відображення обгрунтування зміни partyWithdrawal' == '${TEST_NAME.replace('\'', '')}' and '${ROLE}' == 'viewer'   Run Keywords
   ...   Sleep  10 min
+  ...   AND   uatenders.Пошук угоди по ідентифікатору  ${username}  ${agreement_uaid}
+  ...   AND   Sleep  5 min
+  ...   AND   uatenders.Перезавантажити сторінку з угодою
+  ...   AND   Sleep  2 min
+  ...   AND   Log To Console   =======
+  ...   AND   uatenders.Перезавантажити сторінку з угодою
+  ...   AND   Sleep  1 min
+  ...   AND   Reload Page
+  ...   AND   Sleep  10
 ######################################
-  Run Keyword And Return If  'rationaleType' in '${field_name}'   Get Element Attribute   xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationaleType')])@value
+  Run Keyword And Return If  'rationaleType' in '${field_name}'   Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationaleType')])@value
   Run Keyword And Return If  'rationale' in '${field_name}'       Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'rationale')])@value
   Run Keyword And Return If  'status' in '${field_name}'          Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'status')])@value
-  Run Keyword And Return If  'modifications[0].itemId' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'itemId')])
-  Run Keyword And Return If  'modifications[0].contractId' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'contractId')])
-  Run Keyword And Return If  'modifications[0].addend' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'addend')])
-  Run Keyword And Return If  'modifications[0].factor' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'factor')])
+  Run Keyword And Return If  'modifications[0].itemId' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'itemId')])@value
+  Run Keyword And Return If  'modifications[0].contractId' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'contractId')])@value
+  # displaying only @factor@
+  Run Keyword And Return If  'modifications[0].addend' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'factor')])@value
+  Run Keyword And Return If  'modifications[0].factor' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'factor')])@value
 
 Отримати індекс з назви поля
   [Arguments]  ${field_name}
@@ -1526,6 +1537,16 @@ DismissAlertPopUp
 
 Отримати інформацію про замовника minimalStep.amount
   ${return_value}=                 Отримати текст із поля для замовника               minimalStep.amount
+######################################
+  # for exclude Quinta errors added Sleeep for waiting create data
+  ${suite_name}=    Fetch From Right    ${SUITE_NAME}   .
+  Run Keyword IF   '${suite_name}' == 'Selection'   Run Keywords
+  ...   Sleep  5 min
+  ...   AND   uatenders.Перезавантажити сторінку з угодою
+  ...   AND   Sleep  2 min
+  ...   AND   Reload Page
+  ...   AND   Sleep  10
+######################################
   Run Keyword And Return           Convert To Number                                  ${return_value.replace(' ', '')}
 
 Отримати інформацію про замовника procurementMethodType
