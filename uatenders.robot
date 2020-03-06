@@ -305,7 +305,7 @@ DismissAlertPopUp
   Sleep  1
   Run Keyword if   'Можливість змінити дату закінчення періоду подання пропозиції на 10 днів' == '${TEST_NAME.replace('\'', '')}'
   ...   WaitVisibilityAndClickElement     xpath=(.//*[@name='lots[0][items][${index_0}][same_delivery_address]'])[2]
-  WaitVisibilityAndClickElement     xpath=(.//*[@name='lots[0][items][${index_0}][same_delivery_address]'])[2]
+  WaitVisibilityAndClickElement           xpath=(.//*[@name='lots[0][items][${index_0}][same_delivery_address]'])[2]
   Sleep  1
   Select From List           xpath=(//*[@name='lots[0][items][${index_0}][region_id]'])[3]           ${regionDeliveryGlobal_1}
   ClearFildAndInputText      xpath=(//*[@name='lots[0][items][${index_0}][postal_code]'])[2]         ${postalCodeDeliveryGlobal_1}
