@@ -305,6 +305,7 @@ DismissAlertPopUp
   Sleep  1
   Run Keyword if   'Можливість змінити дату закінчення періоду подання пропозиції на 10 днів' == '${TEST_NAME.replace('\'', '')}'
   ...   WaitVisibilityAndClickElement     xpath=(.//*[@name='lots[0][items][${index_0}][same_delivery_address]'])[2]
+  WaitVisibilityAndClickElement     xpath=(.//*[@name='lots[0][items][${index_0}][same_delivery_address]'])[2]
   Sleep  1
   Select From List           xpath=(//*[@name='lots[0][items][${index_0}][region_id]'])[3]           ${regionDeliveryGlobal_1}
   ClearFildAndInputText      xpath=(//*[@name='lots[0][items][${index_0}][postal_code]'])[2]         ${postalCodeDeliveryGlobal_1}
@@ -1298,7 +1299,8 @@ DismissAlertPopUp
   Run Keyword And Return If  'status' in '${field_name}'          Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//*[contains(@class,'status')])@value
   Run Keyword And Return If  'modifications[0].itemId' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'itemId')])@value
   Run Keyword And Return If  'modifications[0].contractId' in '${field_name}'  Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'contractId')])@value
-  Run Keyword And Return If  'modifications[0].addend' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'addend')])@value
+  # displaying only @factor@
+  Run Keyword And Return If  'modifications[0].addend' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'factor')])@value
   Run Keyword And Return If  'modifications[0].factor' in '${field_name}'      Get Element Attribute  xpath=(.//*[contains(@class,'agreementChange ${fieldNum}')]//../*[contains(@class,'factor')])@value
 
 Отримати індекс з назви поля
