@@ -3122,7 +3122,7 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement         xpath=(//*[contains(@class,'btn btn-warning') and contains(.,'Кваліфікація')])[1]
  # Квалификация победителя по Допорогам проходит, через этот кейВорд
   Run Keyword if   'Неможливість' in '${TEST_NAME.replace('\'', '')}'   Run Keyword if   'open_framework' == '${MODE}'   Run Keywords
-  ...   Sleep  10 min
+  ...   Sleep  15 min
   ...   AND   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   ...   AND   Sleep  2
   ...   AND   Reload Page
