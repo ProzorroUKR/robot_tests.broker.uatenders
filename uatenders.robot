@@ -681,9 +681,6 @@ DismissAlertPopUp
 #######################################################
 Можливість додати лот до тендеру
   [Arguments]  ${tender_data}  ${methodType}  ${mode}
-  ${scenarios_name}=  get_scenarios_name
-  ${scenarios_name_1}=    Fetch From Right    ${scenarios_name}    /
-  ${scenarios_name_2}=    Fetch From Left    ${scenarios_name_1}   .
   #  для процедуры reporting ${NUMBER_OF_LOTS} == 0
   ${LOTS_NUM}=  Run Keyword If
   ...   '${NUMBER_OF_LOTS}' == '0'   Set Variable   1
@@ -693,11 +690,7 @@ DismissAlertPopUp
   \  uatenders.Завантажити документ до створення 'Нової закупівлі' - тендер        ${tender_data}
   \  Run Keyword IF   '${TENDER_MEAT}' == 'True'
   \  ...    uatenders.Можливість заповнити Tender info   ${tender_data}  ${methodType}  ${mode}  ${lot_index}
-  \  Run Keyword IF   'single_item_tender' == '${scenarios_name_2}' and '${LOT_MEAT}' == 'False' and '${methodType}' != 'reporting'
-  \  ...    uatenders.Можливість заповнити безлотовий Lots info     ${tender_data}  ${methodType}  ${mode}
-  \  Run Keyword IF   'single_item_tender' != '${scenarios_name_2}' and '${LOT_MEAT}' == 'True' and '${methodType}' != 'reporting'
-  \  ...    uatenders.Можливість заповнити Lots info          ${tender_data}  ${methodType}   ${mode}        ${lot_index}
-  \  Run Keyword IF   'single_item_tender' != '${scenarios_name_2}' and '${methodType}' != 'reporting'
+  \  Run Keyword IF   '${methodType}' != 'reporting'
   \  ...    uatenders.Можливість в тендері заповнити поля роздiлу ЛОТИ                     ${tender_data}  ${lot_index}  #lot
   \  Run Keyword IF   '${milestonesStatus}' == 'True'
   \  ...    uatenders.Можливість заповнити Milestones info    ${tender_data.data.milestones}  ${methodType}  ${mode}
@@ -3122,7 +3115,7 @@ DismissAlertPopUp
   WaitVisibilityAndClickElement         xpath=(//*[contains(@class,'btn btn-warning') and contains(.,'Кваліфікація')])[1]
  # Квалификация победителя по Допорогам проходит, через этот кейВорд
   Run Keyword if   'Неможливість' in '${TEST_NAME.replace('\'', '')}'   Run Keyword if   'open_framework' == '${MODE}'   Run Keywords
-  ...   Sleep  10 min
+  ...   Sleep  15 min
   ...   AND   uatenders.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
   ...   AND   Sleep  2
   ...   AND   Reload Page
